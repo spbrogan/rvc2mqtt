@@ -60,7 +60,7 @@ class RVC_Decoder(object):
 
     def rvc_decode(self, can_arbitration_id: int, data: str) -> dict:
         result = {"arbitration_id": hex(can_arbitration_id), "data": data}
-        result.extend(self._can_frame_to_rvc(can_arbitration_id))
+        result.update(self._can_frame_to_rvc(can_arbitration_id))
         result["name"] = "UNKNOWN-" + result["dgn"]
 
         # TODO: need to handle types here.  NAK/ACK, etc
@@ -133,13 +133,11 @@ class RVC_Decoder(object):
         if param_count == 0:
             result["DECODER PENDING"] = 1
 
+        presult = {}
         for key in result.keys():
-            newkey = self._parameterize_string(key)
-            if newkey != key:
-                result[newkey] = result[key]
-                del result[key]
+            presult[self._parameterize_string(key)] = result[key]
 
-        return result
+        return presult
 
     def _can_frame_to_rvc(self, arbitration_id: int) -> dict:
         """
