@@ -17,7 +17,7 @@ Might need to bring up the can0 interface like
 
 ```bash
 sudo ip link set can0 down
-sudo link set can0 up type can bitrate 250000
+sudo ip link set can0 up type can bitrate 250000
 ```
 Then to run the docker image
 
