@@ -11,8 +11,18 @@ docker build -t rvc2mqtt .
 
 ## run it
 
+Map in the host network so that the can0 bus is present.  
+TODO: figure out better way maybe using --cap-add=NET_ADMIN
+Might need to bring up the can0 interface like
+
 ```bash
-docker run rvc2mqtt 
+sudo ip link set can0 down
+sudo ip link set can0 up type can bitrate 250000
+```
+Then to run the docker image
+
+```bash
+docker run --network=host rvc2mqtt 
 ```
 
 ## run it interactively 
