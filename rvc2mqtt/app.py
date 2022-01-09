@@ -114,7 +114,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-v",
         "--verbose",
-        dest="Verbose",
+        dest="verbose",
         action="count",
         help="Increase verbosity. Add multiple times to increase",
         default=0,
