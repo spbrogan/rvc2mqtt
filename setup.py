@@ -41,6 +41,6 @@ setuptools.setup(
         "License :: OSI Approved :: Apache2 License",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers"
-    ]
+    ],
     python_requires='>=3.8'
 )
