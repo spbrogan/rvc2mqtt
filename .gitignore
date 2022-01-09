@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+pytest_report.html
+test.junit.xml
+cov.xml
