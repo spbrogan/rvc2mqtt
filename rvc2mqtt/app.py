@@ -37,7 +37,7 @@ PATH_TO_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
 def signal_handler(signal, frame):
     global MyApp
-    logging.critcal("shutting down.")
+    logging.critical("shutting down.")
     MyApp.close()
     logging.shutdown()
     exit(0)
