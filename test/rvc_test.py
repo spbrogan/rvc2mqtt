@@ -35,6 +35,12 @@ class Test_RVC_Decoder(unittest.TestCase):
         results = rvc.rvc_decode(int("19ffe259", 16), "02000060246024ff")
         print(results)
 
+        # acknowledge
+        results = rvc.rvc_decode(int("18E84480", 16), "8001000000BCFF01")
+        self.assertEqual('0E844', results['dgn'])
+        self.assertEqual('ACKNOWLEDGMENT', results['name'])
+        self.assertEqual('command-specific response', results['acknowledgment_code_definition'])
+
     def test_canbus_to_rvc(self):
         rvc = RVC_Decoder()
         result = rvc._can_frame_to_rvc(int("19FFBC44", 16))

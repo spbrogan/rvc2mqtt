@@ -63,11 +63,16 @@ class RVC_Decoder(object):
         result.update(self._can_frame_to_rvc(can_arbitration_id))
         result["name"] = "UNKNOWN-" + result["dgn"]
 
-        # TODO: need to handle types here.  NAK/ACK, etc
         dgn = result["dgn"]
         if dgn not in self.spec:
-            self.Logger.warning(f"Failed to find DGN {dgn} in loaded specification")
-            return result
+
+            # try just the upper half as a few commands match only upper.
+            # commands like ACK
+            dgn = result["dgn_h"]
+
+            if dgn not in self.spec:
+                self.Logger.warning(f"Failed to find DGN {result['dgn']} in loaded specification")
+                return result
 
         decoder = self.spec[dgn]
         result["name"] = decoder["name"]
@@ -86,9 +91,6 @@ class RVC_Decoder(object):
 
         param_count = 0
         for param in params:
-            ## TODO: do this at the end
-            # if parameterized_strings:
-            #    param["name"] = parameterize_string(param["name"])
 
             # Get bytes based on byte param and convert into integer
             try:
@@ -249,7 +251,7 @@ class RVC_Decoder(object):
         """
         return input.translate(input.maketrans(" /", "__", "()")).lower()
 
-    def _convert_unit(input_num: int, unit: str, mytype: str):
+    def _convert_unit(self, input_num: int, unit: str, mytype: str):
         """
         See RVC spec table 5.3 for details
         """
@@ -294,5 +296,8 @@ class RVC_Decoder(object):
 
         elif mu == "bitmap":
             new_value = "{0:08b}".format(input_num)
+
+        elif mu == "hex":
+            new_value = hex(input_num).upper()[2:]
 
         return new_value

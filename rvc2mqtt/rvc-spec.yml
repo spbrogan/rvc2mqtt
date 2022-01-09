@@ -20,6 +20,54 @@
 # spec file.
 API_VERSION: 0
 
+"0EA":
+  name: REQUEST_FOR_DGN
+  comment: This is only the dgn_h
+  parameters:
+    - byte: 0-2
+      name: desired dgn
+      type: uint17
+      unit: hex
+    - byte: 3
+      name: instance
+      type: uint8
+
+"0E8":
+  name: ACKNOWLEDGMENT
+  comment: This is only the dgn_h
+  parameters:
+    - byte: 0
+      name: acknowledgment code
+      type: uint8
+      values:
+        0: ack. command will be executed
+        1: nak. command will not be executed
+        2: command is not acceptable from this source
+        3: conditions do not allow command to be executed
+        4: command is not formatted properly
+        5: command parameters are out of range
+        6: command requires a security password
+        7: command requires more time to execute
+        8: command overridden by user
+        9: reserved
+        127: reserved
+        128: command-specific response
+        254: command-specific response
+    - byte: 1
+      name: instance
+      type: uint8
+    - byte: 2
+      bit: 0-3
+      name: instance bank
+      type: uint4
+    - byte: 4
+      name: source address
+      type: uint8
+    - byte: 5-7
+      name: DGN Acknowledged
+      type: uint24
+      unit: hex
+
 17F00:
   name: GENERAL_RESET
   parameters:
