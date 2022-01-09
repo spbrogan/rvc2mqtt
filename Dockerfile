@@ -1,10 +1,13 @@
-# syntax=docker/dockerfile:1
-
 FROM python:3.9-slim-buster
 
 WORKDIR /app
 
-COPY ../ .
+ADD rvc2mqtt .
+COPY setup.py setup.py
+COPY readme.md readme.md
+COPY requirement.txt requirement.txt
+
+
 RUN pip3 install -r requirement.txt
 RUN pip3 install --no-cache-dir --no-use-pep517 -e .
 
