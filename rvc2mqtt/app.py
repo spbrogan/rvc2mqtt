@@ -28,10 +28,12 @@ import logging
 import queue
 import signal
 import time
+import os
 import datetime
-from rvc import RVC_Decoder
-from rvc2mqtt.can import CAN_Watcher
+from rvc2mqtt.rvc import RVC_Decoder
+from rvc2mqtt.can_support import CAN_Watcher
 
+PATH_TO_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
 def signal_handler(signal, frame):
     global MyApp
@@ -62,7 +64,7 @@ class app(object):
         self.receiver.start()
 
         self.rvc_decoder = RVC_Decoder()
-        self.rvc_decoder.load_rvc_spec()  # load the RVC spec yaml
+        self.rvc_decoder.load_rvc_spec(os.path.join(PATH_TO_FOLDER, 'rvc-spec.yml'))  # load the RVC spec yaml
 
         while True:
             # process any received messages
