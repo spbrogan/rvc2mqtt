@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run:  pip install -r requirement.txt -r requirement.dev.txt
       - name: Test with pytest
-        run: pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --html=pytest_report.html --self-contained-html --cov=rvc2mqtt --cov-report html:cov_html
+        run: pytest test --doctest-modules --junitxml=junit/test-results.xml --html=pytest_report.html --self-contained-html --cov=rvc2mqtt --cov-report html:cov_html
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         with:
