@@ -53,7 +53,7 @@ class RVC_Decoder(object):
         self.Logger.info(f"Loading RVC Spec file {filepath}")
         with open(filepath, "r") as specfile:
             try:
-                self.spec = yaml.load(specfile, yaml.loader)
+                self.spec = yaml.load(specfile, yaml.loader.Loader)
             except yaml.YAMLError as err:
                 self.Logger.error("Yaml Load Error.\n" + err)
                 raise (err)
