@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: 3.9
       - name: Install dependencies
-        run:  |
+        run: |
         pip install -r requirement.txt
         pip install -r requirement.dev.txt
       - name: Test with pytest
