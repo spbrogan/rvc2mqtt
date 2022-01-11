@@ -27,4 +27,5 @@ jobs:
           path: |
             junit/test-results.xml
             pytest_report.html
+            cov_html/
         if: ${{ always() }}
