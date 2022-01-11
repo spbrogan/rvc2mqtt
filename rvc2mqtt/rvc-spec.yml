@@ -20,7 +20,7 @@
 # spec file.
 API_VERSION: 0
 
-"0EA":
+0EA:
   name: REQUEST_FOR_DGN
   comment: This is only the dgn_h
   parameters:
@@ -32,7 +32,7 @@ API_VERSION: 0
       name: instance
       type: uint8
 
-"0E8":
+0E8:
   name: ACKNOWLEDGMENT
   comment: This is only the dgn_h
   parameters:
@@ -100,7 +100,7 @@ API_VERSION: 0
         00: no action
         01: reset statistics
 
-"17E00":
+17E00:
   name: TERMINAL
   parameters:
     - byte: 0-7

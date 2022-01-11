@@ -18,7 +18,6 @@ limitations under the License.
 
 """
 import os
-import sys
 import unittest
 import context  # add rvc2mqtt package to the python path using local reference
 from rvc2mqtt.rvc import RVC_Decoder
@@ -173,10 +172,6 @@ class Test_RVC_Decoder(unittest.TestCase):
         rvc = RVC_Decoder()
         with self.assertRaises(Exception) as cm:
             rvc._get_bits(0xff, "4-8-0")
-
-
-
-
 
 if __name__ == '__main__':
     unittest.main()
