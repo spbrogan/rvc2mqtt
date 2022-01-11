@@ -1,0 +1,28 @@
+name: Run Python Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run:  pip install -r requirements.txt
+      - name: Test with pytest
+        run: pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --html=pytest_report.html --self-contained-html --cov=rvc2mqtt --cov-report html:cov_html
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: pytest-results
+          path: junit/test-results.xml
+        if: ${{ always() }}
