@@ -25,10 +25,12 @@ limitations under the License.
 
 import argparse
 import logging
+import logging.config
 import queue
 import signal
 import time
 import os
+import yaml
 from os import PathLike
 import datetime
 from typing import Optional
@@ -96,9 +98,13 @@ class app(object):
 
         self.Logger.debug(str(MsgDict))
 
-    def load_config(self, config_file_path: Optional[os.PathLike]):
-        """ if config_file_path is a valid file load a yaml/json config file """
-        pass
+
+
+def load_my_config(config_file_path: Optional[os.PathLike]):
+    """ if config_file_path is a valid file load a yaml/json config file """
+    if os.path.isfile(config_file_path):
+        with open(config_file_path, "r") as content:
+            return yaml.safe_load(content.read())
 
 
 
@@ -106,49 +112,20 @@ if __name__ == "__main__":
     """Entrypoint.
     Get loggers setup, cli arguments parsed, and run the app
     """
-    logger = logging.getLogger("")
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    console = logging.StreamHandler()
-    console.setFormatter(formatter)
-    logger.addHandler(console)
-
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i", "--interface", default="can0", help="CAN interface to use"
-    )
-    parser.add_argument(
-        "--OutputLog", dest="OutputLog", help="Create an output log file"
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="verbose",
-        action="count",
-        help="Increase verbosity. Add multiple times to increase",
-        default=0,
-    )
     parser.add_argument("-c", "--config", dest="config_file_path", help="Config file path")
     args = parser.parse_args()
 
-    config = self.load_config(args.config_file_path)
+    a = os.path.join(PATH_TO_FOLDER, "..", "..", "config.yaml")
+    #config = load_config(args.config_file_path)
+    config = load_my_config(a)
+    try:
+        # https://docs.python.org/3/library/logging.config.html#logging-config-dictschema
+        logging.config.dictConfig(config["logger"])
+    except Exception as e:
+        print("Exception trying to setup loggers: " + str(e.args))
 
-    verbosity2level = [logging.ERROR, logging.INFO, logging.DEBUG]
-    console.setLevel(
-        verbosity2level[max(min(0, args.verbose), len(verbosity2level) - 1)]
-    )
-
-    # setup file logging if so requested
-    if args.OutputLog:
-        if len(args.OutputLog) < 2:
-            logging.critical("the output log file parameter is invalid")
-        else:
-            # setup file based logging
-            filelogger = logging.FileHandler(filename=args.OutputLog, mode="w")
-            filelogger.setLevel(
-                verbosity2level[max(min(0, args.verbose), len(verbosity2level) - 1)]
-            )
-            logging.getLogger("").addHandler(filelogger)
+    interface = config["interface"]["name"]
 
     logging.info(
         "Log Started: "
@@ -158,4 +135,4 @@ if __name__ == "__main__":
     global MyApp
     MyApp = app()
     signal.signal(signal.SIGINT, signal_handler)
-    MyApp.main(args.interface)
+    MyApp.main(interface)
