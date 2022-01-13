@@ -29,7 +29,9 @@ import queue
 import signal
 import time
 import os
+from os import PathLike
 import datetime
+from typing import Optional
 from rvc2mqtt.rvc import RVC_Decoder
 from rvc2mqtt.can_support import CAN_Watcher
 
@@ -94,6 +96,11 @@ class app(object):
 
         self.Logger.debug(str(MsgDict))
 
+    def load_config(self, config_file_path: Optional[os.PathLike]):
+        """ if config_file_path is a valid file load a yaml/json config file """
+        pass
+
+
 
 if __name__ == "__main__":
     """Entrypoint.
@@ -121,7 +128,10 @@ if __name__ == "__main__":
         help="Increase verbosity. Add multiple times to increase",
         default=0,
     )
+    parser.add_argument("-c", "--config", dest="config_file_path", help="Config file path")
     args = parser.parse_args()
+
+    config = self.load_config(args.config_file_path)
 
     verbosity2level = [logging.ERROR, logging.INFO, logging.DEBUG]
     console.setLevel(
