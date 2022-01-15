@@ -36,10 +36,13 @@ limitations under the License.
 from os import PathLike
 import logging
 import yaml
-from typing import Union
+from typing import Union, Tuple
 
 
 class RVC_Decoder(object):
+    DEFAULT_PRIORITY: int = 6
+    DEFAULT_SOURCE_ID: int = 130
+
     def __init__(self):
         """create a decoder object to support decoding can bus messages
         compliant with the RVIA RV-C
@@ -301,3 +304,17 @@ class RVC_Decoder(object):
             new_value = hex(input_num).upper()[2:]
 
         return new_value
+
+    def rvc_encode():
+        pass
+
+    def _rvc_to_can_frame(self, values: dict) -> Tuple[int, str]:
+        """convert rvc dgn, priority, source_id"""
+        a = int(values.get("priority", RVC_Decoder.DEFAULT_PRIORITY))
+        b = int(values["dgn"], 16)
+        c = int(values.get("source_id", RVC_Decoder.DEFAULT_SOURCE_ID))
+        arbitration_id = (a & 0x7)
+        arbitration_id = (arbitration_id << 18) | (b & 0x1FFFF)
+        arbitration_id = (arbitration_id << 8)  | (c & 0xf)
+        return arbitration_id
+
