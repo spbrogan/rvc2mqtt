@@ -17,10 +17,10 @@ using the client-id to provide an isolated namespace.  Please make sure this is 
 have more than one bridge 
 
 ```yml
-mqtt:d
-  brokerd: <ip address>:<optional port>
-  username: <user name>
-  password: <password>
+mqtt:
+  broker:    <ip address>:<optional port>
+  username:  <user name>
+  password:  <password>
   client-id: <client-id> #optional default=bridge
 
 ```
