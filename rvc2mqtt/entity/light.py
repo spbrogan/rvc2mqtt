@@ -32,54 +32,23 @@ light:
     payload_off: "OFF"
     optimistic: false
 '''
-
 import queue
+from . import Entity
 
 
-class entity(object):
-    TOPIC_BASE = "rvc"
-    
 
-    def __init__(self, name:str, send_queue: queue):
-        self.name: str = name
-        self.send_queue = send_queue
-        self._topic_string_name = self._prepare_topic_string(name)
-
-        pass
-
-    def _prepare_topic_string(self, input:str) -> str:
-        """ convert the string to a consistant value
-        
-        lower case
-        only alphnumeric
-
-        """
-        return ''.join(c for c in input.lower() if c.isalnum())
-    
-
-    def get_topic_string(self, field:str, state:bool) -> str:
-        """ make a topic string for a field.  
-        It is either a state topic when you just want status
-        Or it is a set topic string if you want to do operations
-        """
-
-        s = entity.TOPIC_BASE + "/" + self._topic_string_name + \
-            "/" + self._prepare_topic_string(type(self)) + "/" + \
-            self._prepare_topic_string(field) + "/"
-
-        if state:
-            return s + "status"
-        else:
-            return s + "set"
-
-
-class Light(entity):
+class Light(Entity):
     LIGHT_ON = "on"
     LIGHT_OFF = "off"
 
+    def __init__(self):
+        pass
 
-    def __init__(self, name: str, send_quque: queue):
-        super.__init__(name, send_quque)
+    
+
+
+    def create(self, name: str, send_quque: queue):
+        super.create(name, send_quque)
         self.brightnes_command_topic: str = self.make_topic_string("brightness", False)
         self.brightnes_command_topic: str = self.make_topic_string("brightness", False)
         self.brightnes_state_topic: str = self.make_topic_string("brightness", True)
@@ -110,3 +79,5 @@ class Light(entity):
 
     def _get_brightness_percent(self) -> float:
         pass
+
+
