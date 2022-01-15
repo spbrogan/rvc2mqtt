@@ -154,7 +154,7 @@ class RVC_Decoder(object):
         CanID = bin(arbitration_id)[2:].zfill(
             29
         )  # make base two string and zfill to 29 bits
-        Priority = int(CanID[0:3], 2)
+        Priority = format(int(CanID[0:3], 2), "01X")
         DgnH = format(int(CanID[4:13], 2), "03X")
         DgnL = format(int(CanID[13:21], 2), "02X")
         Dgn = DgnH + DgnL
@@ -308,13 +308,13 @@ class RVC_Decoder(object):
     def rvc_encode():
         pass
 
-    def _rvc_to_can_frame(self, values: dict) -> Tuple[int, str]:
+    def _rvc_to_can_frame(self, values: dict) -> int:
         """convert rvc dgn, priority, source_id"""
-        a = int(values.get("priority", RVC_Decoder.DEFAULT_PRIORITY))
+        a = int(values.get("priority", RVC_Decoder.DEFAULT_PRIORITY), 16)
         b = int(values["dgn"], 16)
-        c = int(values.get("source_id", RVC_Decoder.DEFAULT_SOURCE_ID))
+        c = int(values.get("source_id", RVC_Decoder.DEFAULT_SOURCE_ID), 16)
         arbitration_id = (a & 0x7)
         arbitration_id = (arbitration_id << 18) | (b & 0x1FFFF)
-        arbitration_id = (arbitration_id << 8)  | (c & 0xf)
+        arbitration_id = (arbitration_id << 8)  | (c & 0xff)
         return arbitration_id
 

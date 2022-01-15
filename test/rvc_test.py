@@ -43,13 +43,23 @@ class Test_RVC_Decoder(unittest.TestCase):
     def test_canbus_to_rvc(self):
         rvc = RVC_Decoder()
         result = rvc._can_frame_to_rvc(int("19FFBC44", 16))
-        self.assertEqual(6, result["priority"])
+        self.assertEqual('6', result["priority"])
         self.assertEqual('1FF', result["dgn_h"])
         self.assertEqual('BC', result["dgn_l"])
         self.assertEqual('1FFBC', result["dgn"])
         self.assertEqual('44', result["source_id"])
 
         print(result)
+
+    def test_rvc_to_canbus(self):
+        rvc = RVC_Decoder()
+        result = rvc._can_frame_to_rvc(int("19FFBC44", 16))
+        arbid = rvc._rvc_to_can_frame(result)
+        self.assertEqual(arbid, 0x19FFBC44)
+
+        result = rvc._can_frame_to_rvc(int("19ffe259", 16))
+        arbid = rvc._rvc_to_can_frame(result)
+        self.assertEqual(arbid, 0x19ffe259)
 
     # -------------------
     # Test Byte Function
