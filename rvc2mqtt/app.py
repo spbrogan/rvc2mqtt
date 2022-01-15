@@ -36,6 +36,9 @@ import datetime
 from typing import Optional
 from rvc2mqtt.rvc import RVC_Decoder
 from rvc2mqtt.can_support import CAN_Watcher
+from rvc2mqtt.mqtt import MQTT_Support
+from rvc2mqtt.mqtt import *
+import rvc2mqtt.entity
 
 PATH_TO_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
@@ -48,7 +51,7 @@ def signal_handler(signal, frame):
 
 
 class app(object):
-    def main(self, can_interface_name: str):
+    def main(self, configuration: dict):
         """main function.  Sets up the app services, creates
         the receive thread, and processes messages.
 
@@ -57,19 +60,37 @@ class app(object):
 
         self.Logger = logging.getLogger("app")
 
-        # make an recieve queue pass messages
+        # make an receive queue of receive can bus messages
         self.rxQueue = queue.Queue()
 
-        # make a transmit queue
-        self.txQueue = queue.Queue()  ## messages to send
+        # make a transmit queue to send can bus messages
+        self.txQueue = queue.Queue()
 
-        # thread to recieve can bus messages
-        self.receiver = CAN_Watcher(can_interface_name, self.rxQueue, self.txQueue)
+        # thread to receive can bus messages
+        self.receiver = CAN_Watcher(configuration["interface"]["name"], self.rxQueue, self.txQueue)
         self.receiver.start()
 
+        # setup decoder
         self.rvc_decoder = RVC_Decoder()
         self.rvc_decoder.load_rvc_spec(os.path.join(PATH_TO_FOLDER, 'rvc-spec.yml'))  # load the RVC spec yaml
 
+        # setup the mqtt broker connection
+        if "mqtt" in configuration:
+            self.mqtt_client = MqttInitalize(configuration["mqtt"])
+
+        # setup object list using 
+        self.entity_list = []
+        
+        # initialize objects from the map list provided in config
+        if "map" in configuration:
+            for item in configuration["map"]:
+                obj = rvc2mqtt.entity.entity_factory(item)
+                if obj is not None:
+                    self.entity_list.add(obj)
+
+        
+
+        # Our RVC message loop here
         while True:
             # process any received messages
             self.message_rx_loop()
@@ -100,7 +121,12 @@ class app(object):
         ## Find if this is a device entity in our list
         ## Pass to object
 
-        self.Logger.debug(str(MsgDict))
+        for item in self.entity_list:
+            if item.ProcessMsg(MsgDict):
+                ## Should we allow processing by more than one obj.  
+                ## 
+                return
+        self.Logger.debug(f"Unused Msg {str(MsgDict)}")
 
 
 def load_my_config(config_file_path: Optional[os.PathLike]):
@@ -128,14 +154,18 @@ if __name__ == "__main__":
         print("Exception trying to setup loggers: " + str(e.args))
         print("Review https://docs.python.org/3/library/logging.config.html#logging-config-dictschema for details")
 
-    interface = config["interface"]["name"]
-
     logging.info(
         "Log Started: "
         + datetime.datetime.strftime(datetime.datetime.now(), "%A, %B %d, %Y %I:%M%p")
     )
 
+    try:
+        #remove the logger config
+        del config["logger"]
+    except Exception as d:
+        logging.debug("Failed to remove the logging config from config")
+
     global MyApp
     MyApp = app()
     signal.signal(signal.SIGINT, signal_handler)
-    MyApp.main(interface)
+    MyApp.main(config)
