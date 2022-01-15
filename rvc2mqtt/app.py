@@ -64,7 +64,7 @@ class app(object):
         self.txQueue = queue.Queue()  ## messages to send
 
         # thread to recieve can bus messages
-        self.receiver = CAN_Watcher(can_interface_name, self.rxQueue)
+        self.receiver = CAN_Watcher(can_interface_name, self.rxQueue, self.txQueue)
         self.receiver.start()
 
         self.rvc_decoder = RVC_Decoder()
@@ -95,9 +95,12 @@ class app(object):
             )
         except Exception as e:
             self.Logger.warning(f"Failed to decode msg. {message}: {e}")
+            return
+        
+        ## Find if this is a device entity in our list
+        ## Pass to object
 
         self.Logger.debug(str(MsgDict))
-
 
 
 def load_my_config(config_file_path: Optional[os.PathLike]):
@@ -110,7 +113,7 @@ def load_my_config(config_file_path: Optional[os.PathLike]):
 
 if __name__ == "__main__":
     """Entrypoint.
-    Get loggers setup, cli arguments parsed, and run the app
+    Get the config and run the app
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", dest="config_file_path", help="Config file path")
@@ -120,10 +123,10 @@ if __name__ == "__main__":
     #config = load_config(args.config_file_path)
     config = load_my_config(a)
     try:
-        # https://docs.python.org/3/library/logging.config.html#logging-config-dictschema
         logging.config.dictConfig(config["logger"])
     except Exception as e:
         print("Exception trying to setup loggers: " + str(e.args))
+        print("Review https://docs.python.org/3/library/logging.config.html#logging-config-dictschema for details")
 
     interface = config["interface"]["name"]
 
