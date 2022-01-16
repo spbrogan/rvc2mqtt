@@ -134,7 +134,7 @@ class app(object):
         self.Logger.debug(f"Unused Msg {str(MsgDict)}")
 
 
-def load_my_config(config_file_path: Optional[os.PathLike]):
+def load_the_config(config_file_path: Optional[os.PathLike]):
     """ if config_file_path is a valid file load a yaml/json config file """
     if os.path.isfile(config_file_path):
         with open(config_file_path, "r") as content:
@@ -150,9 +150,8 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--config", dest="config_file_path", help="Config file path")
     args = parser.parse_args()
 
-    a = os.path.join(PATH_TO_FOLDER, "..", "..", "config.yaml")
-    #config = load_config(args.config_file_path)
-    config = load_my_config(a)
+    config = load_the_config(args.config_file_path)
+
     try:
         logging.config.dictConfig(config["logger"])
     except Exception as e:
