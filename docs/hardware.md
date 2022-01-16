@@ -16,10 +16,31 @@ details to come
 
 ## Software
 
-Install latest version of Raspbian
-Enable CAN
-    * Add waveshare doc and steps here
-Bring up the can network
+### Install latest version of Raspbian
+
+go read the latest on raspberrypi.com
+This has been used on Raspberry Pi OS Lite 
+
+### Enable CanBus support in Kernel
+
+* Add waveshare doc and steps here
+
+### Bring up the can network
+
+TBD - figure out how to do automatically.  Too many different linux network services
+
+Manually this can be done doing
+
+``` bash
+sudo ip link set can0 type can bitrate 250000
+
+sudo ip link set can0 up
+```
+
+### Make a config.yaml file in a folder you can mount as /config for the container
+
+TBD
+
 
 ## Docker
 
