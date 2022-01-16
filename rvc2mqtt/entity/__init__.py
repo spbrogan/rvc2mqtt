@@ -18,6 +18,8 @@ limitations under the License.
 import logging
 import queue
 
+from rvc2mqtt.mqtt import MQTT_Support
+
 __all__ = ["light"]
 
 class Entity(object):
@@ -25,34 +27,20 @@ class Entity(object):
     
     """
       
-    def __init__(self, name:str):
+    def __init__(self, name:str, mqtt_support: MQTT_Support):
         self.name: str = name
-        self._topic_string_name = self._prepare_topic_string(name)
-
-        pass
+        self.Logger = logging.getLogger(__name__)
+        self.device_topic = mqtt_support.make_device_topic_root(name)
+        self.status_topic = mqtt_support.make_device_topic_string(name, None, True)
+        self.set_topic = mqtt_support.make_device_topic_string(name, None, False)
+        mqtt_support.register(self, self.set_topic, self.process_mqtt_msg)
 
     def set_rvc_send_queue(self, send_queue: queue):
+        """ Provide queue for sending RVC messages.  Queue requires 
+        items be formatted as python-can messages"""
         self.send_queue: queue = send_queue
 
-    def set_mqtt_subscriptions(self):
-        pass
-
-    def get_topic_string(self, field:str, state:bool) -> str:
-        """ make a topic string for a field.  
-        It is either a state topic when you just want status
-        Or it is a set topic string if you want to do operations
-        """
-
-        s = Entity.TOPIC_BASE + "/" + self._topic_string_name + \
-            "/" + self._prepare_topic_string(type(self)) + "/" + \
-            self._prepare_topic_string(field) + "/"
-
-        if state:
-            return s + "status"
-        else:
-            return s + "set"
-
-    def process_msg(self, new_message: dict) -> bool:
+    def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
         is of interest to this object.
         
@@ -61,14 +49,19 @@ class Entity(object):
         """
         pass
 
+    def process_mqtt_msg(self, topic, payload):
+        if topic == self.set_topic:
+            self.Logger.info(f"MQTT msg: {topic} {payload}")
+
 
 from .light import Light
 
-def entity_factory(data: dict) -> Entity:
+def entity_factory(data: dict, mqtt_support: MQTT_Support) -> Entity:
     if "type" in data:
         t = data["type"].lower()
+        name = data["name"]
         if t == "light":
-            return Light()
+            return Light(name, mqtt_support)
         # Add more here
         else:
           logging.getLogger(__name__).error(f"Unsupported type: {t}")  

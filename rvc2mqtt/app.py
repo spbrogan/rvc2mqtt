@@ -84,14 +84,13 @@ class app(object):
 
         # setup object list using 
         self.entity_list = []
-        '''
+        
         # initialize objects from the map list provided in config
         if "map" in configuration:
             for item in configuration["map"]:
-                obj = rvc2mqtt.entity.entity_factory(item)
+                obj = rvc2mqtt.entity.entity_factory(item, self.mqtt_client)
                 if obj is not None:
                     self.entity_list.add(obj)
-        '''
 
         
 
@@ -128,7 +127,7 @@ class app(object):
         ## Pass to object
 
         for item in self.entity_list:
-            if item.ProcessMsg(MsgDict):
+            if item.process_rvc_msg(MsgDict):
                 ## Should we allow processing by more than one obj.  
                 ## 
                 return

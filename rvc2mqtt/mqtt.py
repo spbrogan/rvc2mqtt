@@ -22,19 +22,28 @@ import paho.mqtt.client as mqc
 
 
 class MQTT_Support(object):
-    TOPIC_BASE = "rvc"  
+    TOPIC_BASE = "rvc" 
+     
     
     def __init__(self, client_id:str):
         self.Logger = logging.getLogger(__name__)
         self.client_id = client_id
 
         self.root_topic = MQTT_Support.TOPIC_BASE + "/" + self.client_id
+        self.device_topic_base = self.root_topic + "/" + "devices"
 
         # topic strings
         self.bridge_state_topic = self.root_topic + "/" + "state"
         self.bridge_info_topic = self.root_topic + "/" + "info"
 
-    def set_client(self, client):
+        self.registered_mqtt_devices = {}
+
+
+    def register(self, entity, topic, func):
+        self.registered_mqtt_devices[topic] = (entity, func)
+        self.client.subscribe((topic,0))
+
+    def set_client(self, client: mqc):
         self.client = client
 
     def on_connect(self, client, userdata, flags, rc):
@@ -56,14 +65,43 @@ class MQTT_Support(object):
         pass
 
     def on_message(self, client, userdata, msg):
-        pass
-        #topic=msg.topic[13:]
-        #if debug_level:
-        #    print("Send CAN ID: "+topic+" Data: "+msg.payload.decode('ascii'))
-        #can_tx(devIds[dev],[ commands[msg.payload.decode('ascii')] ])
+        if msg.topic in self.registered_mqtt_devices:
+            (entity, func) = self.registered_mqtt_devices[msg.topic]
+            func(entity, msg.topic, msg.payload)
+        else:
+            self.Logger.debug("Received unfiltered mqtt message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
 
     def send_bridge_info(self, info:str):
         pass
+
+    def make_device_topic_root(self, device:str) -> str:
+        return self.device_topic_base + "/" + self._prepare_topic_string_node(str(type(self)) + " " + device)
+
+    def make_device_topic_string(self, device: str, field:str, state:bool) -> str:
+        """ make a topic string for a device.  
+        It is either a state topic when you just want status
+        Or it is a set topic string if you want to do operations
+        """
+
+        s = self.make_device_topic_root(device)
+
+        if field is not None:
+            s += "/" + self._prepare_topic_string_node(field) 
+
+        if state and field is not None:
+            s += "/status"
+        else:
+            s += "/set"
+        return s
+
+    def _prepare_topic_string_node(self, input:str) -> str:
+        """ convert the string to a consistant value
+        
+        lower case
+        only alphanumeric
+
+        """
+        return input.translate(input.maketrans(" /", "__", "()")).lower()
         
  ## GLOBALS ##       
 gMQTTObj:MQTT_Support = None
@@ -111,12 +149,4 @@ def MqttInitalize(config:dict):
         logging.getLogger(__name__).error(f"MQTT Broker Connection Failed. {e}")
         return None
 
-def prepare_topic_string_node(self, input:str) -> str:
-    """ convert the string to a consistant value
-    
-    lower case
-    only alphanumeric
-
-    """
-    return ''.join(c for c in input.lower() if c.isalnum())
 

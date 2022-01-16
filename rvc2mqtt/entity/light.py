@@ -35,49 +35,11 @@ light:
 import queue
 from . import Entity
 
-
-
 class Light(Entity):
     LIGHT_ON = "on"
     LIGHT_OFF = "off"
 
-    def __init__(self):
-        pass
-
-    
-
-
-    def create(self, name: str, send_quque: queue):
-        super.create(name, send_quque)
-        self.brightnes_command_topic: str = self.make_topic_string("brightness", False)
-        self.brightnes_command_topic: str = self.make_topic_string("brightness", False)
-        self.brightnes_state_topic: str = self.make_topic_string("brightness", True)
-        self.brightnes_command_topic: str = self.make_topic_string("brightness", False)
-        pass
-
-    def process_msg(self):
-        pass
-
-    def _set_light_state(self, on:bool) -> int:
-        # send rvc command
-        if on:
-            # send on command
-            pass
-        else:
-            # send off command
-            pass
-
-        return 0
-
-
-    def _get_light_state(self) -> str:
-
-        pass
-
-    def _set_brightness_percent(self, percent: float) -> int:
-        return 0
-
-    def _get_brightness_percent(self) -> float:
-        pass
+    def __init__(self, name: str):
+        super.__init__(name)
 
 
