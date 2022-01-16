@@ -90,7 +90,7 @@ class app(object):
             for item in configuration["map"]:
                 obj = rvc2mqtt.entity.entity_factory(item, self.mqtt_client)
                 if obj is not None:
-                    self.entity_list.add(obj)
+                    self.entity_list.append(obj)
 
         
 
