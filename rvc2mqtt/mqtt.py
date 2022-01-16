@@ -91,6 +91,9 @@ def MqttInitalize(config:dict):
     (addr, _, port)=config["broker"].partition(":")
     if port is None:
         port = 1883
+    else:
+        # yaml loads as strings
+        port = int(port)
     
     mqttc = mqc.Client()
     gMQTTObj.set_client(mqttc)

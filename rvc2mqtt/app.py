@@ -78,6 +78,8 @@ class app(object):
         # setup the mqtt broker connection
         if "mqtt" in configuration:
             self.mqtt_client = MqttInitalize(configuration["mqtt"])
+            if self.mqtt_client:
+                self.mqtt_client.client.loop_start()
 
 
         # setup object list using 
@@ -112,7 +114,6 @@ class app(object):
             return
 
         message = self.rxQueue.get()
-        self.Logger.debug("{0:X} ({1:X})".format(message.arbitration_id, message.dlc))
 
         try:
             MsgDict = self.rvc_decoder.rvc_decode(
@@ -162,12 +163,6 @@ if __name__ == "__main__":
         "Log Started: "
         + datetime.datetime.strftime(datetime.datetime.now(), "%A, %B %d, %Y %I:%M%p")
     )
-
-    try:
-        #remove the logger config
-        del config["logger"]
-    except Exception as d:
-        logging.debug("Failed to remove the logging config from config")
 
     global MyApp
     MyApp = app()
