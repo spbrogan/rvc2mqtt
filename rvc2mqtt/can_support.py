@@ -45,10 +45,10 @@ class CAN_Watcher(threading.Thread):
             if message is not None:
                 self.rx.put(message)  # Put message into queue
 
-            if not self.tx_queue.empty():
-                message = self.tx_queue.get()
+            if not self.tx.empty():   # pending message to send
+                message = self.tx.get() # pull from queue
                 try:
-                    self.bus.send(message, 1)
+                    self.bus.send(message, 1)  # send on canbus
                 except Exception as e:
                     self.Logger.error(f"Exception trying to send {e}")
                     self.Logger.debug(f"Failed Msg: {str(message)}")
