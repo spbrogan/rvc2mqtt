@@ -1,11 +1,6 @@
 """
 MQTT support for rvc2mqtt
 
-Thanks goes to the contributers of https://github.com/linuxkidd/rvc-monitor-py
-This code is derived from parts of https://github.com/linuxkidd/rvc-monitor-py/blob/master/usr/bin/rvc2mqtt.py
-which was licensed using Apache-2.0.  No copyright information was present in the above mentioned file but original
-content is owned by the authors. 
-
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
 
@@ -27,9 +22,17 @@ import paho.mqtt.client as mqc
 
 
 class MQTT_Support(object):
+    TOPIC_BASE = "rvc"  
     
-    def __init__(self):
+    def __init__(self, client_id:str):
         self.Logger = logging.getLogger(__name__)
+        self.client_id = client_id
+
+        self.root_topic = MQTT_Support.TOPIC_BASE + "/" + self.client_id
+
+        # topic strings
+        self.bridge_state_topic = self.root_topic + "/" + "state"
+        self.bridge_info_topic = self.root_topic + "/" + "info"
 
     def set_client(self, client):
         self.client = client
@@ -40,9 +43,12 @@ class MQTT_Support(object):
         """
         self.Logger.info(f"MQTT connected: {mqc.connack_string(rc)}")
         if rc == mqc.CONNACK_ACCEPTED:
+            # publish topic
+            self.client.publish(self.bridge_state_topic, "on", retain=True)
+            self.client.will_set(self.bridge_state_topic, "off", qos=0, retain=False)
+            
             #subscribe to all topics of interest
             #client.subscribe([(mqttTopic + "/transmit/#", 0)])
-            pass
         else:
             self.Logger.critical(f"Failed to connect to mqtt broker: {mqc.connack_string(rc)}")
 
@@ -55,6 +61,9 @@ class MQTT_Support(object):
         #if debug_level:
         #    print("Send CAN ID: "+topic+" Data: "+msg.payload.decode('ascii'))
         #can_tx(devIds[dev],[ commands[msg.payload.decode('ascii')] ])
+
+    def send_bridge_info(self, info:str):
+        pass
         
  ## GLOBALS ##       
 gMQTTObj:MQTT_Support = None
@@ -74,7 +83,10 @@ def MqttInitalize(config:dict):
     mqtt client.
     """
     global gMQTTObj
-    gMQTTObj = MQTT_Support()
+    client_id = "bridge"
+    if "client-id" in config:
+        client_id = config["client-id"]
+    gMQTTObj = MQTT_Support(client_id)
 
     (addr, _, port)=config["broker"].partition(":")
     if port is None:
@@ -85,6 +97,7 @@ def MqttInitalize(config:dict):
     mqttc.on_connect = on_mqtt_connect
     mqttc.on_subscribe = on_mqtt_subscribe
     mqttc.on_message = on_mqtt_message
+    mqttc.username_pw_set(config["username"], config["password"])
 
     try:
         logging.getLogger(__name__).info(f"Connecting to MQTT broker {addr}:{port}")
@@ -94,6 +107,13 @@ def MqttInitalize(config:dict):
     except Exception as e:
         logging.getLogger(__name__).error(f"MQTT Broker Connection Failed. {e}")
         return None
+
+def prepare_topic_string_node(self, input:str) -> str:
+    """ convert the string to a consistant value
     
-    
+    lower case
+    only alphanumeric
+
+    """
+    return ''.join(c for c in input.lower() if c.isalnum())
 

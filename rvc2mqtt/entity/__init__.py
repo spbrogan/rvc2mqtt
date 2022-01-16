@@ -24,8 +24,7 @@ class Entity(object):
     """ Baseclass for all entities.
     
     """
-    TOPIC_BASE = "rvc"    
-
+      
     def __init__(self, name:str):
         self.name: str = name
         self._topic_string_name = self._prepare_topic_string(name)
@@ -37,16 +36,6 @@ class Entity(object):
 
     def set_mqtt_subscriptions(self):
         pass
-
-    def _prepare_topic_string(self, input:str) -> str:
-        """ convert the string to a consistant value
-        
-        lower case
-        only alphnumeric
-
-        """
-        return ''.join(c for c in input.lower() if c.isalnum())
-    
 
     def get_topic_string(self, field:str, state:bool) -> str:
         """ make a topic string for a field.  

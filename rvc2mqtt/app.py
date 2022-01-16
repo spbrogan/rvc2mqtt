@@ -1,7 +1,7 @@
 """
 Main app/entrypoint for RVC2MQTT
 
-Thanks goes to the contributers of https://github.com/linuxkidd/rvc-monitor-py
+Thanks goes to the contributors of https://github.com/linuxkidd/rvc-monitor-py
 This code is derived from parts of https://github.com/linuxkidd/rvc-monitor-py/blob/master/usr/bin/rvc2mqtt.py
 which was licensed using Apache-2.0.  No copyright information was present in the above mentioned file but original
 content is owned by the authors. 
@@ -59,6 +59,7 @@ class app(object):
         """
 
         self.Logger = logging.getLogger("app")
+        self.mqtt_client = None
 
         # make an receive queue of receive can bus messages
         self.rxQueue = queue.Queue()
@@ -78,15 +79,17 @@ class app(object):
         if "mqtt" in configuration:
             self.mqtt_client = MqttInitalize(configuration["mqtt"])
 
+
         # setup object list using 
         self.entity_list = []
-        
+        '''
         # initialize objects from the map list provided in config
         if "map" in configuration:
             for item in configuration["map"]:
                 obj = rvc2mqtt.entity.entity_factory(item)
                 if obj is not None:
                     self.entity_list.add(obj)
+        '''
 
         
 
@@ -100,9 +103,11 @@ class app(object):
         """Shutdown the app and any threads"""
         if self.receiver:
             self.receiver.kill_received = True
+        if self.mqtt_client is not None:
+            self.mqtt_client.client.loop_stop()
 
     def message_rx_loop(self):
-        """Process any recieved messages"""
+        """Process any RVC received messages"""
         if self.rxQueue.empty():  # Check if there is a message in queue
             return
 
