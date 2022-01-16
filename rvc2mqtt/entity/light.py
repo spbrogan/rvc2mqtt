@@ -39,7 +39,7 @@ class Light(Entity):
     LIGHT_ON = "on"
     LIGHT_OFF = "off"
 
-    def __init__(self, name: str):
-        super.__init__(name)
+    def __init__(self, name: str, mqttstuff):
+        super.__init__(name, mqttstuff)
 
 
