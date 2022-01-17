@@ -38,6 +38,7 @@ class Temperature_FromDGN_1FF9C(Entity):
 
         # RVC message must match the following to be this device
         self.rvc_match_status = {"dgn": "1FF9C", "instance": data['instance']}
+        self.reported_temp = 100  #should never get this hot in C
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -49,8 +50,10 @@ class Temperature_FromDGN_1FF9C(Entity):
         # For now only match the status message.
 
         if self._is_entry_match(self.rvc_match_status, new_message):
-            temperatureC = new_message["ambient_temp"]
-            self.mqtt_support.client.publish(self.status_topic, temperatureC, retain=True)
+            # These events happen a lot.  Lets filter down to when temp changes
+            if new_message["ambient_temp"] != self.reported_temp:
+                self.reported_temp = new_message["ambient_temp"]
+                self.mqtt_support.client.publish(self.status_topic, self.reported_temp, retain=True)
 
     def process_mqtt_msg(self, topic, payload):
         pass
