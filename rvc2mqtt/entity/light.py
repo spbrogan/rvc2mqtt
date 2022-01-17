@@ -37,11 +37,8 @@ light:
 
 
 import queue
-
 from rvc2mqtt.mqtt import MQTT_Support
 from . import Entity
-
-
 class Light(Entity):
     LIGHT_ON = "on"
     LIGHT_OFF = "off"
@@ -60,8 +57,6 @@ class Light(Entity):
 
     def process_mqtt_msg(self, topic, payload):
         pass
-
-
 
 
 class Light_FromDGN_1FFBD(Light):
@@ -112,10 +107,11 @@ class Light_FromDGN_1FFBD(Light):
         self.brightness_set_topic = mqtt_support.make_device_topic_string(
             self.name, "brightness", False)
         mqtt_support.register(
-            self, self.brightness_set_topic, self.process_mqtt_msg)
+            self.brightness_set_topic, self.process_mqtt_msg)
 
         # RVC message must match the following to be this device
-        self.rvc_match_status = {"dgn": "1FFBD", "instance": data['instance'], "group": data['group'] }
+        self.rvc_match_status = {
+            "dgn": "1FFBD", "instance": data['instance'], "group": data['group']}
         # ignore for now self.rvc_match_command = {"dgn": "1FFBC", "instance": data['instance'], "group": data['group'] }
 
         # save these for later to send rvc msg
@@ -131,18 +127,19 @@ class Light_FromDGN_1FFBD(Light):
         If relevant - Process the message and return True
         else - return False
         """
-        # For now only match the status message. 
-        
-        if self._is_entry_match( self.rvc_match_status, new_message):          
-          if new_message["operating status"] == 100.0:
-            state = "ON"
-          elif new_message["operating status"] == 0.0:
-            state = "OFF"
-          else:
-            state = "UNEXPECTED(" + str(new_message["operating status"]) + ")"
+        # For now only match the status message.
 
-          self.mqtt_support.client.publish(self.status_topic, state, retain=True)
-          
+        if self._is_entry_match(self.rvc_match_status, new_message):
+            if new_message["operating status"] == 100.0:
+                state = "ON"
+            elif new_message["operating status"] == 0.0:
+                state = "OFF"
+            else:
+                state = "UNEXPECTED(" + \
+                    str(new_message["operating status"]) + ")"
+
+            self.mqtt_support.client.publish(
+                self.status_topic, state, retain=True)
 
     def process_mqtt_msg(self, topic, payload):
         pass
