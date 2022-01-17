@@ -31,8 +31,6 @@ class Entity(object):
         self.Logger = logging.getLogger(__name__)
         self.mqtt_support = mqtt_support
         self.status_topic = mqtt_support.make_device_topic_string(self.name, None, True)
-        self.set_topic = mqtt_support.make_device_topic_string(self.name, None, False)
-        self.mqtt_support.register(self.set_topic, self.process_mqtt_msg)
 
     def _is_entry_match(self, match_entries: dict, rvc_msg: dict) -> bool:
         '''
@@ -71,6 +69,7 @@ class Entity(object):
 
 
 from .light import Light, Light_FromDGN_1FFBD
+from .temperature import Temperature_FromDGN_1FF9C
 
 def entity_factory(data: dict, mqtt_support: MQTT_Support) -> Entity:
     if "type" in data:
@@ -82,6 +81,9 @@ def entity_factory(data: dict, mqtt_support: MQTT_Support) -> Entity:
                 # Lights have custom objects per DGN
                 logging.getLogger(__name__).error(f"Unsupported dgn {data['dgn']} for type {t}") 
         # Add more here
+        elif t == "temperature":
+            if data["dgn"].upper() == "1FF9C":
+                return Temperature_FromDGN_1FF9C(data, mqtt_support)
         else:
           logging.getLogger(__name__).error(f"Unsupported type: {t}")  
     else:

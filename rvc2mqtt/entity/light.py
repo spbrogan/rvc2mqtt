@@ -46,6 +46,10 @@ class Light(Entity):
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
         super().__init__(data, mqtt_support)
 
+        # Allow MQTT to control light
+        self.set_topic = mqtt_support.make_device_topic_string(self.name, None, False)
+        self.mqtt_support.register(self.set_topic, self.process_mqtt_msg)
+
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
         is of interest to this object.
@@ -102,12 +106,9 @@ class Light_FromDGN_1FFBD(Light):
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
         super().__init__(data, mqtt_support)
-        self.brightness_status_topic = mqtt_support.make_device_topic_string(
-            self.name, "brightness", True)
-        self.brightness_set_topic = mqtt_support.make_device_topic_string(
-            self.name, "brightness", False)
-        mqtt_support.register(
-            self.brightness_set_topic, self.process_mqtt_msg)
+        #self.brightness_status_topic = mqtt_support.make_device_topic_string(self.name, "brightness", True)
+        #self.brightness_set_topic = mqtt_support.make_device_topic_string(self.name, "brightness", False)
+        #mqtt_support.register(self.brightness_set_topic, self.process_mqtt_msg)
 
         # RVC message must match the following to be this device
         self.rvc_match_status = {
