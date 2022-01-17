@@ -32,14 +32,117 @@ light:
     payload_off: "OFF"
     optimistic: false
 '''
+
+
+
+
 import queue
+
+from rvc2mqtt.mqtt import MQTT_Support
 from . import Entity
+
 
 class Light(Entity):
     LIGHT_ON = "on"
     LIGHT_OFF = "off"
 
-    def __init__(self, name: str, mqttstuff):
-        super().__init__(name, mqttstuff)
+    def __init__(self, data: dict, mqtt_support: MQTT_Support):
+        super().__init__(data, mqtt_support)
+
+    def process_rvc_msg(self, new_message: dict) -> bool:
+        """ Process an incoming message and determine if it
+        is of interest to this object.
+
+        If relevant - Process the message and return True
+        else - return False
+        """
+        raise NotImplementedError()
+
+    def process_mqtt_msg(self, topic, payload):
+        pass
 
 
+
+
+class Light_FromDGN_1FFBD(Light):
+    """
+    Subclass of light that is tied to RVC DGN of DC_LOAD_STATUS and DC_LOAD_COMMAND
+    Supports ON/OFF 
+
+    TODO: can it support brightness
+
+    issue command - Turn on
+    {"dgn": "1FFBC", "data": "0200FA0001FF0000", "name": "DC_LOAD_COMMAND", "instance": 2, "group": "00000000",
+     "desired level": 125.0,
+     "desired operating mode": "00", "desired operating mode definition": "automatic",
+     "interlock": "00", "interlock definition": "no interlock active",
+     "command": 1, "command definition": "on duration",
+     "delay/duration": 255}
+
+    Issue command - Turn off
+    {"dgn": "1FFBC", "data": "0100FA0003FF0000", "name": "DC_LOAD_COMMAND", "instance": 1, "group": "00000000",
+     "desired level": 125.0,
+     "desired operating mode": "00", "desired operating mode definition": "automatic",
+     "interlock": "00", "interlock definition": "no interlock active",
+     "command": 3, "command definition": "off",
+     "delay/duration": 255}
+
+    status - off
+    {"dgn": "1FFBD", "data": "0100000000000000", "name": "DC_LOAD_STATUS", "instance": 1, "group": "00000000",
+     "operating status": 0.0,
+     "operating mode": "00", "operating mode definition": "automatic",
+     "variable level capability": "00", "variable level capability definition": "not variable",
+     "priority": "0000", "priority definition": "highest priority",
+     "delay": 0, "demanded current": 0, "present current": -1600.0}
+
+    status - on
+    {"dgn": "1FFBD", "data": "0100C80000000000", "name": "DC_LOAD_STATUS", "instance": 1, "group": "00000000",
+     "operating status": 100.0, 
+     "operating mode": "00", "operating mode definition": "automatic", 
+     "variable level capability": "00", "variable level capability definition": "not variable",
+     "priority": "0000", "priority definition": "highest priority",
+     "delay": 0, "demanded current": 0, "present current": -1600.0}
+
+    """
+
+    def __init__(self, data: dict, mqtt_support: MQTT_Support):
+        super().__init__(data, mqtt_support)
+        self.brightness_status_topic = mqtt_support.make_device_topic_string(
+            self.name, "brightness", True)
+        self.brightness_set_topic = mqtt_support.make_device_topic_string(
+            self.name, "brightness", False)
+        mqtt_support.register(
+            self, self.brightness_set_topic, self.process_mqtt_msg)
+
+        # RVC message must match the following to be this device
+        self.rvc_match_status = {"dgn": "1FFBD", "instance": data['instance'], "group": data['group'] }
+        # ignore for now self.rvc_match_command = {"dgn": "1FFBC", "instance": data['instance'], "group": data['group'] }
+
+        # save these for later to send rvc msg
+        self.rvc_instance = data['instance']
+        self.rvc_group = data['group']
+        self.state = "unknown"
+        self.brightness = "unknown"
+
+    def process_rvc_msg(self, new_message: dict) -> bool:
+        """ Process an incoming message and determine if it
+        is of interest to this object.
+
+        If relevant - Process the message and return True
+        else - return False
+        """
+        # For now only match the status message. 
+        
+        if self._is_entry_match( self.rvc_match_status, new_message):          
+          if new_message["operating status"] == 100.0:
+            state = "ON"
+          elif new_message["operating status"] == 0.0:
+            state = "OFF"
+          else:
+            state = "UNEXPECTED(" + str(new_message["operating status"]) + ")"
+
+          self.mqtt_support.client.publish(self.status_topic, state, retain=True)
+          
+
+    def process_mqtt_msg(self, topic, payload):
+        pass

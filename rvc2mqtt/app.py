@@ -105,6 +105,7 @@ class app(object):
         if self.receiver:
             self.receiver.kill_received = True
         if self.mqtt_client is not None:
+            self.mqtt_client.shutdown()
             self.mqtt_client.client.loop_stop()
 
     def message_rx_loop(self):

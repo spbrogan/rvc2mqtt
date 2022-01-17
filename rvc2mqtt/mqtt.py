@@ -39,8 +39,8 @@ class MQTT_Support(object):
         self.registered_mqtt_devices = {}
 
 
-    def register(self, entity, topic, func):
-        self.registered_mqtt_devices[topic] = (entity, func)
+    def register(self, topic, func):
+        self.registered_mqtt_devices[topic] = func
         self.client.subscribe((topic,0))
 
     def set_client(self, client: mqc):
@@ -53,11 +53,7 @@ class MQTT_Support(object):
         self.Logger.info(f"MQTT connected: {mqc.connack_string(rc)}")
         if rc == mqc.CONNACK_ACCEPTED:
             # publish topic
-            self.client.publish(self.bridge_state_topic, "on", retain=True)
-            self.client.will_set(self.bridge_state_topic, "off", qos=0, retain=False)
-            
-            #subscribe to all topics of interest
-            #client.subscribe([(mqttTopic + "/transmit/#", 0)])
+            self.client.publish(self.bridge_state_topic, "online", retain=True)
         else:
             self.Logger.critical(f"Failed to connect to mqtt broker: {mqc.connack_string(rc)}")
 
@@ -66,31 +62,31 @@ class MQTT_Support(object):
 
     def on_message(self, client, userdata, msg):
         if msg.topic in self.registered_mqtt_devices:
-            (entity, func) = self.registered_mqtt_devices[msg.topic]
-            func(entity, msg.topic, msg.payload)
+            func = self.registered_mqtt_devices[msg.topic]
+            func(msg.topic, msg.payload)
         else:
-            self.Logger.debug("Received unfiltered mqtt message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
+            self.Logger.warning("Received mqtt message without a device registered '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
 
     def send_bridge_info(self, info:str):
         pass
 
-    def make_device_topic_root(self, device:str) -> str:
-        return self.device_topic_base + "/" + self._prepare_topic_string_node(str(type(self)) + " " + device)
+    def make_device_topic_root(self, name:str) -> str:
+        return self.device_topic_base + "/" + self._prepare_topic_string_node(name)
 
-    def make_device_topic_string(self, device: str, field:str, state:bool) -> str:
+    def make_device_topic_string(self, name: str, field:str, state:bool) -> str:
         """ make a topic string for a device.  
         It is either a state topic when you just want status
         Or it is a set topic string if you want to do operations
         """
 
-        s = self.make_device_topic_root(device)
+        s = self.make_device_topic_root(name)
 
         if field is not None:
             s += "/" + self._prepare_topic_string_node(field) 
 
         if state and field is not None:
             s += "/status"
-        else:
+        elif not state:
             s += "/set"
         return s
 
@@ -102,6 +98,10 @@ class MQTT_Support(object):
 
         """
         return input.translate(input.maketrans(" /", "__", "()")).lower()
+
+    def shutdown(self):
+        """ shutdown.  Tell server we are going offline"""
+        self.client.publish(self.bridge_state_topic, "offline", retain=True)
         
  ## GLOBALS ##       
 gMQTTObj:MQTT_Support = None

@@ -25,15 +25,32 @@ __all__ = ["light"]
 class Entity(object):
     """ Baseclass for all entities.
     
-    """
-      
-    def __init__(self, name:str, mqtt_support: MQTT_Support):
-        self.name: str = name
+    """  
+    def __init__(self, data:dict, mqtt_support: MQTT_Support):
+        self.name: str = data["name"]
         self.Logger = logging.getLogger(__name__)
-        self.device_topic = mqtt_support.make_device_topic_root(name)
-        self.status_topic = mqtt_support.make_device_topic_string(name, None, True)
-        self.set_topic = mqtt_support.make_device_topic_string(name, None, False)
-        mqtt_support.register(self, self.set_topic, self.process_mqtt_msg)
+        self.mqtt_support = mqtt_support
+        self.status_topic = mqtt_support.make_device_topic_string(self.name, None, True)
+        self.set_topic = mqtt_support.make_device_topic_string(self.name, None, False)
+        self.mqtt_support.register(self.set_topic, self.process_mqtt_msg)
+
+    def _is_entry_match(self, match_entries: dict, rvc_msg: dict) -> bool:
+        '''
+        Determine if message matches the map_entries.  
+        All fields in match_entries must match the same fields in rvc_msg.
+
+        ret True if match
+        ret False if no match
+        
+        '''
+        for k,v in match_entries.items():
+            if k not in rvc_msg:
+                return False
+            
+            if rvc_msg[k] != v:
+                return False
+        
+        return True
 
     def set_rvc_send_queue(self, send_queue: queue):
         """ Provide queue for sending RVC messages.  Queue requires 
@@ -47,21 +64,23 @@ class Entity(object):
         If relevant - Process the message and return True
         else - return False
         """
-        pass
+        raise NotImplementedError()
 
     def process_mqtt_msg(self, topic, payload):
-        if topic == self.set_topic:
-            self.Logger.info(f"MQTT msg: {topic} {payload}")
+       self.Logger.error(f"No class handler.  MQTT msg: {topic} {payload}")
 
 
-from .light import Light
+from .light import Light, Light_FromDGN_1FFBD
 
 def entity_factory(data: dict, mqtt_support: MQTT_Support) -> Entity:
     if "type" in data:
         t = data["type"].lower()
-        name = data["name"]
         if t == "light":
-            return Light(name, mqtt_support)
+            if data["dgn"].upper() == "1FFBD":
+                return Light_FromDGN_1FFBD(data, mqtt_support)
+            else:
+                # Lights have custom objects per DGN
+                logging.getLogger(__name__).error(f"Unsupported dgn {data['dgn']} for type {t}") 
         # Add more here
         else:
           logging.getLogger(__name__).error(f"Unsupported type: {t}")  
