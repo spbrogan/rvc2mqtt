@@ -26,22 +26,25 @@ from rvc2mqtt.mqtt import MQTT_Support
 def entity_factory(data: dict, mqtt_support: MQTT_Support, entity_factory_list: list) -> EntityPluginBaseClass:
     # loop thru the factory list and if a full match between factory and data then
     # instantiate the object. 
+    logger =logging.getLogger(__name__)
+    logger.debug(f"Factory for: {str(data)}")
     for f_entry in entity_factory_list:
         match = True
         for k,v in f_entry[0].items():
             if k not in data:
+                logger.debug(f"Key not in data: {k}")
                 match = False
                 break
             if data[k] != v:
+                logger.debug(f"Value {v} for key {k} not the same as data: {str(data)}")
                 match = False
                 break
         # finished or break - check for match
         if match:
             # matched.  Make matching entity
-            logging.getLogger(__name__).debug(f"Found Entity Match for {str(data)} as {f_entry[1].__class__.__name__}")
+            logger.debug(f"Found Entity Match for {str(data)} as {f_entry[1].__class__.__name__}")
             return f_entry[1](data, mqtt_support)
-        else:
-            logging.getLogger(__name__).error(f"Unsupported entity: {str(data)}")
-
+        
+    logger.error(f"Unsupported entity: {str(data)}")
     return None
     
