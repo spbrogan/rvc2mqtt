@@ -22,7 +22,7 @@ import paho.mqtt.client as mqc
 
 
 class MQTT_Support(object):
-    TOPIC_BASE = "rvc" 
+    TOPIC_BASE = "rvc2mqtt" 
      
     
     def __init__(self, client_id:str):
@@ -30,7 +30,7 @@ class MQTT_Support(object):
         self.client_id = client_id
 
         self.root_topic = MQTT_Support.TOPIC_BASE + "/" + self.client_id
-        self.device_topic_base = self.root_topic + "/" + "devices"
+        self.device_topic_base = MQTT_Support.TOPIC_BASE
 
         # topic strings
         self.bridge_state_topic = self.root_topic + "/" + "state"
@@ -70,23 +70,21 @@ class MQTT_Support(object):
     def send_bridge_info(self, info:str):
         pass
 
-    def _make_device_topic_root(self, name:str) -> str:
-        return self.device_topic_base + "/" + self._prepare_topic_string_node(name)
+    def _make_device_topic_root(self, id:str) -> str:
+        return self.device_topic_base + "/" + self._prepare_topic_string_node(id)
 
-    def make_device_topic_string(self, name: str, field:str, state:bool) -> str:
+    def make_device_topic_string(self, id: str, field:str, state:bool) -> str:
         """ make a topic string for a device.  
         It is either a state topic when you just want status
         Or it is a set topic string if you want to do operations
         """
 
-        s = self._make_device_topic_root(name)
+        s = self._make_device_topic_root(id)
 
         if field is not None:
             s += "/" + self._prepare_topic_string_node(field) 
 
-        if state and field is not None:
-            s += "/status"
-        elif not state:
+        if not state:
             s += "/set"
         return s
 
