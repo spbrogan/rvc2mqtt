@@ -110,7 +110,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
     """
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
-        self.id = "light-1FFBD-i" + str(data["instance"]) + "g-" + data["group"]
+        self.id = "light-1FFBD-i" + str(data["instance"]) + "-g" + data["group"]
 
         super().__init__(data, mqtt_support)
         self.Logger = logging.getLogger(__class__.__name__)

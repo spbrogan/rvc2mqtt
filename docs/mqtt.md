@@ -37,7 +37,7 @@ More specifically:
 `rvc2mqtt/<client-id>/info`  - contains json defined metadata about this bridge and the rvc2mqtt software
 
 Devices managed by rvc2mqtt are listed by their unique device id
-`rvc2mqtt/<device-id>`
+`rvc2mqtt/d/<device-id>`
 
 ### Light
 

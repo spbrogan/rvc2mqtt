@@ -30,7 +30,7 @@ class MQTT_Support(object):
         self.client_id = client_id
 
         self.root_topic = MQTT_Support.TOPIC_BASE + "/" + self.client_id
-        self.device_topic_base = MQTT_Support.TOPIC_BASE
+        self.device_topic_base = MQTT_Support.TOPIC_BASE + "/d"
 
         # topic strings
         self.bridge_state_topic = self.root_topic + "/" + "state"
