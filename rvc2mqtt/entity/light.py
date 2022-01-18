@@ -37,6 +37,7 @@ light:
 
 
 import queue
+import logging
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
@@ -47,6 +48,7 @@ class LightBaseClass(EntityPluginBaseClass):
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
         super().__init__(data, mqtt_support)
+        self.Logger = logging.getLogger(__class__.__name__)
 
         # Allow MQTT to control light
         self.set_topic = mqtt_support.make_device_topic_string(self.name, None, False)
@@ -62,7 +64,7 @@ class LightBaseClass(EntityPluginBaseClass):
         raise NotImplementedError()
 
     def process_mqtt_msg(self, topic, payload):
-        pass
+        self.Logger(f"MQTT Message {topic} {payload}")
 
 
 class Light_FromDGN_1FFBD(LightBaseClass):
@@ -109,6 +111,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
         super().__init__(data, mqtt_support)
+        self.Logger = logging.getLogger(__class__.__name__)
         #self.brightness_status_topic = mqtt_support.make_device_topic_string(self.name, "brightness", True)
         #self.brightness_set_topic = mqtt_support.make_device_topic_string(self.name, "brightness", False)
         #mqtt_support.register(self.brightness_set_topic, self.process_mqtt_msg)

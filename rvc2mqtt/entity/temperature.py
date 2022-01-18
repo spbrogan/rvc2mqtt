@@ -19,6 +19,7 @@ limitations under the License.
 """
 
 import queue
+import logging
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
@@ -36,9 +37,8 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
 
     """
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
-        
-
         super().__init__(data, mqtt_support)
+        self.Logger = logging.getLogger(__class__.__name__)
 
         # RVC message must match the following to be this device
         self.rvc_match_status = {"dgn": "1FF9C", "instance": data['instance']}
