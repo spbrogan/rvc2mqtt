@@ -37,7 +37,7 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
 
     """
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
-        self.id = "temperature-1FF9C-i" + data["instance"]
+        self.id = "temperature-1FF9C-i" + str(data["instance"])
         super().__init__(data, mqtt_support)
         self.Logger = logging.getLogger(__class__.__name__)
 
