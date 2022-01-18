@@ -24,7 +24,7 @@ from rvc2mqtt.entity import EntityPluginBaseClass
 
 
 class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"type": "Light", "dgn": "1FF9C"}
+    FACTORY_MATCH_ATTRIBUTES = {"type": "Temperature", "dgn": "1FF9C"}
     
     """ Provide basic temperature values using DGN THERMOSTAT_AMBIENT_STATUS
     
