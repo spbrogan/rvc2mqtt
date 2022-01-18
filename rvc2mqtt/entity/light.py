@@ -51,7 +51,7 @@ class LightBaseClass(EntityPluginBaseClass):
         self.Logger = logging.getLogger(__class__.__name__)
 
         # Allow MQTT to control light
-        self.set_topic = mqtt_support.make_device_topic_string(self.name, None, False)
+        self.set_topic = mqtt_support.make_device_topic_string(self.id, None, False)
         self.mqtt_support.register(self.set_topic, self.process_mqtt_msg)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
