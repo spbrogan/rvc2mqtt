@@ -30,26 +30,38 @@ mqtt:
 rvc2mqtt uses the following topic hierarchy.
 Information about the bridge device (this device)
 is located at here:
-`rvc/<client-id>`  
+`rvc2mqtt/<client-id>`  
 
 More specifically:
-`rvc/<client-id>/state`   - this reports the connected state of our bridge to the mqtt broker (`on` or `off`)
-`rvc/<client-id>/info`    - contains json defined metadata about this bridge and the rvc2mqtt software
-`rvc/<client-id>/devices` - contains the devices.  The hierarchy for specific device types are below
+`rvc2mqtt/<client-id>`       - this reports the connected state of our bridge to the mqtt broker (`online` or `offline`)
+`rvc2mqtt/<client-id>/info`  - contains json defined metadata about this bridge and the rvc2mqtt software
+
+Devices managed by rvc2mqtt are listed by their unique device id
+`rvc2mqtt/<device-id>`
 
 ### Light
 
 The Light object is used to describe a light.
-A light can have brightness control from 0 - 100%
 A light can have on / off
+
+| Topic             | rvc2mqtt operation | Description                     |
+|---                | :---:              | ---                             |
+|`<device-id>`      | publish            | status of light (`on` or `off`) |
+|`<device-id>cmd`   | subscribe          | command the light with payload `on` or `off` |
+|`<device-id>/info` | publish            | json data with more attributes and info about light |
+
+
+### Temperature Sensor
+
+A very simple RVC device that reports temperature in C
+This sensor has no configuration and will just have a state value in C
+It does not subscribe to any topics
+It only updates the mqtt topic when the temperature changes.
 
 | Topic                         | rvc2mqtt operation | Description                     |
 |---                            | :---:              | ---                             |
-|`<device-id>/light/state`      | publish            | status of light (`on` or `off`) |
-|`<device-id>/light/cmd`        | subscribe          | command the light with payload `on` or `off` |
-|`<device-id>/brightness/state` | publish            | brightness percentage between (0 - 100) | rvc2mqtt will publish |
-|`<device-id>/brightness/cmd`   | subscribe          | set the brightness | rvc2mqtt will publish |
-|`<device-id>/info`             | publish            | json data with more attributes and info about light |
+|`<device-id>`      | publish            | temperature in C |
+
 
 ### HVAC
 

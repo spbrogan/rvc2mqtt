@@ -28,13 +28,16 @@ class EntityPluginBaseClass(object):
     """  
     def __init__(self, data:dict, mqtt_support: MQTT_Support):
 
-        self.id:str = "MUST_BE_SET_IN_SUBCLASS"
+        if not hasattr(self, "id"):
+            # this seems like a bad code pattern..but ok for now
+            raise Exception("self.id must be defined")
+        
         self.Logger = logging.getLogger(__class__.__name__)
-        self.name: str = data["name"]
         self.mqtt_support: MQTT_Support = mqtt_support
 
         # Make the required one status/state topic
-        self.status_topic: str = mqtt_support.make_device_topic_string(self.name, None, True)
+        self.status_topic: str = mqtt_support.make_device_topic_string(self.id, None, True)
+        self.info_topic: str = mqtt_support.make_device_topic_string(self.id, "info", True)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming rvc message and determine if it

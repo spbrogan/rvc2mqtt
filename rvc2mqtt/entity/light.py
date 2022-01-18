@@ -68,7 +68,7 @@ class LightBaseClass(EntityPluginBaseClass):
 
 
 class Light_FromDGN_1FFBD(LightBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"dgn": "1FFBD", "type": "Light"}
+    FACTORY_MATCH_ATTRIBUTES = {"dgn": "1FFBD", "type": "light"}
     """
     Subclass of light that is tied to RVC DGN of DC_LOAD_STATUS and DC_LOAD_COMMAND
     Supports ON/OFF 
@@ -110,23 +110,25 @@ class Light_FromDGN_1FFBD(LightBaseClass):
     """
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
+        self.id = "light-1FFBD-i" + data["instance"] + "g-" + data["group"]
+
         super().__init__(data, mqtt_support)
         self.Logger = logging.getLogger(__class__.__name__)
-        #self.brightness_status_topic = mqtt_support.make_device_topic_string(self.name, "brightness", True)
-        #self.brightness_set_topic = mqtt_support.make_device_topic_string(self.name, "brightness", False)
-        #mqtt_support.register(self.brightness_set_topic, self.process_mqtt_msg)
 
         # RVC message must match the following to be this device
         self.rvc_match_status = {
             "dgn": "1FFBD", "instance": data['instance'], "group": data['group']}
+
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
         # ignore for now self.rvc_match_command = {"dgn": "1FFBC", "instance": data['instance'], "group": data['group'] }
 
         # save these for later to send rvc msg
         self.rvc_instance = data['instance']
         self.rvc_group = data['group']
+        self.name = data['name']
         self.state = "unknown"
-        self.brightness = "unknown"
+
+        self.mqtt_support.client.publish(self.info_topic, "{name=" + self.name + "}", retain=True)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -139,12 +141,13 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug("Msg Match Status")
             if new_message["operating_status"] == 100.0:
-                state = "ON"
+                state = LightBaseClass.LIGHT_ON
             elif new_message["operating_status"] == 0.0:
-                state = "OFF"
+                state = LightBaseClass.LIGHT_OFF
             else:
                 state = "UNEXPECTED(" + \
                     str(new_message["operating_status"]) + ")"
+                self.Logger.error(f"Unexpected RVC value {str(new_message['operating_status'])}")
 
             self.mqtt_support.client.publish(
                 self.status_topic, state, retain=True)

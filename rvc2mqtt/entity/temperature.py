@@ -25,7 +25,7 @@ from rvc2mqtt.entity import EntityPluginBaseClass
 
 
 class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"type": "Temperature", "dgn": "1FF9C"}
+    FACTORY_MATCH_ATTRIBUTES = {"type": "temperature", "dgn": "1FF9C"}
     
     """ Provide basic temperature values using DGN THERMOSTAT_AMBIENT_STATUS
     
@@ -37,6 +37,7 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
 
     """
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
+        self.id = "temperature-1FF9C-i" + data["instance"]
         super().__init__(data, mqtt_support)
         self.Logger = logging.getLogger(__class__.__name__)
 
@@ -44,7 +45,9 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         self.rvc_match_status = {"dgn": "1FF9C", "instance": data['instance']}
         self.reported_temp = 100  #should never get this hot in C
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
-        
+
+        self.name = data['name']
+        self.mqtt_support.client.publish(self.info_topic, "{name=" + self.name + "}", retain=True)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -63,8 +66,3 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
                 self.mqtt_support.client.publish(self.status_topic, self.reported_temp, retain=True)
             return True
         return False
-            
-
-    def process_mqtt_msg(self, topic, payload):
-        pass
-        #don't register for anything.  Nothing is settable

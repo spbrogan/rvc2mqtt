@@ -5,7 +5,7 @@
 ## Setup
 
 1. create a python virtual environment
-    I prefer to do this in the one directory outside my git repository.
+    I prefer to do this in the one directory above (outside) my git repository.
     This works well for vscode
     ``` bash
     python3 -m venv venv
@@ -35,6 +35,6 @@
 ``` bash
 pytest -v --html=pytest_report.html --self-contained-html --cov=rvc2mqtt --cov-report html:cov_html
 ```
-
+Check out the results in `pytest_report.html`
 Check out the code coverage in `cov_html/index.html`
 
