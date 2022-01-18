@@ -134,6 +134,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         # For now only match the status message.
 
         if self._is_entry_match(self.rvc_match_status, new_message):
+            self.Logger.debug("Msg Match Status")
             if new_message["operating status"] == 100.0:
                 state = "ON"
             elif new_message["operating status"] == 0.0:
