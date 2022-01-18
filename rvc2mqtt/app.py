@@ -1,7 +1,7 @@
 """
 Main app/entrypoint for RVC2MQTT
 
-Thanks goes to the contributers of https://github.com/linuxkidd/rvc-monitor-py
+Thanks goes to the contributors of https://github.com/linuxkidd/rvc-monitor-py
 This code is derived from parts of https://github.com/linuxkidd/rvc-monitor-py/blob/master/usr/bin/rvc2mqtt.py
 which was licensed using Apache-2.0.  No copyright information was present in the above mentioned file but original
 content is owned by the authors. 
@@ -25,13 +25,21 @@ limitations under the License.
 
 import argparse
 import logging
+import logging.config
 import queue
 import signal
 import time
 import os
+import yaml
+from os import PathLike
 import datetime
+from typing import Optional
 from rvc2mqtt.rvc import RVC_Decoder
 from rvc2mqtt.can_support import CAN_Watcher
+from rvc2mqtt.mqtt import MQTT_Support
+from rvc2mqtt.plugin_support import PluginSupport
+from rvc2mqtt.mqtt import *
+from rvc2mqtt.entity_factory_support import entity_factory
 
 PATH_TO_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
@@ -44,7 +52,7 @@ def signal_handler(signal, frame):
 
 
 class app(object):
-    def main(self, can_interface_name: str):
+    def main(self, configuration: dict):
         """main function.  Sets up the app services, creates
         the receive thread, and processes messages.
 
@@ -52,20 +60,46 @@ class app(object):
         """
 
         self.Logger = logging.getLogger("app")
+        self.mqtt_client: MQTT_Support = None
 
-        # make an recieve queue pass messages
+        # make an receive queue of receive can bus messages
         self.rxQueue = queue.Queue()
 
-        # make a transmit queue
-        self.txQueue = queue.Queue()  ## messages to send
+        # make a transmit queue to send can bus messages
+        self.txQueue = queue.Queue()
 
-        # thread to recieve can bus messages
-        self.receiver = CAN_Watcher(can_interface_name, self.rxQueue)
+        # thread to receive can bus messages
+        self.receiver = CAN_Watcher(configuration["interface"]["name"], self.rxQueue, self.txQueue)
         self.receiver.start()
 
+        # setup decoder
         self.rvc_decoder = RVC_Decoder()
         self.rvc_decoder.load_rvc_spec(os.path.join(PATH_TO_FOLDER, 'rvc-spec.yml'))  # load the RVC spec yaml
 
+        # setup the mqtt broker connection
+        if "mqtt" in configuration:
+            self.mqtt_client = MqttInitalize(configuration["mqtt"])
+            if self.mqtt_client:
+                self.mqtt_client.client.loop_start()
+
+        # Enable plugins
+        self.PluginSupport: PluginSupport = PluginSupport(os.path.join(PATH_TO_FOLDER, "entity"), configuration.get("plugins", {}))
+
+        # Use plugins to dynamically prepare the entity factory
+        entity_factory_list = []
+        self.PluginSupport.register_with_factory_the_entity_plugins(entity_factory_list)
+
+        # setup entity list using 
+        self.entity_list = []
+        
+        # initialize objects from the map list provided in config
+        if "map" in configuration:
+            for item in configuration["map"]:
+                obj = entity_factory(item, self.mqtt_client, entity_factory_list)
+                if obj is not None:
+                    self.entity_list.append(obj)
+
+        # Our RVC message loop here
         while True:
             # process any received messages
             self.message_rx_loop()
@@ -75,14 +109,16 @@ class app(object):
         """Shutdown the app and any threads"""
         if self.receiver:
             self.receiver.kill_received = True
+        if self.mqtt_client is not None:
+            self.mqtt_client.shutdown()
+            self.mqtt_client.client.loop_stop()
 
     def message_rx_loop(self):
-        """Process any recieved messages"""
+        """Process any RVC received messages"""
         if self.rxQueue.empty():  # Check if there is a message in queue
             return
 
         message = self.rxQueue.get()
-        self.Logger.debug("{0:X} ({1:X})".format(message.arbitration_id, message.dlc))
 
         try:
             MsgDict = self.rvc_decoder.rvc_decode(
@@ -91,54 +127,44 @@ class app(object):
             )
         except Exception as e:
             self.Logger.warning(f"Failed to decode msg. {message}: {e}")
+            return
+        
+        ## Find if this is a device entity in our list
+        ## Pass to object
 
-        self.Logger.debug(str(MsgDict))
+        for item in self.entity_list:
+            if item.process_rvc_msg(MsgDict):
+                ## Should we allow processing by more than one obj.  
+                ## 
+                return
+
+        # Use a custom logger so it can be routed easily or ignored
+        logging.getLogger("unhandled_rvc").debug(f"Msg {str(MsgDict)}")
+
+
+def load_the_config(config_file_path: Optional[os.PathLike]):
+    """ if config_file_path is a valid file load a yaml/json config file """
+    if os.path.isfile(config_file_path):
+        with open(config_file_path, "r") as content:
+            return yaml.safe_load(content.read())
+
 
 
 if __name__ == "__main__":
     """Entrypoint.
-    Get loggers setup, cli arguments parsed, and run the app
+    Get the config and run the app
     """
-    logger = logging.getLogger("")
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    console = logging.StreamHandler()
-    console.setFormatter(formatter)
-    logger.addHandler(console)
-
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i", "--interface", default="can0", help="CAN interface to use"
-    )
-    parser.add_argument(
-        "--OutputLog", dest="OutputLog", help="Create an output log file"
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="verbose",
-        action="count",
-        help="Increase verbosity. Add multiple times to increase",
-        default=0,
-    )
+    parser.add_argument("-c", "--config", dest="config_file_path", help="Config file path")
     args = parser.parse_args()
 
-    verbosity2level = [logging.ERROR, logging.INFO, logging.DEBUG]
-    console.setLevel(
-        verbosity2level[max(min(0, args.verbose), len(verbosity2level) - 1)]
-    )
+    config = load_the_config(args.config_file_path)
 
-    # setup file logging if so requested
-    if args.OutputLog:
-        if len(args.OutputLog) < 2:
-            logging.critical("the output log file parameter is invalid")
-        else:
-            # setup file based logging
-            filelogger = logging.FileHandler(filename=args.OutputLog, mode="w")
-            filelogger.setLevel(
-                verbosity2level[max(min(0, args.verbose), len(verbosity2level) - 1)]
-            )
-            logging.getLogger("").addHandler(filelogger)
+    try:
+        logging.config.dictConfig(config["logger"])
+    except Exception as e:
+        print("Exception trying to setup loggers: " + str(e.args))
+        print("Review https://docs.python.org/3/library/logging.config.html#logging-config-dictschema for details")
 
     logging.info(
         "Log Started: "
@@ -148,4 +174,4 @@ if __name__ == "__main__":
     global MyApp
     MyApp = app()
     signal.signal(signal.SIGINT, signal_handler)
-    MyApp.main(args.interface)
+    MyApp.main(config)

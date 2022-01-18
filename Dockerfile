@@ -12,4 +12,4 @@ COPY requirement.txt requirement.txt
 RUN pip3 install -r requirement.txt
 RUN pip3 install --no-cache-dir --no-use-pep517 -e .
 
-CMD python3 rvc2mqtt/app.py -i can0
+CMD python3 rvc2mqtt/app.py -c /config/config.yaml

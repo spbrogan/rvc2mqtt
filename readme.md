@@ -1,6 +1,6 @@
 # RVC2MQTT
 
-This is an experimential project to connect an RV can bus to mqtt with the intent
+This is an experimental project to connect an RV can bus to mqtt with the intent
 to monitor and control features of your RV.
 
 ## Current Status
