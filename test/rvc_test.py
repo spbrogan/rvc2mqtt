@@ -51,7 +51,7 @@ class Test_RVC_Decoder(unittest.TestCase):
 
         print(result)
 
-    def test_rvc_to_canbus(self):
+    def test_rvc_to_canbus_round_trip(self):
         rvc = RVC_Decoder()
         result = rvc._can_frame_to_rvc(int("19FFBC44", 16))
         arbid = rvc._rvc_to_can_frame(result)
@@ -60,6 +60,14 @@ class Test_RVC_Decoder(unittest.TestCase):
         result = rvc._can_frame_to_rvc(int("19ffe259", 16))
         arbid = rvc._rvc_to_can_frame(result)
         self.assertEqual(arbid, 0x19ffe259)
+
+    def test_rvc_to_canbus_defaults(self):
+        rvc = RVC_Decoder()
+        arbitration_id = rvc._rvc_to_can_frame({"dgn": "1FFBC"})
+        # Defaults are defined in rvc.py
+        # priority default is 0x6
+        # source address default is 0x82  
+        self.assertEqual(arbitration_id, int("19FFBC82", 16))
 
     # -------------------
     # Test Byte Function
@@ -182,6 +190,7 @@ class Test_RVC_Decoder(unittest.TestCase):
         rvc = RVC_Decoder()
         with self.assertRaises(Exception) as cm:
             rvc._get_bits(0xff, "4-8-0")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -46,10 +46,11 @@ class CAN_Watcher(threading.Thread):
                 self.rx.put(message)  # Put message into queue
 
             if not self.tx.empty():   # pending message to send
-                message = self.tx.get() # pull from queue
+                msg_dict = self.tx.get() # pull from queue
                 try:
-                    self.bus.send(message, 1)  # send on canbus
+                    tx_message = can.Message(arbitration_id=msg_dict["arbitration_id"], data=msg_dict["data"], is_extended_id=True)
+                    self.bus.send(tx_message, 1)  # send on canbus
                 except Exception as e:
                     self.Logger.error(f"Exception trying to send {e}")
-                    self.Logger.debug(f"Failed Msg: {str(message)}")
+                    self.Logger.debug(f"Failed Msg: {str(tx_message)}")
                 

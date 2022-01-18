@@ -38,6 +38,7 @@ light:
 
 import queue
 import logging
+import struct
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
@@ -64,7 +65,7 @@ class LightBaseClass(EntityPluginBaseClass):
         raise NotImplementedError()
 
     def process_mqtt_msg(self, topic, payload):
-        self.Logger(f"MQTT Message {topic} {payload}")
+        self.Logger.error(f"Incomple handler MQTT Message {topic} {payload}")
 
 
 class Light_FromDGN_1FFBD(LightBaseClass):
@@ -141,19 +142,44 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug("Msg Match Status")
             if new_message["operating_status"] == 100.0:
-                state = LightBaseClass.LIGHT_ON
+                self.state = LightBaseClass.LIGHT_ON
             elif new_message["operating_status"] == 0.0:
-                state = LightBaseClass.LIGHT_OFF
+                self.state = LightBaseClass.LIGHT_OFF
             else:
-                state = "UNEXPECTED(" + \
+                self.state = "UNEXPECTED(" + \
                     str(new_message["operating_status"]) + ")"
                 self.Logger.error(f"Unexpected RVC value {str(new_message['operating_status'])}")
 
             self.mqtt_support.client.publish(
-                self.status_topic, state, retain=True)
+                self.status_topic, self.state, retain=True)
             
             return True
         return False
 
     def process_mqtt_msg(self, topic, payload):
-        pass
+        self.Logger.debug(f"MQTT Msg Received on topic {topic} with payload {payload}")
+
+        if topic == self.set_topic:
+            if payload.lower() == LightBaseClass.LIGHT_OFF:
+                if self.state != LightBaseClass.LIGHT_OFF:
+                    self._rvc_light_off()
+            elif payload.lower() == LightBaseClass.LIGHT_ON:
+                if self.state != LightBaseClass.LIGHT_ON:
+                    self._rvc_light_on()
+            else:
+                self.Logger.warning(f"Invalid payload {payload} for topic {topic}")
+
+
+    def _rvc_light_off(self):
+        #01 00 FA 00 03 FF 0000
+        msg_bytes = bytearray(8)
+        struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(self.rvc_group, 2), 250, 0, 3, 0xFF, 0 )
+        self.send_queue.put({"dgn": "1FFBC", "data": msg_bytes})
+
+    def _rvc_light_on(self):
+        
+        #01 00 FA 00 01 FF 0000
+        msg_bytes = bytearray(8)  
+        struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(self.rvc_group, 2), 250, 0, 1, 0xFF, 0 )
+        self.send_queue.put({"dgn": "1FFBC", "data": msg_bytes})
+        

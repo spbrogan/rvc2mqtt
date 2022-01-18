@@ -65,6 +65,13 @@ class app(object):
         # make an receive queue of receive can bus messages
         self.rxQueue = queue.Queue()
 
+        # For now lets buffer rVC formatted messages in this queue
+        # which can then go thru the app to get encoded 
+        # and put into the txQueue for the canbus
+        # this is a little hacky...so need to revisit
+        self.tx_RVC_Buffer = queue.Queue()
+
+
         # make a transmit queue to send can bus messages
         self.txQueue = queue.Queue()
 
@@ -97,12 +104,14 @@ class app(object):
             for item in configuration["map"]:
                 obj = entity_factory(item, self.mqtt_client, entity_factory_list)
                 if obj is not None:
+                    obj.set_rvc_send_queue(self.tx_RVC_Buffer)
                     self.entity_list.append(obj)
 
         # Our RVC message loop here
         while True:
             # process any received messages
             self.message_rx_loop()
+            self.message_tx_loop()
             time.sleep(0.001)
 
     def close(self):
@@ -112,6 +121,21 @@ class app(object):
         if self.mqtt_client is not None:
             self.mqtt_client.shutdown()
             self.mqtt_client.client.loop_stop()
+
+    def message_tx_loop(self):
+        """ hacky - translate RVC formatted dict from rvc_tx to canbus msg formatted tx"""
+        if self.tx_RVC_Buffer.empty():
+            return
+
+        rvc_dict = self.tx_RVC_Buffer.get()
+
+        #translate
+        rvc_dict["arbitration_id"] = self.rvc_decoder._rvc_to_can_frame(rvc_dict)
+
+        self.Logger.debug(f"Sending Msg: {str(rvc_dict)}")
+
+        #put into canbus watcher
+        self.txQueue.put(rvc_dict)
 
     def message_rx_loop(self):
         """Process any RVC received messages"""
