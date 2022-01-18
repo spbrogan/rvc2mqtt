@@ -119,7 +119,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         # RVC message must match the following to be this device
         self.rvc_match_status = {
             "dgn": "1FFBD", "instance": data['instance'], "group": data['group']}
-        self.Logger(f"Must match: {str(self.rvc_match_status)}")
+        self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
         # ignore for now self.rvc_match_command = {"dgn": "1FFBC", "instance": data['instance'], "group": data['group'] }
 
         # save these for later to send rvc msg
