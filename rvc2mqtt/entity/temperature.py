@@ -58,6 +58,9 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
             if new_message["ambient_temp"] != self.reported_temp:
                 self.reported_temp = new_message["ambient_temp"]
                 self.mqtt_support.client.publish(self.status_topic, self.reported_temp, retain=True)
+            return True
+        return False
+            
 
     def process_mqtt_msg(self, topic, payload):
         pass

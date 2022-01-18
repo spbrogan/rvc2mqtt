@@ -139,7 +139,7 @@ class app(object):
                 return
 
         # Use a custom logger so it can be routed easily or ignored
-        logging.getLogger("unhandled_rvc").debug(f"Unused Msg {str(MsgDict)}")
+        logging.getLogger("unhandled_rvc").debug(f"Msg {str(MsgDict)}")
 
 
 def load_the_config(config_file_path: Optional[os.PathLike]):

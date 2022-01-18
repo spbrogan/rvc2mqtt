@@ -144,6 +144,9 @@ class Light_FromDGN_1FFBD(LightBaseClass):
 
             self.mqtt_support.client.publish(
                 self.status_topic, state, retain=True)
+            
+            return True
+        return False
 
     def process_mqtt_msg(self, topic, payload):
         pass

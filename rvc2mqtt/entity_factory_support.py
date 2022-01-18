@@ -42,7 +42,7 @@ def entity_factory(data: dict, mqtt_support: MQTT_Support, entity_factory_list: 
         # finished or break - check for match
         if match:
             # matched.  Make matching entity
-            logger.debug(f"Found Entity Match for {str(data)} as {f_entry[1].__class__.__name__}")
+            logger.debug(f"Found Entity Match for {str(data)} as {f_entry[1].__name__}")
             return f_entry[1](data, mqtt_support)
         
     logger.error(f"Unsupported entity: {str(data)}")
