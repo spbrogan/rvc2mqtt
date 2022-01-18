@@ -70,7 +70,7 @@ class MQTT_Support(object):
     def send_bridge_info(self, info:str):
         pass
 
-    def make_device_topic_root(self, name:str) -> str:
+    def _make_device_topic_root(self, name:str, cla) -> str:
         return self.device_topic_base + "/" + self._prepare_topic_string_node(name)
 
     def make_device_topic_string(self, name: str, field:str, state:bool) -> str:
@@ -79,7 +79,7 @@ class MQTT_Support(object):
         Or it is a set topic string if you want to do operations
         """
 
-        s = self.make_device_topic_root(name)
+        s = self._make_device_topic_root(name)
 
         if field is not None:
             s += "/" + self._prepare_topic_string_node(field) 

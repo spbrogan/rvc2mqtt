@@ -20,10 +20,12 @@ limitations under the License.
 
 import queue
 from rvc2mqtt.mqtt import MQTT_Support
-from . import Entity
+from rvc2mqtt.entity import EntityPluginBaseClass
 
 
-class Temperature_FromDGN_1FF9C(Entity):
+class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
+    FACTORY_MATCH_ATTRIBUTES = {"type": "Light", "dgn": "1FF9C"}
+    
     """ Provide basic temperature values using DGN THERMOSTAT_AMBIENT_STATUS
     
     Example rvc msg: 
@@ -34,6 +36,8 @@ class Temperature_FromDGN_1FF9C(Entity):
 
     """
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
+        
+
         super().__init__(data, mqtt_support)
 
         # RVC message must match the following to be this device

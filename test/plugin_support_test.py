@@ -1,7 +1,7 @@
 """
-Defines an abstract class that defines an API for a process plugin.
+Unit tests for the plugin_support module
 
-This type of plugin is used to modify an RVC Msg dict. 
+This is just a hack to invoke it..not a unit test
 
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
@@ -17,20 +17,18 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
 """
+import os
+import unittest
 
+import context  # add rvc2mqtt package to the python path using local reference
+from rvc2mqtt.plugin_support import PluginSupport
 
-from typing import Optional
+p_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'rvc2mqtt', "entity"))
 
-
-class IProcessPlugin(object):
-    CONFIG_KEY: str = "to_be_filled_in_by_you"
-
-    def __init__(self, config: Optional(dict)):
-        pass
-
-    ##
-    # Function to process a RVC msg
-    #
-    def process_rvc_message(self, msg: dict) -> bool:
-        pass
+if __name__ == '__main__':
+    ps = PluginSupport( p_path, {})
+    fm = []
+    ps.register_with_factory_the_entity_plugins(fm)  # will be list of tuples (dict of match parameters, class)
+    print(fm)

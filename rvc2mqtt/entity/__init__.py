@@ -17,24 +17,41 @@ limitations under the License.
 """
 import logging
 import queue
-
 from rvc2mqtt.mqtt import MQTT_Support
 
-__all__ = ["light"]
-
-class Entity(object):
-    """ Baseclass for all entities.
+class EntityPluginBaseClass(object):
+    """ Baseclass for all device entities
     
+    Make a subclass for a new object
+    and define 
+
     """  
     def __init__(self, data:dict, mqtt_support: MQTT_Support):
-        self.name: str = data["name"]
-        self.Logger = logging.getLogger(__name__)
-        self.mqtt_support = mqtt_support
-        self.status_topic = mqtt_support.make_device_topic_string(self.name, None, True)
 
+        self.id:str = "MUST_BE_SET_IN_SUBCLASS"
+        self.Logger = logging.getLogger(__class__.__name__)
+        self.name: str = data["name"]
+        self.mqtt_support: MQTT_Support = mqtt_support
+
+        # Make the required one status/state topic
+        self.status_topic: str = mqtt_support.make_device_topic_string(self.name, None, True)
+
+    def process_rvc_msg(self, new_message: dict) -> bool:
+        """ Process an incoming rvc message and determine if it
+        is of interest to this instance of this object.
+        
+        If relevant - Process the message and return True
+        else - return False
+        """
+        raise NotImplementedError()
+
+    ########
+    # HELPER FUNCTIONS 
+    # NOT EXPECTING TO NEED TO BE OVERRIDDEN
+    ########
     def _is_entry_match(self, match_entries: dict, rvc_msg: dict) -> bool:
         '''
-        Determine if message matches the map_entries.  
+        Determine if a RVC message matches the map_entries.  
         All fields in match_entries must match the same fields in rvc_msg.
 
         ret True if match
@@ -55,39 +72,3 @@ class Entity(object):
         items be formatted as python-can messages"""
         self.send_queue: queue = send_queue
 
-    def process_rvc_msg(self, new_message: dict) -> bool:
-        """ Process an incoming message and determine if it
-        is of interest to this object.
-        
-        If relevant - Process the message and return True
-        else - return False
-        """
-        raise NotImplementedError()
-
-    def process_mqtt_msg(self, topic, payload):
-       self.Logger.error(f"No class handler.  MQTT msg: {topic} {payload}")
-
-
-from .light import Light, Light_FromDGN_1FFBD
-from .temperature import Temperature_FromDGN_1FF9C
-
-def entity_factory(data: dict, mqtt_support: MQTT_Support) -> Entity:
-    if "type" in data:
-        t = data["type"].lower()
-        if t == "light":
-            if data["dgn"].upper() == "1FFBD":
-                return Light_FromDGN_1FFBD(data, mqtt_support)
-            else:
-                # Lights have custom objects per DGN
-                logging.getLogger(__name__).error(f"Unsupported dgn {data['dgn']} for type {t}") 
-        # Add more here
-        elif t == "temperature":
-            if data["dgn"].upper() == "1FF9C":
-                return Temperature_FromDGN_1FF9C(data, mqtt_support)
-        else:
-          logging.getLogger(__name__).error(f"Unsupported type: {t}")  
-    else:
-        logging.getLogger(__name__).error(f"Invalid Data: type not defined.  {str(data)}")
-    
-    return None
-    

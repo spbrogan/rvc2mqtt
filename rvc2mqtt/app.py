@@ -37,8 +37,9 @@ from typing import Optional
 from rvc2mqtt.rvc import RVC_Decoder
 from rvc2mqtt.can_support import CAN_Watcher
 from rvc2mqtt.mqtt import MQTT_Support
+from rvc2mqtt.plugin_support import PluginSupport
 from rvc2mqtt.mqtt import *
-import rvc2mqtt.entity
+from .entity_factory_support import entity_factory
 
 PATH_TO_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
@@ -59,7 +60,7 @@ class app(object):
         """
 
         self.Logger = logging.getLogger("app")
-        self.mqtt_client = None
+        self.mqtt_client: MQTT_Support = None
 
         # make an receive queue of receive can bus messages
         self.rxQueue = queue.Queue()
@@ -81,18 +82,22 @@ class app(object):
             if self.mqtt_client:
                 self.mqtt_client.client.loop_start()
 
+        # Enable plugins
+        self.PluginSupport: PluginSupport = PluginSupport(os.path.join(PATH_TO_FOLDER, "entity"), configuration.get("plugins", {}))
 
-        # setup object list using 
+        # Use plugins to dynamically prepare the entity factory
+        entity_factory_list = []
+        self.PluginSupport.register_with_factory_the_entity_plugins(entity_factory_list)
+
+        # setup entity list using 
         self.entity_list = []
         
         # initialize objects from the map list provided in config
         if "map" in configuration:
             for item in configuration["map"]:
-                obj = rvc2mqtt.entity.entity_factory(item, self.mqtt_client)
+                obj = entity_factory(item, self.mqtt_client, entity_factory_list)
                 if obj is not None:
                     self.entity_list.append(obj)
-
-        
 
         # Our RVC message loop here
         while True:
@@ -132,7 +137,9 @@ class app(object):
                 ## Should we allow processing by more than one obj.  
                 ## 
                 return
-        self.Logger.debug(f"Unused Msg {str(MsgDict)}")
+
+        # Use a custom logger so it can be routed easily or ignored
+        logging.getLogger("unhandled_rvc").debug(f"Unused Msg {str(MsgDict)}")
 
 
 def load_the_config(config_file_path: Optional[os.PathLike]):

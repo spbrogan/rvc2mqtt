@@ -38,8 +38,10 @@ light:
 
 import queue
 from rvc2mqtt.mqtt import MQTT_Support
-from . import Entity
-class Light(Entity):
+from rvc2mqtt.entity import EntityPluginBaseClass
+
+
+class LightBaseClass(EntityPluginBaseClass):
     LIGHT_ON = "on"
     LIGHT_OFF = "off"
 
@@ -63,7 +65,8 @@ class Light(Entity):
         pass
 
 
-class Light_FromDGN_1FFBD(Light):
+class Light_FromDGN_1FFBD(LightBaseClass):
+    FACTORY_MATCH_ATTRIBUTES = {"dgn": "1FFBD", "type": "Light"}
     """
     Subclass of light that is tied to RVC DGN of DC_LOAD_STATUS and DC_LOAD_COMMAND
     Supports ON/OFF 
