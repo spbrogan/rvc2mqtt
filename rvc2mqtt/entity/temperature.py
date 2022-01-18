@@ -47,7 +47,7 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
 
         self.name = data['name']
-        self.mqtt_support.client.publish(self.info_topic, "{name=" + self.name + "}", retain=True)
+        self.mqtt_support.client.publish(self.info_topic, '{"name"="' + self.name + '"}', retain=True)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it

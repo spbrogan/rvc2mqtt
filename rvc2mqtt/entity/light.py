@@ -128,7 +128,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         self.name = data['name']
         self.state = "unknown"
 
-        self.mqtt_support.client.publish(self.info_topic, "{name=" + self.name + "}", retain=True)
+        self.mqtt_support.client.publish(self.info_topic, '{"name"="' + self.name + '"}', retain=True)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
