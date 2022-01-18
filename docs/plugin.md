@@ -22,6 +22,8 @@ by the factory.
 
 A plugin must be able to make a unique and consistent device identifier for mqtt usage.
 
+Don't use relative imports.  Due to how it is loaded this doesn't work right.
+
 ## Members
 
 `self.id:str` - Must be set to a unique and consistent value (used for mqtt topic).  Must be first thing done in `init`

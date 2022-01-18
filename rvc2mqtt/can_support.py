@@ -2,7 +2,7 @@
 Defines a thread class for reading the can bus using python-can library.
 Messages are put into queue for usage outside this thread.
 
-Thanks goes to the contributers of https://github.com/linuxkidd/rvc-monitor-py
+Thanks goes to the contributors of https://github.com/linuxkidd/rvc-monitor-py
 This code is derived from parts of https://github.com/linuxkidd/rvc-monitor-py/blob/master/usr/bin/rvc2mqtt.py
 which was licensed using Apache-2.0.  No copyright information was present in the above mentioned file but original
 content is owned by the authors. 

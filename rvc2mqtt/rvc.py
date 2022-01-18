@@ -12,7 +12,7 @@ RVC:  http://rv-c.com
 # DEV NOTES:
 - This class does not do CAN bus communication 
 
-Thanks goes to the contributers of https://github.com/linuxkidd/rvc-monitor-py
+Thanks goes to the contributors of https://github.com/linuxkidd/rvc-monitor-py
 This code is derived from parts of https://github.com/linuxkidd/rvc-monitor-py/blob/master/usr/bin/rvc2mqtt.py
 which was licensed using Apache-2.0.  No copyright information was present in the above mentioned file but original
 content is owned by the authors. 

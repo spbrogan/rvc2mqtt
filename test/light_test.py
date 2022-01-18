@@ -20,14 +20,14 @@ limitations under the License.
 
 import unittest
 import context  # add rvc2mqtt package to the python path using local reference
-from rvc2mqtt.entity.light import Light
+from rvc2mqtt.entity.light import LightBaseClass
 
 class Test_Light(unittest.TestCase):
 
     def test_basic(self):
         
         l = Light()
-        self.assertTrue(type(l), Light)
+        self.assertTrue(type(l), LightBaseClass)
 
 if __name__ == '__main__':
     unittest.main()

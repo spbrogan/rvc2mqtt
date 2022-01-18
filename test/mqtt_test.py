@@ -22,24 +22,8 @@ import unittest
 import context  # add rvc2mqtt package to the python path using local reference
 from rvc2mqtt.mqtt import *
 
-class Test_MQTT_Support(unittest.TestCase):
-    MQTT_BRIDGE_SETTINGS = { "broker": "100.64.39.110:1883", "client-id": "test_bridge", "username": "test_b", "password": "pass_b"}
-
-    def test_init(self):
-        mqs = MqttInitalize(Test_MQTT_Support.MQTT_BRIDGE_SETTINGS)
-        a = None
-        t = "topic1"
-        mqs.client.loop_start()
-        
-        def got_message(client, userdata, msg):
-            a = msg
-
-        mqs.register(self, t, got_message)
-
-        self.assertEqual(a.payload, "online")
-
 ## can't figure out how to unit test this..probably need to mock...but given this class is tightly coupled with
-## paho mqtt not sure how useful....anywy..below is hack to test it with real mqtt server
+## paho mqtt not sure how useful....anyway..below is hack to test it with real mqtt server
 
 class device1(object):
 

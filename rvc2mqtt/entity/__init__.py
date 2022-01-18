@@ -1,4 +1,7 @@
 """
+
+EntityPluginBaseClass
+
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
 
