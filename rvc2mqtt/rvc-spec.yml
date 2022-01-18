@@ -68,8 +68,16 @@ API_VERSION: 0
       type: uint24
       unit: hex
 
-17F00:
+0EE00:
+  name: ADDRESS_CLAIMED
+
+0EA:
+  name: ADDRESS_REQUESTED
+  comment: dg_l is the requested address
+
+17F:
   name: GENERAL_RESET
+  comment: This is only the dgn_h
   parameters:
     - byte: 0
       bit: 0-1
@@ -100,12 +108,17 @@ API_VERSION: 0
         00: no action
         01: reset statistics
 
-17E00:
+17E:
   name: TERMINAL
+  comment: This is only the dgn_h
   parameters:
     - byte: 0-7
       name: msg 
       type: ascii
+
+17D:
+  name: DOWNLOAD
+  comment: This is only the dgn_h
 
 1FED8:
   name: GENERIC_CONFIGURATION_STATUS
@@ -3422,6 +3435,188 @@ API_VERSION: 0
       values:
         0000: off (end of test)
         0101: test (forced on)
+
+1FE95:
+  name: BATTERY_STATUS_1
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+      comment: 1-250 are valid
+    - byte: 1
+      name: dc instance
+      type: uint8
+      comment: DC SOURCE Instance this Battery is associated with
+    - byte: 2-3
+      name: dc voltage
+      type: uint16
+      unit: V
+    - byte: 4 to 7
+      name: dc current
+      type: uint32
+      type: A
+      comment: A positive value indicates current flowing from the battery (discharge), while a negative value would be indicative of the battery being recharged
+
+1FE94:
+  name: BATTERY_STATUS_2
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+      comment: 1-250 are valid
+    - byte: 1
+      name: dc instance
+      type: uint8
+      comment: DC SOURCE Instance this Battery is associated with
+    - byte: 2-3
+      name: source temperature
+      type: uint16
+      unit: C
+    - byte: 4
+      name: state of charge
+      type: uint8
+      unit: pct
+    - byte: 5 to 6
+      name: time remaining
+      type: uint16
+      comment: time to 0 or time to 100
+      unit: min
+    - byte: 7
+      bit: 0 to 1
+      name: time remaining interpretation
+      type: bit2
+      values:
+        00: time to empty
+        01: time to full
+        11: time to empty
+
+1FE93:
+  name: BATTERY_STATUS_3
+  comment: TODO
+
+1FE92:
+  name: BATTERY_STATUS_4
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+      comment: 1-250 are valid
+    - byte: 1
+      name: dc instance
+      type: uint8
+      comment: DC SOURCE Instance this Battery is associated with
+    - byte: 2
+      name: desired charge state
+      type: uint8
+      comment: see DC_SOURCE_STATUS_4
+    - byte: 3 to 4
+      name: desired dc voltage
+      type: uint16
+      type: V
+    - byte: 5 to 6
+      name: desired dc current
+      type: uint16
+      type: A
+    - byte: 7
+      bit: 0 to 3
+      name: battery type
+      type: bit4
+      values:
+        0: flooded
+        1: gel
+        2: agm
+        3: lithium-iron-phosphate
+
+1FE91:
+  name: BATTERY_STATUS_5
+  comment: NOT USED
+
+1FE90:
+  name: BATTERY_STATUS_6
+  comment: TODO
+
+1FE8F:
+  name: BATTERY_STATUS_7
+  comment: TODO
+
+1FE8E:
+  name: BATTERY_STATUS_8
+  comment: TODO
+
+1FE8D:
+  name: BATTERY_STATUS_9
+  comment: TODO
+
+1FE8C:
+  name: BATTERY_STATUS_10
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+      comment: 1-250 are valid
+    - byte: 1
+      name: dc instance
+      type: uint8
+      comment: DC SOURCE Instance this Battery is associated with
+    - byte: 2 to 3
+      name: last 7 days input amp hours
+      type: uint16
+      unit: Ah
+    - byte: 4 to 5
+      name: last 7 days output amp hours
+      type: uint16
+      unit: Ah
+
+1FE8B:
+  name: BATTERY_STATUS_11
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+      comment: 1-250 are valid
+    - byte: 1
+      name: dc instance
+      type: uint8
+      comment: DC SOURCE Instance this Battery is associated with
+    - byte: 2
+      bit: 0 to 1
+      name: discharge on/off status
+      type: bit2
+      values:
+        00: battery discharge bus disconnected
+        01: battery discharge bus connected
+    - byte: 2
+      bit: 2 to 3
+      name: charge on/off status
+      type: bit2
+      values:
+        00: charge bus disconnected
+        01: charge bus connected
+    - byte: 2
+      bit: 4 to 5
+      name: charge detected
+      type: bit2
+      values:
+        00: no change detected
+        01: charge detected
+      comment: state of Charge source. Usually valid only when Power off.
+    - byte: 2
+      bit: 6 to 7
+      name: reserve status
+      type: bit2
+      values:
+        00: battery charge is above reserve level
+        01: battery charge is at or below reserve level
+    - byte: 3 to 4
+      name: full capacity
+      type: uint16
+      unit: Ah
+      comment: Nominal capacity of a fully charged battery. Precision 1 Ah
+    - byte: 5 to 6
+      name: dc power
+      type: uint16
+      unit: W
+      comment: current DC Power input or output. Consult the amperage value in BATTERY_STATUS_1 to determine whether this is input or output
 
 0FECA:
   name: DM_1
