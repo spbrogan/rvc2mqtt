@@ -70,7 +70,7 @@ class MQTT_Support(object):
     def send_bridge_info(self, info:str):
         pass
 
-    def _make_device_topic_root(self, name:str, cla) -> str:
+    def _make_device_topic_root(self, name:str) -> str:
         return self.device_topic_base + "/" + self._prepare_topic_string_node(name)
 
     def make_device_topic_string(self, name: str, field:str, state:bool) -> str:
