@@ -39,7 +39,7 @@ from rvc2mqtt.can_support import CAN_Watcher
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.plugin_support import PluginSupport
 from rvc2mqtt.mqtt import *
-from .entity_factory_support import entity_factory
+from rvc2mqtt.entity_factory_support import entity_factory
 
 PATH_TO_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
