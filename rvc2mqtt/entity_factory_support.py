@@ -28,7 +28,7 @@ def entity_factory(data: dict, mqtt_support: MQTT_Support, entity_factory_list: 
     # instantiate the object. 
     for f_entry in entity_factory_list:
         match = True
-        for k,v in f_entry[0]:
+        for k,v in f_entry[0].items():
             if k not in data:
                 match = False
                 break
