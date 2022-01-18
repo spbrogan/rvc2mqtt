@@ -119,6 +119,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         # RVC message must match the following to be this device
         self.rvc_match_status = {
             "dgn": "1FFBD", "instance": data['instance'], "group": data['group']}
+        self.Logger(f"Must match: {str(self.rvc_match_status)}")
         # ignore for now self.rvc_match_command = {"dgn": "1FFBC", "instance": data['instance'], "group": data['group'] }
 
         # save these for later to send rvc msg
@@ -134,17 +135,16 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         If relevant - Process the message and return True
         else - return False
         """
-        # For now only match the status message.
-
+ 
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug("Msg Match Status")
-            if new_message["operating status"] == 100.0:
+            if new_message["operating_status"] == 100.0:
                 state = "ON"
-            elif new_message["operating status"] == 0.0:
+            elif new_message["operating_status"] == 0.0:
                 state = "OFF"
             else:
                 state = "UNEXPECTED(" + \
-                    str(new_message["operating status"]) + ")"
+                    str(new_message["operating_status"]) + ")"
 
             self.mqtt_support.client.publish(
                 self.status_topic, state, retain=True)

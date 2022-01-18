@@ -43,6 +43,8 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         # RVC message must match the following to be this device
         self.rvc_match_status = {"dgn": "1FF9C", "instance": data['instance']}
         self.reported_temp = 100  #should never get this hot in C
+        self.Logger(f"Must match: {str(self.rvc_match_status)}")
+        
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
