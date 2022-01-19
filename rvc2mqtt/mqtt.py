@@ -63,7 +63,7 @@ class MQTT_Support(object):
     def on_message(self, client, userdata, msg):
         if msg.topic in self.registered_mqtt_devices:
             func = self.registered_mqtt_devices[msg.topic]
-            func(msg.topic, msg.payload)
+            func(msg.topic, msg.payload.decode('utf-8'))
         else:
             self.Logger.warning("Received mqtt message without a device registered '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
 
