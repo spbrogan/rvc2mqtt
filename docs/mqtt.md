@@ -37,7 +37,7 @@ More specifically:
 `rvc2mqtt/<client-id>/info`  - contains json defined metadata about this bridge and the rvc2mqtt software
 
 Devices managed by rvc2mqtt are listed by their unique device id
-`rvc2mqtt/d/<device-id>`
+`rvc2mqtt/<client-id>/d/<device-id>`
 
 ### Light
 
@@ -48,7 +48,7 @@ A light can have on / off
 |---                | :---:              | ---                             |
 |`<device-id>`      | publish            | status of light (`on` or `off`) |
 |`<device-id>cmd`   | subscribe          | command the light with payload `on` or `off` |
-|`<device-id>/info` | publish            | json data with more attributes and info about light |
+
 
 
 ### Temperature Sensor
@@ -74,4 +74,12 @@ TBD
 Home assistant has created mqtt auto-discovery.  This describes how rvc2mqtt integrates
 with mqtt auto-discovery.
 
-TBD
+
+follows path like: <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+
+<homeassistant> is the discovery prefix
+
+<node_id> will be a bridge <client-id> this is needed because if two bridges talk to same server there could be conflicting ids
+
+payload is json that matches HA config (at least all required)
+

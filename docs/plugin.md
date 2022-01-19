@@ -32,8 +32,6 @@ Don't use relative imports.  Due to how it is loaded this doesn't work right.
 
 `self.status_topic: str` - Topic string for the device state to publish to
 
-`self.info_topic: str` - Optional topic string for the device to publish additional json data to
-
 `self.mqtt_support: MQTT_Support` - mqtt_support object used for pub/sub operations
 
 `self.send_queue: queue` - queue used to transmit any RVC can bus messages.  Msg must a dictionary and must supply at least the `dgn` string and 8 byte `data` array.   
@@ -70,7 +68,6 @@ def initialize(self):
     
     """
     # publish info to mqtt
-    self.mqtt_support.client.publish(self.info_topic, '{"name": "' + self.name + '"}', retain=True)
     self.mqtt_support.client.publish(self.status_topic, self.state, retain=True)
 
     # request dgn report - this should trigger that light to report

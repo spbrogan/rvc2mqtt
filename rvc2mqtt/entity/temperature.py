@@ -20,22 +20,18 @@ limitations under the License.
 
 import queue
 import logging
+import json
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
 
 class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
     FACTORY_MATCH_ATTRIBUTES = {"type": "temperature", "dgn": "1FF9C"}
-    
+
     """ Provide basic temperature values using DGN THERMOSTAT_AMBIENT_STATUS
-    
-    Example rvc msg: 
-    {'arbitration_id': '0x19ff9c59', 'data': '02F522FFFFFFFFFF', 'priority': '6',
-     'dgn_h': '1FF', 'dgn_l': '9C', 'dgn': '1FF9C', 'source_id': '59',
-     'name': 'THERMOSTAT_AMBIENT_STATUS', 
-     'instance': 2, 'ambient_temp': 6.66}
 
     """
+
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
         self.id = "temperature-1FF9C-i" + str(data["instance"])
         super().__init__(data, mqtt_support)
@@ -43,11 +39,10 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
 
         # RVC message must match the following to be this device
         self.rvc_match_status = {"dgn": "1FF9C", "instance": data['instance']}
-        self.reported_temp = 100  #should never get this hot in C
+        self.reported_temp = 100  # should never get this hot in C
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
 
         self.name = data['name']
-        self.mqtt_support.client.publish(self.info_topic, '{"name": "' + self.name + '"}', retain=True)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -63,6 +58,33 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
             # These events happen a lot.  Lets filter down to when temp changes
             if new_message["ambient_temp"] != self.reported_temp:
                 self.reported_temp = new_message["ambient_temp"]
-                self.mqtt_support.client.publish(self.status_topic, self.reported_temp, retain=True)
+                self.mqtt_support.client.publish(
+                    self.status_topic, self.reported_temp, retain=True)
             return True
         return False
+
+    def initialize(self):
+        """ Optional function 
+        Will get called once when the object is loaded.  
+        RVC canbus tx queue is available
+        mqtt client is ready.  
+
+        This can be a good place to request data    
+        """
+
+        # produce the HA MQTT discovery config json
+        config = {"name": self.name, "state_topic": self.status_topic,
+                  "qos": 1, "retain": False,
+                  "unit_of_meas": '°C',
+                  "device_class": "temperature",
+                  "state_class": "measurement",
+                  "value_template": '{{value}}'}
+
+        config_json = json.dumps(config)
+
+        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
+            self.id, "sensor")
+
+        # publish info to mqtt
+        self.mqtt_support.client.publish(
+            ha_config_topic, config_json, retain=True)

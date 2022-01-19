@@ -18,27 +18,11 @@ limitations under the License.
 
 """
 
-'''
-# Example configuration.yaml entry
-light:
-  - platform: mqtt
-    name: "Office light"
-    state_topic: "office/light/status"
-    command_topic: "office/light/switch"
-    brightness_state_topic: 'office/light/brightness'
-    brightness_command_topic: 'office/light/brightness/set'
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-'''
-
-
-
 
 import queue
 import logging
 import struct
+import json
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
@@ -52,8 +36,9 @@ class LightBaseClass(EntityPluginBaseClass):
         self.Logger = logging.getLogger(__class__.__name__)
 
         # Allow MQTT to control light
-        self.set_topic = mqtt_support.make_device_topic_string(self.id, None, False)
-        self.mqtt_support.register(self.set_topic, self.process_mqtt_msg)
+        self.command_topic = mqtt_support.make_device_topic_string(
+            self.id, None, False)
+        self.mqtt_support.register(self.command_topic, self.process_mqtt_msg)
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -76,37 +61,6 @@ class Light_FromDGN_1FFBD(LightBaseClass):
 
     TODO: can it support brightness
 
-    issue command - Turn on
-    {"dgn": "1FFBC", "data": "0200FA0001FF0000", "name": "DC_LOAD_COMMAND", "instance": 2, "group": "00000000",
-     "desired level": 125.0,
-     "desired operating mode": "00", "desired operating mode definition": "automatic",
-     "interlock": "00", "interlock definition": "no interlock active",
-     "command": 1, "command definition": "on duration",
-     "delay/duration": 255}
-
-    Issue command - Turn off
-    {"dgn": "1FFBC", "data": "0100FA0003FF0000", "name": "DC_LOAD_COMMAND", "instance": 1, "group": "00000000",
-     "desired level": 125.0,
-     "desired operating mode": "00", "desired operating mode definition": "automatic",
-     "interlock": "00", "interlock definition": "no interlock active",
-     "command": 3, "command definition": "off",
-     "delay/duration": 255}
-
-    status - off
-    {"dgn": "1FFBD", "data": "0100000000000000", "name": "DC_LOAD_STATUS", "instance": 1, "group": "00000000",
-     "operating status": 0.0,
-     "operating mode": "00", "operating mode definition": "automatic",
-     "variable level capability": "00", "variable level capability definition": "not variable",
-     "priority": "0000", "priority definition": "highest priority",
-     "delay": 0, "demanded current": 0, "present current": -1600.0}
-
-    status - on
-    {"dgn": "1FFBD", "data": "0100C80000000000", "name": "DC_LOAD_STATUS", "instance": 1, "group": "00000000",
-     "operating status": 100.0, 
-     "operating mode": "00", "operating mode definition": "automatic", 
-     "variable level capability": "00", "variable level capability definition": "not variable",
-     "priority": "0000", "priority definition": "highest priority",
-     "delay": 0, "demanded current": 0, "present current": -1600.0}
 
     """
 
@@ -136,7 +90,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         If relevant - Process the message and return True
         else - return False
         """
- 
+
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug(f"Msg Match Status: {str(new_message)}")
             if new_message["operating_status"] == 100.0:
@@ -146,18 +100,20 @@ class Light_FromDGN_1FFBD(LightBaseClass):
             else:
                 self.state = "UNEXPECTED(" + \
                     str(new_message["operating_status"]) + ")"
-                self.Logger.error(f"Unexpected RVC value {str(new_message['operating_status'])}")
+                self.Logger.error(
+                    f"Unexpected RVC value {str(new_message['operating_status'])}")
 
             self.mqtt_support.client.publish(
                 self.status_topic, self.state, retain=True)
-            
+
             return True
         return False
 
     def process_mqtt_msg(self, topic, payload):
-        self.Logger.debug(f"MQTT Msg Received on topic {topic} with payload {payload}")
+        self.Logger.debug(
+            f"MQTT Msg Received on topic {topic} with payload {payload}")
 
-        if topic == self.set_topic:
+        if topic == self.command_topic:
             if payload.lower() == LightBaseClass.LIGHT_OFF:
                 if self.state != LightBaseClass.LIGHT_OFF:
                     self._rvc_light_off()
@@ -165,20 +121,22 @@ class Light_FromDGN_1FFBD(LightBaseClass):
                 if self.state != LightBaseClass.LIGHT_ON:
                     self._rvc_light_on()
             else:
-                self.Logger.warning(f"Invalid payload {payload} for topic {topic}")
-
+                self.Logger.warning(
+                    f"Invalid payload {payload} for topic {topic}")
 
     def _rvc_light_off(self):
-        #01 00 FA 00 03 FF 0000
+        # 01 00 FA 00 03 FF 0000
         msg_bytes = bytearray(8)
-        struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(self.rvc_group, 2), 250, 0, 3, 0xFF, 0 )
+        struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(
+            self.rvc_group, 2), 250, 0, 3, 0xFF, 0)
         self.send_queue.put({"dgn": "1FFBC", "data": msg_bytes})
 
     def _rvc_light_on(self):
-        
-        #01 00 FA 00 01 FF 0000
-        msg_bytes = bytearray(8)  
-        struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(self.rvc_group, 2), 250, 0, 1, 0xFF, 0 )
+
+        # 01 00 FA 00 01 FF 0000
+        msg_bytes = bytearray(8)
+        struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(
+            self.rvc_group, 2), 250, 0, 1, 0xFF, 0)
         self.send_queue.put({"dgn": "1FFBC", "data": msg_bytes})
 
     def initialize(self):
@@ -186,18 +144,30 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         Will get called once when the object is loaded.  
         RVC canbus tx queue is available
         mqtt client is ready.  
-        
+
         This can be a good place to request data
+
         """
+
+        # produce the HA MQTT discovery config json
+        config = {"name": self.name, "state_topic": self.status_topic,
+                  "command_topic": self.command_topic, "qos": 1, "retain": False,
+                  "payload_on": LightBaseClass.LIGHT_ON, "payload_off": LightBaseClass.LIGHT_OFF}
+
+        config_json = json.dumps(config)
+
+        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
+            self.id, "switch")
+
         # publish info to mqtt
-        self.mqtt_support.client.publish(self.info_topic, '{"name": "' + self.name + '"}', retain=True)
-        self.mqtt_support.client.publish(self.status_topic, self.state, retain=True)
+        self.mqtt_support.client.publish(
+            ha_config_topic, config_json, retain=True)
+        self.mqtt_support.client.publish(
+            self.status_topic, self.state, retain=True)
 
         # request dgn report - this should trigger that light to report
         # dgn = 1FFBD which is actually  BD FF 01 <instance> FF 00 00 00
         self.Logger.debug("Sending Request for DGN")
-        data = struct.pack("<BBBBBBBB", int("0xBD",0), int("0xFF", 0), 1, self.rvc_instance, 0, 0, 0, 0)
+        data = struct.pack("<BBBBBBBB", int("0xBD", 0), int(
+            "0xFF", 0), 1, self.rvc_instance, 0, 0, 0, 0)
         self.send_queue.put({"dgn": "EAFF", "data": data})
-
-
-        

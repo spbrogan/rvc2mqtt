@@ -22,7 +22,8 @@ import paho.mqtt.client as mqc
 
 
 class MQTT_Support(object):
-    TOPIC_BASE = "rvc2mqtt" 
+    TOPIC_BASE = "rvc2mqtt"
+    HA_AUTO_BASE = "homeassistant"
      
     
     def __init__(self, client_id:str):
@@ -30,7 +31,7 @@ class MQTT_Support(object):
         self.client_id = client_id
 
         self.root_topic = MQTT_Support.TOPIC_BASE + "/" + self.client_id
-        self.device_topic_base = MQTT_Support.TOPIC_BASE + "/d"
+        self.device_topic_base = self.root_topic + "/d"
 
         # topic strings
         self.bridge_state_topic = self.root_topic + "/" + "state"
@@ -87,6 +88,11 @@ class MQTT_Support(object):
         if not state:
             s += "/set"
         return s
+
+    def make_ha_auto_discovery_config_topic(self, id: str, ha_component: str) -> str:
+        """ make a config topic string for a Home Assistant auto discovery config"""
+        return MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + self.client_id + "/" + id + "/config"
+
 
     def _prepare_topic_string_node(self, input:str) -> str:
         """ convert the string to a consistant value
