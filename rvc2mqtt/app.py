@@ -105,6 +105,7 @@ class app(object):
                 obj = entity_factory(item, self.mqtt_client, entity_factory_list)
                 if obj is not None:
                     obj.set_rvc_send_queue(self.tx_RVC_Buffer)
+                    obj.initialize()
                     self.entity_list.append(obj)
 
         # Our RVC message loop here
