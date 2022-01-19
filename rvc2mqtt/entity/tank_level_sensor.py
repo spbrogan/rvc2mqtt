@@ -113,7 +113,7 @@ class TankLevelSensor_FromDGN_1FFB7(EntityPluginBaseClass):
     def _get_instance_name(self, instance: int) -> str:
         imap = {0: "fresh water", 
                 1: "black waste", 
-                2: "grey waste", 
+                2: "gray waste", 
                 3: "lpg",
                 16: "second fresh water", 
                 17: "second black waste", 
