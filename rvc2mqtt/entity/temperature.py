@@ -88,5 +88,3 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         # publish info to mqtt
         self.mqtt_support.client.publish(
             ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_topic, self.state, retain=True)
