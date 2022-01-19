@@ -59,7 +59,7 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         # For now only match the status message.
 
         if self._is_entry_match(self.rvc_match_status, new_message):
-            self.Logger.debug("Msg Match Status")
+            self.Logger.debug(f"Msg Match Status: {str(new_message)}")
             # These events happen a lot.  Lets filter down to when temp changes
             if new_message["ambient_temp"] != self.reported_temp:
                 self.reported_temp = new_message["ambient_temp"]

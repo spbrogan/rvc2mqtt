@@ -3451,7 +3451,7 @@ API_VERSION: 0
       name: dc voltage
       type: uint16
       unit: V
-    - byte: 4 to 7
+    - byte: 4-7
       name: dc current
       type: uint32
       type: A
@@ -3476,13 +3476,13 @@ API_VERSION: 0
       name: state of charge
       type: uint8
       unit: pct
-    - byte: 5 to 6
+    - byte: 5-6
       name: time remaining
       type: uint16
       comment: time to 0 or time to 100
       unit: min
     - byte: 7
-      bit: 0 to 1
+      bit: 0-1
       name: time remaining interpretation
       type: bit2
       values:
@@ -3509,16 +3509,16 @@ API_VERSION: 0
       name: desired charge state
       type: uint8
       comment: see DC_SOURCE_STATUS_4
-    - byte: 3 to 4
+    - byte: 3 - 4
       name: desired dc voltage
       type: uint16
       type: V
-    - byte: 5 to 6
+    - byte: 5 - 6
       name: desired dc current
       type: uint16
       type: A
     - byte: 7
-      bit: 0 to 3
+      bit: 0 - 3
       name: battery type
       type: bit4
       values:
@@ -3558,11 +3558,11 @@ API_VERSION: 0
       name: dc instance
       type: uint8
       comment: DC SOURCE Instance this Battery is associated with
-    - byte: 2 to 3
+    - byte: 2 - 3
       name: last 7 days input amp hours
       type: uint16
       unit: Ah
-    - byte: 4 to 5
+    - byte: 4 - 5
       name: last 7 days output amp hours
       type: uint16
       unit: Ah
@@ -3579,21 +3579,21 @@ API_VERSION: 0
       type: uint8
       comment: DC SOURCE Instance this Battery is associated with
     - byte: 2
-      bit: 0 to 1
+      bit: 0 - 1
       name: discharge on/off status
       type: bit2
       values:
         00: battery discharge bus disconnected
         01: battery discharge bus connected
     - byte: 2
-      bit: 2 to 3
+      bit: 2 - 3
       name: charge on/off status
       type: bit2
       values:
         00: charge bus disconnected
         01: charge bus connected
     - byte: 2
-      bit: 4 to 5
+      bit: 4 - 5
       name: charge detected
       type: bit2
       values:
@@ -3601,18 +3601,18 @@ API_VERSION: 0
         01: charge detected
       comment: state of Charge source. Usually valid only when Power off.
     - byte: 2
-      bit: 6 to 7
+      bit: 6 - 7
       name: reserve status
       type: bit2
       values:
         00: battery charge is above reserve level
         01: battery charge is at or below reserve level
-    - byte: 3 to 4
+    - byte: 3 - 4
       name: full capacity
       type: uint16
       unit: Ah
       comment: Nominal capacity of a fully charged battery. Precision 1 Ah
-    - byte: 5 to 6
+    - byte: 5 - 6
       name: dc power
       type: uint16
       unit: W

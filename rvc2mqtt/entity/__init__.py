@@ -51,6 +51,16 @@ class EntityPluginBaseClass(object):
         """
         raise NotImplementedError()
 
+    def initialize(self):
+        """ Optional function 
+        Will get called once when the object is loaded.  
+        RVC canbus tx queue is available
+        mqtt client is ready.  
+        
+        This can be a good place to request data
+        """
+        pass
+
     ########
     # HELPER FUNCTIONS 
     # NOT EXPECTING TO NEED TO BE OVERRIDDEN

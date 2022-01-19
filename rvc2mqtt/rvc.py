@@ -40,8 +40,8 @@ from typing import Union, Tuple
 
 
 class RVC_Decoder(object):
-    DEFAULT_PRIORITY: int = 6
-    DEFAULT_SOURCE_ID: int = 130
+    DEFAULT_PRIORITY: int = '6'
+    DEFAULT_SOURCE_ID: int = '82'  # 130 decimal
 
     def __init__(self):
         """create a decoder object to support decoding can bus messages
@@ -166,10 +166,10 @@ class RVC_Decoder(object):
             "dgn_l": DgnL,
             "dgn": Dgn,
             "source_id": SrcID,
-        }
+        }        
 
     def _get_bytes(self, bytes: str, byte_range: Union[int, str]) -> str:
-        """extract/slice the requsted bytes from string of hex data.
+        """extract/slice the requested bytes from string of hex data.
             Incoming bytes are not checked for length exception will be
             raised if invalid length.
 
