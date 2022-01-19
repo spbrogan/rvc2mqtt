@@ -36,7 +36,7 @@ Don't use relative imports.  Due to how it is loaded this doesn't work right.
 
 `self.mqtt_support: MQTT_Support` - mqtt_support object used for pub/sub operations
 
-`self.send_queue: queue` - queue used to transmit any RVC can bus messages.  Must be in message format as defined by python-can
+`self.send_queue: queue` - queue used to transmit any RVC can bus messages.  Msg must a dictionary and must supply at least the `dgn` string and 8 byte `data` array.   
 
 ## Functions
 
@@ -54,6 +54,30 @@ def __init__(self, data:dict, mqtt_support: MQTT_Support):
     self.Logger = logging.getLogger(__class__.__name__)
 
     # do your init here
+```
+
+### initialize
+
+```python
+def initialize(self):
+    """ Optional function 
+    Will get called once when the object is loaded.  
+    RVC canbus tx queue is available
+    mqtt client is ready.  
+    
+    This can be a good place to request data from canbus
+    and publish more info topics
+    
+    """
+    # publish info to mqtt
+    self.mqtt_support.client.publish(self.info_topic, '{"name": "' + self.name + '"}', retain=True)
+    self.mqtt_support.client.publish(self.status_topic, self.state, retain=True)
+
+    # request dgn report - this should trigger that light to report
+    # dgn = 1FFBD which is actually  BD FF 01 <instance> FF 00 00 00
+    self.Logger.debug("Sending Request for DGN")
+    data = struct.pack("<BBBBBBBB", int("0xBD",0), int("0xFF", 0), 1, self.rvc_instance, 0, 0, 0, 0)
+    self.send_queue.put({"dgn": "EAFF", "data": data})
 ```
 
 ### process rvc messages
