@@ -39,7 +39,7 @@ sudo ip link set can0 up
 
 ### Make a config.yaml file in a folder you can mount as /config for the container
 
-See configuration.md
+See [configuration.md](configuration.md)
 
 ### Build and deploy with docker
 

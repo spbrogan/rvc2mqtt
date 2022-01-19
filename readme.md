@@ -25,4 +25,4 @@ This project welcomes all types of contributions.
 
 ## Documentation
 
-See the github repo [__docs__](docs/) folder
+See the github repo [__docs__](docs/overview.md) folder
