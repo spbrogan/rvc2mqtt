@@ -65,7 +65,7 @@ class LightBaseClass(EntityPluginBaseClass):
         raise NotImplementedError()
 
     def process_mqtt_msg(self, topic, payload):
-        self.Logger.error(f"Incomple handler MQTT Message {topic} {payload}")
+        self.Logger.error(f"Incomplete handler MQTT Message {topic} {payload}")
 
 
 class Light_FromDGN_1FFBD(LightBaseClass):
@@ -129,8 +129,6 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         self.name = data['name']
         self.state = "unknown"
 
-        self.mqtt_support.client.publish(self.info_topic, '{"name": "' + self.name + '"}', retain=True)
-
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
         is of interest to this object.
@@ -182,4 +180,23 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         msg_bytes = bytearray(8)  
         struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(self.rvc_group, 2), 250, 0, 1, 0xFF, 0 )
         self.send_queue.put({"dgn": "1FFBC", "data": msg_bytes})
+
+    def initialize(self):
+        """ Optional function 
+        Will get called once when the object is loaded.  
+        RVC canbus tx queue is available
+        mqtt client is ready.  
+        
+        This can be a good place to request data
+        """
+        # publish info to mqtt
+        self.mqtt_support.client.publish(self.info_topic, '{"name": "' + self.name + '"}', retain=True)
+        self.mqtt_support.client.publish(self.status_topic, self.state, retain=True)
+
+        # request dgn report - this should trigger that light to report
+        # dgn = 1FFBD which is actually  BD FF 01 <instance> FF 00 00 00
+        data = struct.pack("<BBBBBBBB", int("0xBD",0), int("0xFF", 0), 1, self.rvc_instance, int("0xFF", 0), 0, 0, 0)
+        self.send_queue.put({"dgn": "EAFF", "data": data})
+
+
         

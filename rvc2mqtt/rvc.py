@@ -169,7 +169,7 @@ class RVC_Decoder(object):
         }        
 
     def _get_bytes(self, bytes: str, byte_range: Union[int, str]) -> str:
-        """extract/slice the requsted bytes from string of hex data.
+        """extract/slice the requested bytes from string of hex data.
             Incoming bytes are not checked for length exception will be
             raised if invalid length.
 
