@@ -93,7 +93,7 @@ class MQTT_Support(object):
         """ make a config topic string for a Home Assistant auto discovery config"""
         topic = MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + self.client_id + "/" + id
         if sub_type is not None:
-            topic += "/" + sub_type
+            topic += "-" + sub_type
         return topic + "/config"
 
 
