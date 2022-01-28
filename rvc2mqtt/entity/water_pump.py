@@ -131,7 +131,7 @@ class WaterPumpClass(EntityPluginBaseClass):
 
             # System Pressure
             self.system_pressure = new_message['current_system_pressure']
-            self.mqtt_support.client.publish(self.external_water_status_topic, self.system_pressure, retain=True)
+            self.mqtt_support.client.publish(self.system_pressure_status_topic, self.system_pressure, retain=True)
 
             return True
 
@@ -143,6 +143,8 @@ class WaterPumpClass(EntityPluginBaseClass):
         return False
 
     def process_mqtt_msg(self, topic, payload):
+        """ mqtt message to turn on or off the power switch for the pump"""
+        
         self.Logger.debug(f"MQTT Msg Received on topic {topic} with payload {payload}")
 
         if topic == self.command_topic:
@@ -208,7 +210,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         self.mqtt_support.client.publish(
             ha_config_topic, config_json, retain=True)
         self.mqtt_support.client.publish(
-            self.status_topic, self.power_state, retain=True)
+            self.running_status_topic, self.running_state, retain=True)
 
         # External Water Connected binary sensor  - produce the HA MQTT discovery config json for
         config = {"name": self.name , "state_topic": self.external_water_status_topic,
@@ -225,7 +227,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         self.mqtt_support.client.publish(
             ha_config_topic, config_json, retain=True)
         self.mqtt_support.client.publish(
-            self.status_topic, self.power_state, retain=True)
+            self.external_water_status_topic, self.external_water_hookup, retain=True)
 
         # System Pressure sensor  - produce the HA MQTT discovery config json for
         config = {"name": self.name , "state_topic": self.system_pressure_status_topic,
@@ -244,4 +246,4 @@ class WaterPumpClass(EntityPluginBaseClass):
         self.mqtt_support.client.publish(
             ha_config_topic, config_json, retain=True)
         self.mqtt_support.client.publish(
-            self.status_topic, self.power_state, retain=True)
+            self.system_pressure_status_topic, self.system_pressure, retain=True)
