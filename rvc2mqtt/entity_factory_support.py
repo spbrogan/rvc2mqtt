@@ -26,7 +26,7 @@ from rvc2mqtt.mqtt import MQTT_Support
 def entity_factory(data: dict, mqtt_support: MQTT_Support, entity_factory_list: list) -> EntityPluginBaseClass:
     # loop thru the factory list and if a full match between factory and data then
     # instantiate the object. 
-    logger =logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
     logger.debug(f"Factory for: {str(data)}")
     for f_entry in entity_factory_list:
         match = True

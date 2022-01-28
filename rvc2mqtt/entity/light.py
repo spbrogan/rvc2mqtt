@@ -80,7 +80,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         # save these for later to send rvc msg
         self.rvc_instance = data['instance']
         self.rvc_group = data['group']
-        self.name = data['name']
+        self.name = data['instance_name']
         self.state = "unknown"
 
     def process_rvc_msg(self, new_message: dict) -> bool:

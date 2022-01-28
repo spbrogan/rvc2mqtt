@@ -42,7 +42,7 @@ class TankLevelSensor_FromDGN_1FFB7(EntityPluginBaseClass):
         self.level = 100  # should never get this hot in C
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
 
-        self.name = data['name']
+        self.name = data['instance_name']
         self.instance = data['instance']
         self.instance_name = self._get_instance_name(self.instance)
 

@@ -76,16 +76,19 @@ map:
     instance: 1
     group: '00000000'
     type: light
-    name: bedroom_light
+    instance_name: bedroom_light
   - dgn: 1FFBD
     instance: 2
     group: '00000000'
     type: light
-    name: main_light
+    instance_name: main_light
   - dgn: 1FF9C
     instance: 2
     type: temperature
-    name: bedroom_temp
+    instance_name: bedroom_temp
+  - name: WATER_PUMP_STATUS
+    type: water_pump
+    instance_name: water pump
 
 #
 # MQTT specific settings
