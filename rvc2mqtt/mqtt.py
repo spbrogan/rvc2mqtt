@@ -89,9 +89,12 @@ class MQTT_Support(object):
             s += "/set"
         return s
 
-    def make_ha_auto_discovery_config_topic(self, id: str, ha_component: str) -> str:
+    def make_ha_auto_discovery_config_topic(self, id: str, ha_component: str, sub_type: str = None) -> str:
         """ make a config topic string for a Home Assistant auto discovery config"""
-        return MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + self.client_id + "/" + id + "/config"
+        topic = MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + self.client_id + "/" + id
+        if sub_type is not None:
+            topic += "-" + sub_type
+        return topic + "/config"
 
 
     def _prepare_topic_string_node(self, input:str) -> str:
