@@ -26,6 +26,14 @@ rvc_spec_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..
 
 class Test_RVC_Decoder(unittest.TestCase):
 
+    def test_waterheater_status(self):
+        rvc = RVC_Decoder()
+        rvc.load_rvc_spec(rvc_spec_file_path)
+
+        results = rvc.rvc_decode(int("19fff780", 16), "0100000000000000")
+        print(results)
+
+
     def test_rvc_valid_pgn(self):
         
         rvc = RVC_Decoder()

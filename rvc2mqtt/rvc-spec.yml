@@ -31,8 +31,11 @@ API_VERSION: 0
     - byte: 3
       name: instance
       type: uint8
+# there is also a special version of 0EA that is
+# used for source address claiming procedure.  That
+# is not supported here.
 
-0E8:
+'0E8':
   name: ACKNOWLEDGMENT
   comment: This is only the dgn_h
   parameters:
@@ -70,10 +73,6 @@ API_VERSION: 0
 
 0EE00:
   name: ADDRESS_CLAIMED
-
-0EA:
-  name: ADDRESS_REQUESTED
-  comment: dg_l is the requested address
 
 17F:
   name: GENERAL_RESET
@@ -3454,7 +3453,7 @@ API_VERSION: 0
     - byte: 4-7
       name: dc current
       type: uint32
-      type: A
+      unit: A
       comment: A positive value indicates current flowing from the battery (discharge), while a negative value would be indicative of the battery being recharged
 
 1FE94:
@@ -3512,11 +3511,11 @@ API_VERSION: 0
     - byte: 3 - 4
       name: desired dc voltage
       type: uint16
-      type: V
+      unit: V
     - byte: 5 - 6
       name: desired dc current
       type: uint16
-      type: A
+      unit: A
     - byte: 7
       bit: 0 - 3
       name: battery type
