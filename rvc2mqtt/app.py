@@ -153,6 +153,9 @@ class app(object):
         except Exception as e:
             self.Logger.warning(f"Failed to decode msg. {message}: {e}")
             return
+
+        ## Log all rvc bus messages to custom logger so it can be routed or ignored
+        logging.getLogger("rvc_bus_trace").debug(str(MsgDict))
         
         ## Find if this is a device entity in our list
         ## Pass to object
