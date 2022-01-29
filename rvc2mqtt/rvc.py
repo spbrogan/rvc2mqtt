@@ -35,7 +35,7 @@ limitations under the License.
 """
 from os import PathLike
 import logging
-import yaml
+import ruyaml as YAML
 from typing import Union, Tuple
 
 
@@ -56,8 +56,9 @@ class RVC_Decoder(object):
         self.Logger.info(f"Loading RVC Spec file {filepath}")
         with open(filepath, "r") as specfile:
             try:
-                self.spec = yaml.load(specfile, yaml.loader.Loader)
-            except yaml.YAMLError as err:
+                yaml=YAML.YAML(typ='safe')
+                self.spec = yaml.load(specfile)
+            except YAML.YAMLError as err:
                 self.Logger.error("Yaml Load Error.\n" + err)
                 raise (err)
 

@@ -30,7 +30,7 @@ import queue
 import signal
 import time
 import os
-import yaml
+import ruyaml as YAML
 from os import PathLike
 import datetime
 from typing import Optional
@@ -171,7 +171,8 @@ def load_the_config(config_file_path: Optional[os.PathLike]):
     """ if config_file_path is a valid file load a yaml/json config file """
     if os.path.isfile(config_file_path):
         with open(config_file_path, "r") as content:
-            return yaml.safe_load(content.read())
+            yaml=YAML.YAML(typ='safe')
+            return yaml.load(content.read())
 
 
 

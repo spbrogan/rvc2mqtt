@@ -134,7 +134,6 @@ def MqttInitalize(config:dict):
     if port is None:
         port = 1883
     else:
-        # yaml loads as strings
         port = int(port)
     
     mqttc = mqc.Client()
