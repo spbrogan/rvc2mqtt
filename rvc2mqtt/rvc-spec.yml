@@ -3364,6 +3364,208 @@ API_VERSION: 0
 1FEAD:
   name: SOLAR_EQUALIZATION_CONFIGURATION_COMMAND
 
+1FEA7:
+  name: ROOF_FAN_STATUS_1
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+    - byte: 1
+      bit: 0-1
+      name: system status
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 1
+      bit: 2-3
+      name: fan status
+      type: bit2
+      values:
+        00: auto
+        01: forced on
+    - byte: 1
+      bit: 4-5
+      name: speed mode
+      type: bit2
+      values:
+        00: auto
+        01: manual
+    - byte: 1
+      bit: 6-7
+      name: light
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 2
+      name: fan speed setting
+      type: uint8
+      unit: pct
+    - byte: 3
+      bit: 0-1
+      name: wind direction setting
+      type: bit2
+      values:
+        00: air out
+        01: air in
+    - byte: 3
+      bit: 2-5
+      name: dome position
+      type: bit4
+      values:
+        0000: closed
+        0001: 1/4 open
+        0010: 1/2 open
+        0011: 3/4 open
+        0100: open
+    - byte: 4-5
+      name: ambient temperature
+      type: uint16
+      unit: deg C
+    - byte: 6-7
+      name: set point
+      type: uint16
+      unit: deg C
+
+1FDE3:
+  name: ROOF_FAN_STATUS_2
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+    - byte: 1
+      name: dome mode
+      type: uint8
+      values:
+        0: stopped
+        1: opening
+        2: closing
+    - byte: 2
+      name: dome position
+      type: uint8
+      unit: pct
+    - byte: 3
+      bit: 0-1
+      name: rain sensor
+      type: bit2
+      values:
+        00: no rain detected
+        01: rain detected
+        10: sensor error
+        11: rain sensor not installed
+    - byte: 3
+      bit: 2-3
+      name: rain sensor override
+      type: bit2
+      values:
+        00: rain sensor used (auto)
+        01: rain sensor not used
+    - byte: 3
+      bit: 4-5
+      name: setpoint controlled dome state
+      type: bit2
+      values:
+        00: dome not automatically controlled
+        01: dome automatically controlled
+    - byte: 3
+      bit: 6-7
+      name: auto close dome on fan off
+      type: bit2
+      values:
+        00: dome will stay open when fan shuts off
+        01: dome will automatically close
+    - byte: 4
+      bit: 0-1
+      name: auto fan off on dome close
+      type: bit2
+      values:
+        00: fan will not automatically shut off when dome closes
+        01: fan will automatically shut off when dome closes
+    - byte: 4
+      bit: 2-7
+      name: fan steps supported
+      type: bit6
+      values:
+        000000: 1/2 percent step resolution
+        000001: 1 percent step resolution
+        111111: fan speed increment/decrement not supported
+      comment: todo value 2-50 == number of steps supported
+
+1FEA6:
+  name: ROOF_FAN_COMMAND_1
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+    - byte: 1
+      bit: 0-1
+      name: system status
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 1
+      bit: 2-3
+      name: fan mode
+      type: bit2
+      values:
+        00: auto
+        01: force on
+    - byte: 1
+      bit: 4-5
+      name: speed mode
+      type: bit2
+      values:
+        00: auto
+        01: manual
+    - byte: 1
+      bit: 6-7
+      name: light
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 2
+      name: fan speed setting
+      type: uint8
+      unit: pct
+    - byte: 3
+      bit: 0-1
+      name: wind direction setting
+      type: bit2
+      values:
+        00: air out
+        01: air in
+    - byte: 3
+      bit: 2-5
+      name: dome position
+      type: bit4
+      values:
+        0000: close
+        0001: 1/4 open
+        0010: 1/2 open
+        0011: 3/4 open
+        0100: open
+        0101: stop
+      comment: deprecated
+    - byte: 3
+      bit: 6-7
+      name: rain sensor
+      type: bit2
+      comment: deprecated
+    - byte: 4-5
+      name: ambient temperature
+      type: uint16
+      unit: deg C
+    - byte: 6-7
+      name: set point
+      type: uint16
+      unit: deg C
+
+1FDE2:
+  name: ROOF_FAN_COMMAND_2
+
 1FED6:
   name: MFG_SPECIFIC_CLAIM_REQUEST
 
