@@ -504,14 +504,14 @@ API_VERSION: 0
       type: bit
       values:
         00: off
-        01: ac element is active
+        01: burner lit
     - byte: 6
       bit: 4-5
       name: ac element status
       type: bit
       values:
-        00: no fault
-        01: open neutral fault detected
+        00: off
+        01: ac element active
     - byte: 6
       bit: 6-7
       name: high temperature limit switch status
@@ -540,10 +540,41 @@ API_VERSION: 0
       values:
         00: dc power present
         01: dc power not present
+    - byte: 7
+      bit: 6-7
+      name: dc power warning status
+      type: bit
+      values:
+        00: dc power sufficient
+        01: dc power warning
 
 1FFF6:
   name: WATERHEATER_COMMAND
-  alias: 1FFF7
+  comment: value of 0xFF (255) means don't change the field
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+    - byte: 1
+      name: operating modes
+      type: uint8
+      values:
+        0: off
+        1: combustion
+        2: electric
+        3: gas electric
+        4: automatic
+        5: test combustion
+        6: test electric
+    - byte: 2-3
+      name: set point temperature
+      type: uint16
+      unit: Deg C
+    - byte: 6
+      bit: 0-3
+      name: electric element level
+      type: bit4
+      comment: valid 1-13 but must be below the max element level
 
 1FFF5:
   name: GAS_SENSOR_STATUS
