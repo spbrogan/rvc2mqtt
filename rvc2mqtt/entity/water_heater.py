@@ -375,14 +375,16 @@ class WaterHeaterClass(EntityPluginBaseClass):
 
         # Set Point Temp input - produce the HA MQTT discovery config json for
         config = {"name": self.name + " Set Point Temperature", "state_topic": self.status_set_point_temp_topic,
-                  "command_topic": self.command_set_point_temp_topic, "qos": 1, "retain": False
-                  #todo
-                  }
+                  "command_topic": self.command_set_point_temp_topic, "qos": 1, "retain": False,
+                  "unit_of_meas": '°C',
+                  "device_class": "temperature",
+                  "state_class": "measurement",
+                  "value_template": '{{value}}'}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "input", "set_point_temperature")
+            self.id, "number", "set_point_temperature")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
