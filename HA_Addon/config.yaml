@@ -14,23 +14,20 @@ init: false
 options:
   interface_name: "can0"
   plugin_paths: "/"  
-schema:
-  interface_name: str?
-  plugin_paths: str?
   dgn-map: 
     - dgn: 1FFBD
       instance: 1
-      group: 00000000
+      group: 0
       type: light
       instance_name: bedroom_light
     - dgn: 1FFBD
       instance: 2
-      group: 00000000
+      group: 0
       type: light
       instance_name: main_light
     - dgn: 1FFBD
       instance: 8
-      group: 00000000
+      group: 0
       type: light
       instance_name: awning_light
     - dgn: 1FF9C
@@ -70,22 +67,23 @@ schema:
       instance: 35
       instance_name: fresh water tank heater
   mqtt:
-    - broker:   100.64.39.110:9883
+    - broker: 100.64.39.110:9883
       username: rvc
       password: c0ugar
 schema:
   interface_name: str?
   plugin_paths: str?
   dgn-map:
-    - dgn: str?
-      instance: int?
-      type: str?
-      instance_name: str?
+    - dgn: str
+      instance: int
+      group: int
+      type: str
+      instance_name: str
   name-map:
-    - name: str?
-      type: str?
-      instance: int?
-      instance_name: str?
+    - name: str
+      type: str
+      instance: int
+      instance_name: str
   mqtt:
     - broker: str
       username: str
