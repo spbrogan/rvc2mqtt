@@ -14,6 +14,7 @@ init: false
 options:
   interface_name: "can0"
   plugin_paths: "/"  
+  map: 
     - dgn: 1FFBD
       instance: 1
       group: 0
