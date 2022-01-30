@@ -1,7 +1,7 @@
 name: "RVC2MQTT"
 description: "Addon to sniff can data in RVC format"
 version: "1.0.0"
-slug: "RVC2MQTT"
+slug: "rvc2mqtt"
 url: "https://github.com/spbrogan/rvc2mqtt"
 arch:
   - aarch64
