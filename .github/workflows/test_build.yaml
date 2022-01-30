@@ -15,5 +15,4 @@ jobs:
           args: |
             --test \
             --all \
-            --target HA_Addon \
-            --docker-hub spbrogan
+            --target HA_Addon
