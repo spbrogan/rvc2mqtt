@@ -4,11 +4,11 @@ FROM $BUILD_FROM
 
 WORKDIR /app
 WORKDIR /app/rvc2mqtt
-ADD ../rvc2mqtt .
+ADD ./rvc2mqtt .
 WORKDIR /app
-COPY ../setup.py /
-COPY ../readme.md /
-COPY ../requirement.txt /
+COPY ./setup/setup.py /
+COPY ./setup//readme.md /
+COPY ./sestup/requirement.txt /
 COPY ./default_config.yaml /
 COPY ./run.sh /
 
