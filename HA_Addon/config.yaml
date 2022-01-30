@@ -94,8 +94,8 @@ plugin_paths: /home/pi/config
   mqtt_password: c0ugar
   
 schema:
-  interface_name: string
-  plugin_paths: string
-  mqtt_broker: string
-  mqtt_username: string
-  mqtt_password: string
+  interface_name: str
+  plugin_paths: str
+  mqtt_broker: str
+  mqtt_username: str
+  mqtt_password: str
