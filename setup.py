@@ -46,7 +46,7 @@ setuptools.setup(
     install_requires=[
         'python-can',
         'ruyaml',
-        'paho.mqtt'
+        'paho-mqtt'
     ],
     python_requires='>=3.8'
 )
