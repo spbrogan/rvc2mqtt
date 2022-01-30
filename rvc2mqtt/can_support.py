@@ -35,7 +35,7 @@ class CAN_Watcher(threading.Thread):
         self.kill_received = False
         self.Logger = logging.getLogger(__name__)
         self.Logger.info(f"Starting can bus on interface {interface}")
-        self.bus = can.interface.Bus(channel=interface, bustype="socketcan_native")
+        self.bus = can.interface.Bus(channel=interface, bustype="socketcan_native", bitrate=250000)
         self.rx = rx_queue
         self.tx = tx_queue
 
