@@ -9,3 +9,11 @@ arch:
   - armhf
   - armv7
   - i386
+host_network: true
+init: false
+options:
+  interface_name: "can0"
+  plugin_paths: "/"  
+schema:
+  interface_name: str?
+  plugin_paths: str?
