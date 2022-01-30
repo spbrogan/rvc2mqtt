@@ -8,7 +8,7 @@ ADD ./rvc2mqtt .
 WORKDIR /app
 COPY ./setup/setup.py /
 COPY ./setup//readme.md /
-COPY ./sestup/requirement.txt /
+COPY ./setup/requirement.txt /
 COPY ./default_config.yaml /
 COPY ./run.sh /
 
