@@ -79,6 +79,7 @@ schema:
     - dgn: str?
       name: str?
       instance: int?
+      group: str?
       type: str?
       instance_name: str?
   mqtt:
