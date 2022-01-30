@@ -15,6 +15,4 @@ RUN \
     && pip3 install --no-cache-dir --no-use-pep517 -e . \
     && chmod a+x ./run.sh
 
-COPY rootfs /
-
-CMD ["/run.sh"]
+CMD ["./run.sh"]
