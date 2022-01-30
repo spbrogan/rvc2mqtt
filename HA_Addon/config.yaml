@@ -1,0 +1,101 @@
+name: "RVC2MQTT"
+description: "Addon to sniff can data in RVC format"
+version: "1.0.0"
+slug: "RVC2MQTT"
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+host_network: true
+
+options:
+   #
+  # define the name of the can device
+  #
+  interface_name: can0
+
+#
+# External Plugins for device entity
+#
+plugin_paths: /home/pi/config
+#
+# RV - floorplan
+#
+# map: 
+#   - dgn: 1FFBD
+#     instance: 1
+#     group: '00000000'
+#     type: light
+#     instance_name: bedroom_light
+
+#   - dgn: 1FFBD
+#     instance: 2
+#     group: '00000000'
+#     type: light
+#     instance_name: main_light
+
+#   - dgn: 1FFBD
+#     instance: 8
+#     group: '00000000'
+#     type: light
+#     instance_name: awning_light
+
+#   - dgn: 1FF9C
+#     instance: 2
+#     type: temperature
+#     instance_name: bedroom_temp
+
+#   - dgn: 1FFB7
+#     instance: 0
+#     type: tank_level
+#     instance_name: fresh_water_tank
+
+#   - dgn: 1FFB7
+#     instance: 1
+#     type: tank_level
+#     instance_name: black_waste_tank
+
+#   - dgn: 1FFB7
+#     instance: 2
+#     type: tank_level
+#     instance_name: rear_gray_waste_tank
+
+#   - dgn: 1FFB7
+#     instance: 18
+#     type: tank_level
+#     instance_name: galley_gray_waste_tank
+
+#   - name: WATER_PUMP_STATUS
+#     type: water_pump
+#     instance_name: fresh water pump
+
+#   - name: WATERHEATER_STATUS
+#     type: waterheater
+#     instance: 1
+#     instance_name: trailer waterheater
+
+#   - name: DC_LOAD_STATUS
+#     type: tank_warmer
+#     instance: 34
+#     instance_name: waste tank heater
+
+#   - name: DC_LOAD_STATUS
+#     type: tank_warmer
+#     instance: 35
+#     instance_name: fresh water tank heater
+
+#
+# MQTT specific settings
+#
+  mqtt_broker:   100.64.39.110:9883
+  mqtt_username: rvc
+  mqtt_password: c0ugar
+  
+schema:
+  interface_name: string
+  plugin_paths: string
+  mqtt_broker: string
+  mqtt_username: string
+  mqtt_password: string
