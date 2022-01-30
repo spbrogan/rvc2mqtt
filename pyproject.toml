@@ -1,9 +1,12 @@
+[project]
+
+dependencies = [
+  'python-can',
+  'ruyaml',
+  'paho.mqtt'
+]
+
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
-
-# Requirements
-[dependencies]
-python-can
-ruyaml
-paho.mqtt
