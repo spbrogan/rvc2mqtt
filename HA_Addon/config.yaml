@@ -76,7 +76,7 @@ schema:
   dgn-map:
     - dgn: str
       instance: int
-      group: int
+      group: int?
       type: str
       instance_name: str
   name-map:
