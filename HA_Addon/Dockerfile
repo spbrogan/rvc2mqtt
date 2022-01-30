@@ -3,14 +3,12 @@ ARG BUILD_FROM
 FROM $BUILD_FROM
 
 WORKDIR /app
-WORKDIR /app/rvc2mqtt
 ADD ./rvc2mqtt .
-WORKDIR /app
-COPY ./setup/setup.py /
-COPY ./setup/readme.md /
-COPY ./setup/requirement.txt /
-COPY ./default_config.yaml /
-COPY ./run.sh /
+COPY ./setup/setup.py .
+COPY ./setup/readme.md .
+COPY ./setup/requirement.txt .
+COPY ./default_config.yaml .
+COPY ./run.sh .
 
 RUN \
     pip3 install -r ./requirement.txt \
