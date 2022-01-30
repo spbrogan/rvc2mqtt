@@ -14,7 +14,7 @@ init: false
 options:
   interface_name: "can0"
   plugin_paths: "/"  
-  dgn-map: 
+  map: 
     - dgn: 1FFBD
       instance: 1
       group: 0
@@ -50,7 +50,6 @@ options:
       instance: 18
       type: tank_level
       instance_name: galley_gray_waste_tank
-  name-map:
     - name: WATER_PUMP_STATUS
       type: water_pump
       instance_name: fresh water pump
@@ -73,17 +72,13 @@ options:
 schema:
   interface_name: str?
   plugin_paths: str?
-  dgn-map:
-    - dgn: str
-      instance: int
+  map:
+    - dgn: str?
+      name: str?
+      instance: int?
       group: int?
-      type: str
-      instance_name: str
-  name-map:
-    - name: str
-      type: str
-      instance: int
-      instance_name: str
+      type: str?
+      instance_name: str?
   mqtt:
     - broker: str
       username: str
