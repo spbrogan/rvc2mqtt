@@ -43,5 +43,10 @@ setuptools.setup(
     entry_points={
         'console_scripts': ['rvc2mqtt=rvc2mqtt.app:main']
     },
+    install_requires=[
+        'python-can',
+        'ruyaml',
+        'paho.mqtt'
+    ],
     python_requires='>=3.8'
 )
