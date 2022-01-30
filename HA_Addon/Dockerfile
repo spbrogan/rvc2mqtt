@@ -13,7 +13,7 @@ COPY ./run.sh .
 RUN \
     pip3 install -r ./requirement.txt \
     && pip3 install --no-cache-dir --no-use-pep517 -e . \
-    && chmod a+x /run.sh
+    && chmod a+x ./run.sh
 
 COPY rootfs /
 
