@@ -40,5 +40,8 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers"
     ],
+    entry_points={
+        'console_scripts': ['rvc2mqtt=rvc2mqtt.app:main']
+    },
     python_requires='>=3.8'
 )

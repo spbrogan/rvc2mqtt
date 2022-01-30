@@ -177,9 +177,7 @@ def load_the_config(config_file_path: Optional[os.PathLike]):
             yaml=YAML.YAML(typ='safe')
             return yaml.load(content.read())
 
-
-
-if __name__ == "__main__":
+def main():
     """Entrypoint.
     Get the config and run the app
     """
@@ -204,3 +202,6 @@ if __name__ == "__main__":
     MyApp = app()
     signal.signal(signal.SIGINT, signal_handler)
     MyApp.main(config)
+
+if __name__ == "__main__":
+    main()

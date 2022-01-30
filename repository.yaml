@@ -1,3 +1,0 @@
-# https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
-name: RVC2MQTT Home Assistant add-on repository
-url: 'https://github.com/spbrogan/rvc2mqtt'
