@@ -13,7 +13,6 @@ COPY ./default_config.yaml /
 COPY ./run.sh /
 
 RUN \
-  apk add --no-cache \
     pip3 install -r requirement.txt \
     && pip3 install --no-cache-dir --no-use-pep517 -e . \
     && chmod a+x /run.sh
