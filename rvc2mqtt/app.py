@@ -207,7 +207,7 @@ def main():
     parser.add_argument("--MQTT_HOST", "--mqtt_host", dest="mqtt_host",
                         help="Host URL", default=os.environ.get("MQTT_HOST"))
     parser.add_argument("--MQTT_PORT", "--mqtt_port", dest="mqtt_port",
-                        help="Port", default=os.environ.get("MQTT_port", "1883"))
+                        help="Port", default=os.environ.get("MQTT_PORT", "1883"))
     parser.add_argument("--MQTT_USER", "--mqtt_user", dest="mqtt_user",
                         help="username for mqtt", default=os.environ.get("MQTT_USERNAME"))
     parser.add_argument("--MQTT_PASS", "--mqtt_pass", dest="mqtt_pass",
