@@ -32,7 +32,6 @@ import signal
 import time
 import os
 import sys
-import json
 import ruyaml as YAML
 from os import PathLike
 import datetime
@@ -202,8 +201,8 @@ def main():
                         help="can interface name like can0", default=os.environ.get("CAN_INTERFACE_NAME", "can0"))
     parser.add_argument("-f", "--floorplan", "--FLOORPLAN",
                         dest="floorplan", help="floorplan file path")
-    parser.add_argument("-j", "--floorplanjson",
-                        dest="floorplan_json", help="string in json format")
+    parser.add_argument("-g", "--floorplan2",
+                        dest="floorplan2", help="filepath to more floorplan")
     parser.add_argument("-p", "--plugin_path", dest="plugin_paths", action="append", help="path to directory to load plugins", default=[])
     parser.add_argument("--MQTT_HOST", "--mqtt_host", dest="mqtt_host",
                         help="Host URL", default=os.environ.get("MQTT_HOST"))
@@ -244,9 +243,10 @@ def main():
                 if "floorplan" in c:
                     fp.extend(c["floorplan"])
         
-        if args.floorplan_json is not None:
-            floorplan = json.loads(args.floorplan_json)
-            fp.extend(floorplan)
+        if args.floorplan2 is not None:
+            d = load_the_config(args.floorplan2)
+            if "floorplan" in d:
+                fp.extend(d["floorplan"])
         args.fp = fp
     except Exception as e:
         logging.critical(f"Floorplan failure: {str(e)}")
