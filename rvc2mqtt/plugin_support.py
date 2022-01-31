@@ -36,17 +36,16 @@ class PluginSupport(object):
 
    """
 
-   def __init__(self, internal_plugin_path: os.PathLike, data: dict):
+   def __init__(self, internal_plugin_path: os.PathLike, optional_paths: list):
       self.Logger = logging.getLogger(__name__)
       self.plugin_locations = [internal_plugin_path]
-      if "paths" in data:
-         for path in data["paths"]:
-            path = os.path.abspath(path)
-            if os.path.exists(path):
-               self.Logger.debug(f"Adding Valid Plugin Path: {path}")
-               self.plugin_locations.append(path)
-            else:
-               self.Logger.error(f"Invalid Plugin Path: {path}")
+      for p in optional_paths:
+         if os.path.exists(p):
+            p = os.path.abspath(p)
+            self.Logger.debug(f"Adding Valid Plugin Path: {p}")
+            self.plugin_locations.append(p)
+         else:
+            self.Logger.error(f"Invalid Plugin Path: {p}")
       
    def register_with_factory_the_entity_plugins(self, factory_map:list):
       """

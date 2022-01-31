@@ -123,32 +123,28 @@ def on_mqtt_subscribe(client, userdata, mid, granted_qos):
 def on_mqtt_message(client, userdata, msg):
     gMQTTObj.on_message(client, userdata, msg)
 
-def MqttInitalize(config:dict):
+def MqttInitalize(host, port, user, password, client_id):
     """ main function to parse config and initialize the 
     mqtt client.
     """
     global gMQTTObj
     client_id = "bridge"
-    if "client-id" in config:
-        client_id = config["client-id"]
+    if client_id is not None:
+        client_id = client_id
     gMQTTObj = MQTT_Support(client_id)
 
-    (addr, _, port)=config["broker"].partition(":")
-    if port is None:
-        port = 1883
-    else:
-        port = int(port)
+    port = int(port)
     
     mqttc = mqc.Client()
     gMQTTObj.set_client(mqttc)
     mqttc.on_connect = on_mqtt_connect
     mqttc.on_subscribe = on_mqtt_subscribe
     mqttc.on_message = on_mqtt_message
-    mqttc.username_pw_set(config["username"], config["password"])
+    mqttc.username_pw_set(user, password)
 
     try:
-        logging.getLogger(__name__).info(f"Connecting to MQTT broker {addr}:{port}")
-        mqttc.connect(addr, port=port)
+        logging.getLogger(__name__).info(f"Connecting to MQTT broker {host}:{port}")
+        mqttc.connect(host, port=port)
         return gMQTTObj
     
     except Exception as e:
