@@ -238,7 +238,7 @@ def main():
                         help="Increase verbosity of stdout logger. Add multiple times to increase",
                         default=0)
 
-    parser.add_argument("-l", "--LOG_CONFIG_FILE", "--log_config_file" dest="log_config_file", help="filepath to config file for logging")
+    parser.add_argument("-l", "--LOG_CONFIG_FILE", "--log_config_file", dest="log_config_file", help="filepath to config file for logging")
 
     args = parser.parse_args()
     configure_logging(args.verbose, args.log_config_file)
