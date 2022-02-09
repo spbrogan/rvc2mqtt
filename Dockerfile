@@ -11,4 +11,4 @@ COPY readme.md readme.md
 #RUN pip3 install -r requirement.txt
 RUN pip3 install --no-cache-dir --no-use-pep517 -e .
 
-CMD python3 -m rvc2mqtt.app -f ${FLOORPLAN}
+CMD python3 -m rvc2mqtt.app -f ${FLOORPLAN} -l ${LOG_CONFIG_FILE}

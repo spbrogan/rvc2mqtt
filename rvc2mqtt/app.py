@@ -177,10 +177,21 @@ class app(object):
         logging.getLogger("unhandled_rvc").debug(f"Msg {str(MsgDict)}")
 
 
-def configure_logging(verbosity: int):
+def configure_logging(verbosity: int, config_file: Optional[os.PathLike]):
+    if config_file is not None:
+        if os.path.isfile(config_file):
+            try:
+                content = load_the_config(config_file)
+                logging.config.dictConfig(content["logger"])
+                return
+            except Exception as e:
+                print("Exception trying to setup loggers: " + str(e.args))
+                print(
+                    "Review https://docs.python.org/3/library/logging.config.html#logging-config-dictschema for details")
+
     log_format = "%(levelname)s %(asctime)s - %(message)s"
     logging.basicConfig(stream=sys.stdout,
-                        format=log_format, level=logging.DEBUG)
+                        format=log_format, level=logging.ERROR)
 
 
 def load_the_config(config_file_path: Optional[os.PathLike]):
@@ -202,7 +213,8 @@ def main():
                         dest="floorplan", help="floorplan file path")
     parser.add_argument("-g", "--floorplan2",
                         dest="floorplan2", help="filepath to more floorplan")
-    parser.add_argument("-p", "--plugin_path", dest="plugin_paths", action="append", help="path to directory to load plugins", default=[])
+    parser.add_argument("-p", "--plugin_path", dest="plugin_paths",
+                        action="append", help="path to directory to load plugins", default=[])
     parser.add_argument("--MQTT_HOST", "--mqtt_host", dest="mqtt_host",
                         help="Host URL", default=os.environ.get("MQTT_HOST"))
     parser.add_argument("--MQTT_PORT", "--mqtt_port", dest="mqtt_port",
@@ -223,25 +235,27 @@ def main():
                         help="key for mqtt", default=os.environ.get("MQTT_KEY"))
 
     parser.add_argument("-v", "--verbose", "--VERBOSE", dest="verbose", action="count",
-                        help="Increase verbosity. Add multiple times to increase",
+                        help="Increase verbosity of stdout logger. Add multiple times to increase",
                         default=0)
 
+    parser.add_argument("-l", "--LOG_CONFIG_FILE", "--log_config_file" dest="log_config_file", help="filepath to config file for logging")
+
     args = parser.parse_args()
-    configure_logging(args.verbose)
+    configure_logging(args.verbose, args.log_config_file)
     logging.info(
         "Log Started: "
         + datetime.datetime.strftime(datetime.datetime.now(),
                                      "%A, %B %d, %Y %I:%M%p")
     )
 
-    try: 
+    try:
         fp = []
         if args.floorplan is not None:
             if os.path.isfile(args.floorplan):
                 c = load_the_config(args.floorplan)
                 if "floorplan" in c:
                     fp.extend(c["floorplan"])
-        
+
         if args.floorplan2 is not None:
             d = load_the_config(args.floorplan2)
             if "floorplan" in d:
