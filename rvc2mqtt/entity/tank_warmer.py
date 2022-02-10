@@ -51,8 +51,13 @@ class TankWarmer_DC_LOAD_STATUS(EntityPluginBaseClass):
         self.rvc_instance = data['instance']
         self.name = data['instance_name']
         self.state = "unknown"
-        super().__init__(data, mqtt_support)
-        self.Logger = logging.getLogger(__class__.__name__)
+
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Tank Warner from DC_LOAD_STATUS"
+                       }
 
         # Allow MQTT to control heater
         self.command_topic = mqtt_support.make_device_topic_string(
@@ -164,9 +169,14 @@ class TankWarmer_DC_LOAD_STATUS(EntityPluginBaseClass):
         """
 
         # produce the HA MQTT discovery config json
-        config = {"name": self.name, "state_topic": self.status_topic,
-                  "command_topic": self.command_topic, "qos": 1, "retain": False,
-                  "payload_on": TankWarmer_DC_LOAD_STATUS.ON, "payload_off": TankWarmer_DC_LOAD_STATUS.OFF}
+        config = {"name": self.name,
+                  "state_topic": self.status_topic,
+                  "command_topic": self.command_topic,
+                  "qos": 1, "retain": False,
+                  "payload_on": TankWarmer_DC_LOAD_STATUS.ON,
+                  "payload_off": TankWarmer_DC_LOAD_STATUS.OFF,
+                  "unique_id": self.unique_device_id,
+                  "device": self.device}
 
         config_json = json.dumps(config)
 

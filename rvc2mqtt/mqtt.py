@@ -85,15 +85,17 @@ class MQTT_Support(object):
         if field is not None:
             s += "/" + self._prepare_topic_string_node(field) 
 
-        if not state:
+        if state:
+            s += "/state"
+        else:
             s += "/set"
         return s
 
     def make_ha_auto_discovery_config_topic(self, id: str, ha_component: str, sub_type: str = None) -> str:
         """ make a config topic string for a Home Assistant auto discovery config"""
-        topic = MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + id
+        topic = MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + self._prepare_topic_string_node(id)
         if sub_type is not None:
-            topic += "/" + sub_type
+            topic += "/" + self._prepare_topic_string_node(sub_type)
         return topic + "/config"
 
 
@@ -105,6 +107,12 @@ class MQTT_Support(object):
 
         """
         return input.translate(input.maketrans(" /", "__", "()")).lower()
+
+    def get_bridge_ha_name(self) -> str:
+        """ return a string that is used to identify the bridge HA as a device."""
+        return self._prepare_topic_string_node(self.root_topic)
+
+
 
     def shutdown(self):
         """ shutdown.  Tell server we are going offline"""

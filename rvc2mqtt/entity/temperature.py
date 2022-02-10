@@ -43,6 +43,12 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
 
         self.name = data['instance_name']
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Temperature Sensor from THERMOSTAT_AMBIENT_STATUS"
+                       }
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -78,7 +84,9 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
                   "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
-                  "value_template": '{{value}}'}
+                  "value_template": '{{value}}',
+                  "unique_id": self.unique_device_id,
+                  "device": self.device}
 
         config_json = json.dumps(config)
 

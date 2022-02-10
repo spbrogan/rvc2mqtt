@@ -87,11 +87,11 @@ class WaterPumpClass(EntityPluginBaseClass):
             self.id, "system_pressure", True)
         self.mqtt_support.register(self.command_topic, self.process_mqtt_msg)
 
-        self.device = {"manufacturer": "keystone",
-                       "via_device": "rvc2mqtt " + self.mqtt_support.client_id,
-                       "identifiers": "waterpump:1",
-                       "name": "water pump",
-                       "model": "pump"
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Waterpump from WATER_PUMP_STATUS"
                        }
 
     def process_rvc_msg(self, new_message: dict) -> bool:
@@ -201,10 +201,13 @@ class WaterPumpClass(EntityPluginBaseClass):
         """
 
         # power state switch - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " power", "state_topic": self.status_topic,
+        config = {"name": self.name + " power",
+                  "state_topic": self.status_topic,
                   "command_topic": self.command_topic, "qos": 1, "retain": False,
-                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF,
-                  "unique_id": self.unique_device_id + "_power", "device": self.device}
+                  "payload_on": WaterPumpClass.ON,
+                  "payload_off": WaterPumpClass.OFF,
+                  "unique_id": self.unique_device_id + "_power",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -218,15 +221,18 @@ class WaterPumpClass(EntityPluginBaseClass):
             self.status_topic, self.power_state, retain=True)
 
         # running state binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " running status", "state_topic": self.running_status_topic,
+        config = {"name": self.name + " running status",
+                  "state_topic": self.running_status_topic,
                   "qos": 1, "retain": False,
-                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF,
-                  "unique_id": self.unique_device_id + "_rs", "device": self.device}
+                  "payload_on": WaterPumpClass.ON,
+                  "payload_off": WaterPumpClass.OFF,
+                  "unique_id": self.unique_device_id + "_running",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "rs")
+            self.id, "binary_sensor", "running")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -235,16 +241,18 @@ class WaterPumpClass(EntityPluginBaseClass):
             self.running_status_topic, self.running_state, retain=True)
 
         # External Water Connected binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " external water", "state_topic": self.external_water_status_topic,
+        config = {"name": self.name + " external water",
+                  "state_topic": self.external_water_status_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterPumpClass.OUTSIDE_WATER_CONNECTED,
                   "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED,
-                  "unique_id": self.unique_device_id + "_ew", "device": self.device}
+                  "unique_id": self.unique_device_id + "_external_water",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "ew")
+            self.id, "binary_sensor", "external_water")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -253,18 +261,20 @@ class WaterPumpClass(EntityPluginBaseClass):
             self.external_water_status_topic, self.external_water_hookup, retain=True)
 
         # System Pressure sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " system pressure", "state_topic": self.system_pressure_status_topic,
+        config = {"name": self.name + " system pressure", 
+                  "state_topic": self.system_pressure_status_topic,
                   "qos": 1, "retain": False,
                   "unit_of_meas": 'Pa',
                   "device_class": "pressure",
                   "state_class": "measurement",
                   "value_template": '{{value}}',
-                  "unique_id": self.unique_device_id + "_sp", "device": self.device}
+                  "unique_id": self.unique_device_id + "_system_pressure",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "sensor", "sp")
+            self.id, "sensor", "system_pressure")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(

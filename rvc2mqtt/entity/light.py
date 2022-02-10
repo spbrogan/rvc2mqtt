@@ -84,6 +84,14 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         self.name = data['instance_name']
         self.state = "unknown"
 
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Light from DC_LOAD_STATUS"
+                       }
+
+
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
         is of interest to this object.
@@ -156,9 +164,14 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         """
 
         # produce the HA MQTT discovery config json
-        config = {"name": self.name, "state_topic": self.status_topic,
-                  "command_topic": self.command_topic, "qos": 1, "retain": False,
-                  "payload_on": LightBaseClass.LIGHT_ON, "payload_off": LightBaseClass.LIGHT_OFF}
+        config = {"name": self.name, 
+                  "state_topic": self.status_topic,
+                  "command_topic": self.command_topic,
+                  "qos": 1, "retain": False,
+                  "payload_on": LightBaseClass.LIGHT_ON,
+                  "payload_off": LightBaseClass.LIGHT_OFF,
+                  "unique_id": self.unique_device_id,
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
