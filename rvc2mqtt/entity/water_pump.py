@@ -89,7 +89,7 @@ class WaterPumpClass(EntityPluginBaseClass):
 
         self.device = {"manufacturer": "keystone",
                        "via_device": "rvc2mqtt " + self.mqtt_support.client_id,
-                       # "identifiers": "",
+                       "identifiers": "waterpump:1",
                        "name": "water pump",
                        "model": "pump"
                        }
