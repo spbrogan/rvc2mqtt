@@ -73,6 +73,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         # RVC message must match the following to be this device
         self.rvc_match_status = {
             "dgn": "1FFBD", "instance": data['instance']}
+        self.rvc_match_command= { "dgn": "1FFBC", "instance": data['instance']}
 
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
         # ignore for now self.rvc_match_command = {"dgn": "1FFBC", "instance": data['instance'], "group": data['group'] }
@@ -105,7 +106,12 @@ class Light_FromDGN_1FFBD(LightBaseClass):
 
             self.mqtt_support.client.publish(
                 self.status_topic, self.state, retain=True)
+            return True
 
+        elif self._is_entry_match(self.rvc_match_command, new_message):
+            # This is the command.  Just eat the message so it doesn't show up
+            # as unhandled.
+            self.Logger.debug(f"Msg Match Command: {str(new_message)}")
             return True
         return False
 
