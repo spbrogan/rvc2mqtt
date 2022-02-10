@@ -19,16 +19,16 @@ to make it more manageable and maintainable.
 
 The overall application entrypoint that drives the initial setup and configuration as well as the main loop of checking queues for messages and processing.
 
-Configuration - Parse cli parameters (config.yaml file) and use it to setup everything.  This includes MQTT client, CANBUS interface, RVC Decoder (using spec file), and user supplied plugins.  
+Configuration - Parse cli parameters and use it to setup everything.  This includes MQTT client, CANBUS interface, RVC Decoder (using spec file), and user supplied plugins.  
 
-Entity Mgmt - From the config parse out the `map` which is a description of the sensors in the RV.  Then instantiate entities for each entry to deal with state changes and command requests. 
+Entity Mgmt - From the floor plan files parse out the `floorplan` which is a description of the sensors in the RV.  Then instantiate entities for each entry to deal with state changes and command requests. 
 
 Process CANBUS Rx - The CAN watcher will listen to all messages on the RV CAN Bus and add them to the Rx Queue.  The App must:
     1. Take a message from queue and decode it to RVC
     2. Ask the instantiated entities to process the message.
        - If of interest the entity will do something with it (ie. Update state, etc)
        - Else - ignore it so other entities can process
-    3. If no entity log it (common)
+    3. If no entity log the message.
 
 Process CANBUS Tx - The entities may want to send a RVC message.  To do this they put a message into the Tx Queue and then the app must:
     1. Translate RVC DGN to CANBUS arbitration id
@@ -39,12 +39,11 @@ Thats it for the app.
 ### MQTT Support
 
 See [mqtt.md](mqtt.md) for more details about MQTT mapping.
-Overall, the process is using `Paho.mqtt Python Library` to create a client.  The entities then publish information and subscribe to commands.
+Overall, the process is using `paho-mqtt` Python Library to create a client.  The entities then publish information and subscribe to commands.
 
 ### CAN Watcher
 
-This is a simple class using 'python-can' to support bi-directional communication on the CANBUS.  This mostly runs its
-own thread and gets and puts messages into the correct queues (rx/tx)
+This is a simple class using `python-can` to support bi-directional communication on the CANBUS.  This mostly runs its own thread and gets and puts messages into the correct queues (rx/tx)
 
 ### RVC Decoder
 
@@ -57,7 +56,7 @@ data as well as friendly parsed and converted data.
 
 Plugin support does a few important things.
 * Load python modules (an entity representing a device) from internal and  sources
-* Parse `map` config to find the correct entity per entry.
+* Parse `floorplan` config to find the correct entity per entry.
 * Instantiate the entry with the supplied configuration.
 
 This model will allow end user customization and extension without requiring modifying the entire projects source code.  It also keeps each entity (device) source isolated for easier code readability and maintenance.
@@ -75,16 +74,14 @@ The base class for any entity is `EntityPluginBaseClass` and all entities must b
 * <https://github.com/hardbyte/python-can>
 * <https://python-can.readthedocs.io/en/master/>
 
-### Paho.Mqtt
+### Paho-Mqtt
 
 * <https://pypi.org/project/paho-mqtt/>
 * <https://www.eclipse.org/paho/>
 
-### PyYaml
+### ruyaml
 
-* <https://pypi.org/project/PyYAML/>
-* <https://pyyaml.org>
-* <https://pyyaml.org/wiki/PyYAMLDocumentation>
+* <https://pypi.org/project/ruyaml/>
 
 
 

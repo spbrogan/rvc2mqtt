@@ -23,10 +23,9 @@ This has been used on Raspberry Pi OS Lite
 
 ### Enable CanBus support in Kernel
 
-* Add waveshare doc and steps here
-* <https://www.waveshare.com/w/upload/2/29/RS485-CAN-HAT-user-manuakl-en.pdf>
+See the waveshare doc here: <https://www.waveshare.com/w/upload/2/29/RS485-CAN-HAT-user-manuakl-en.pdf>
 
-Need to update /boot/config.txt to enable rs485 can hat
+### Update /boot/config.txt to enable rs485 can hat
 
 If you are using HomeAssistantOS you will need to remove the SD card and find the file on the boot partition.  
 
@@ -47,16 +46,16 @@ TBD - figure out how to do automatically.  Too many different linux network serv
 Manually this can be done doing
 
 ``` bash
-sudo ip link set can0 type can bitrate 250000
+sudo ip link set can0 type can
 
 sudo ip link set can0 up
 ```
 
-### Make a config.yaml file in a folder you can mount as /config for the container
+### Make a floorplan.yaml file and/or logging.yaml in a folder you can mount as /config for the container
 
 See [configuration.md](configuration.md)
 
-### Build and deploy with docker
+### deploy with docker
 
 see docker_deploy.md
 

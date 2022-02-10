@@ -16,14 +16,7 @@ This schema can support multiple rvc2mqtt bridges
 using the client-id to provide an isolated namespace.  Please make sure this is unique if you
 have more than one bridge 
 
-```yml
-mqtt:
-  broker:    <ip address>:<optional port>
-  username:  <user name>
-  password:  <password>
-  client-id: <client-id> #optional default=bridge
-
-```
+Setting the config for MQTT can be done as command line parameters or thru environment variables.  For Docker env is suggested.
 
 ## Topic hierarchy
 
@@ -75,11 +68,11 @@ Home assistant has created mqtt auto-discovery.  This describes how rvc2mqtt int
 with mqtt auto-discovery.
 
 
-follows path like: <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
+follows path like: `<discovery_prefix>/<component>/<unique_object_id>/config`
 
-<homeassistant> is the discovery prefix
+`homeassistant` is the discovery prefix  
+`component` is one of the home assistant component types  
+`unique_object_id` is the sensors unique id.  This will be a concatination that includes the rvc2mqtt_client-id_object
 
-<node_id> will be a bridge <client-id> this is needed because if two bridges talk to same server there could be conflicting ids
-
-payload is json that matches HA config (at least all required)
+config payload is json that matches HA config (at least all required)
 
