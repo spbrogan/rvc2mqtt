@@ -24,6 +24,7 @@ limitations under the License.
 """
 
 import argparse
+from email.policy import default
 import logging
 import logging.config
 import queue
@@ -182,6 +183,7 @@ def configure_logging(verbosity: int, config_file: Optional[os.PathLike]):
         if os.path.isfile(config_file):
             try:
                 content = load_the_config(config_file)
+                print("Trying to configuring  Logging from config file")
                 logging.config.dictConfig(content["logger"])
                 return
             except Exception as e:
@@ -210,18 +212,18 @@ def main():
     parser.add_argument("-i", "--interface", "--INTERFACE", dest="can_interface",
                         help="can interface name like can0", default=os.environ.get("CAN_INTERFACE_NAME", "can0"))
     parser.add_argument("-f", "--floorplan", "--FLOORPLAN",
-                        dest="floorplan", help="floorplan file path")
+                        dest="floorplan", help="floorplan file path", default=os.environ.get("FLOORPLAN_FILE_1"))
     parser.add_argument("-g", "--floorplan2",
-                        dest="floorplan2", help="filepath to more floorplan")
+                        dest="floorplan2", help="filepath to more floorplan", default=os.environ.get("FLOORPLAN_FILE_2"))
     parser.add_argument("-p", "--plugin_path", dest="plugin_paths",
                         action="append", help="path to directory to load plugins", default=[])
     parser.add_argument("--MQTT_HOST", "--mqtt_host", dest="mqtt_host",
                         help="Host URL", default=os.environ.get("MQTT_HOST"))
     parser.add_argument("--MQTT_PORT", "--mqtt_port", dest="mqtt_port",
                         help="Port", default=os.environ.get("MQTT_PORT", "1883"))
-    parser.add_argument("--MQTT_USER", "--mqtt_user", dest="mqtt_user",
+    parser.add_argument("--MQTT_USERNAME", "--mqtt_username", dest="mqtt_user",
                         help="username for mqtt", default=os.environ.get("MQTT_USERNAME"))
-    parser.add_argument("--MQTT_PASS", "--mqtt_pass", dest="mqtt_pass",
+    parser.add_argument("--MQTT_PASSWORD", "--mqtt_password", dest="mqtt_pass",
                         help="password for mqtt", default=os.environ.get("MQTT_PASSWORD"))
 
     # optional settings
@@ -238,7 +240,8 @@ def main():
                         help="Increase verbosity of stdout logger. Add multiple times to increase",
                         default=0)
 
-    parser.add_argument("-l", "--LOG_CONFIG_FILE", "--log_config_file", dest="log_config_file", help="filepath to config file for logging")
+    parser.add_argument("-l", "--LOG_CONFIG_FILE", "--log_config_file", dest="log_config_file",
+                        help="filepath to config file for logging", default=os.environ.get("LOG_CONFIG_FILE"))
 
     args = parser.parse_args()
     configure_logging(args.verbose, args.log_config_file)

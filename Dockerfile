@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM python:3.10-slim-bullseye
 
 WORKDIR /app
 WORKDIR /app/rvc2mqtt
@@ -11,4 +11,4 @@ COPY readme.md readme.md
 #RUN pip3 install -r requirement.txt
 RUN pip3 install --no-cache-dir --no-use-pep517 -e .
 
-CMD python3 -m rvc2mqtt.app -f ${FLOORPLAN} -l ${LOG_CONFIG_FILE}
+CMD python3 -m rvc2mqtt.app
