@@ -40,6 +40,7 @@ class EntityPluginBaseClass(object):
 
         # Make the required one status/state topic
         self.status_topic: str = mqtt_support.make_device_topic_string(self.id, None, True)
+        self.unique_device_id = mqtt_support.TOPIC_BASE + "_" + mqtt_support.client_id + "_" + self.id 
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming rvc message and determine if it

@@ -183,7 +183,8 @@ class WaterPumpClass(EntityPluginBaseClass):
         # power state switch - produce the HA MQTT discovery config json for
         config = {"name": self.name + " power", "state_topic": self.status_topic,
                   "command_topic": self.command_topic, "qos": 1, "retain": False,
-                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF}
+                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF, 
+                  "unique_id": self.unique_device_id + "_power"}
 
         config_json = json.dumps(config)
 
@@ -199,7 +200,8 @@ class WaterPumpClass(EntityPluginBaseClass):
         # running state binary sensor  - produce the HA MQTT discovery config json for
         config = {"name": self.name + " running status", "state_topic": self.running_status_topic,
                   "qos": 1, "retain": False,
-                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF}
+                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF,
+                  "unique_id": self.unique_device_id + "_rs"}
 
         config_json = json.dumps(config)
 
@@ -216,7 +218,8 @@ class WaterPumpClass(EntityPluginBaseClass):
         config = {"name": self.name + " external water" , "state_topic": self.external_water_status_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterPumpClass.OUTSIDE_WATER_CONNECTED,
-                  "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED}
+                  "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED,
+                  "unique_id": self.unique_device_id + "_ew"}
 
         config_json = json.dumps(config)
 
@@ -235,7 +238,8 @@ class WaterPumpClass(EntityPluginBaseClass):
                    "unit_of_meas": 'Pa',
                   "device_class": "pressure",
                   "state_class": "measurement",
-                  "value_template": '{{value}}'}
+                  "value_template": '{{value}}',
+                  "unique_id": self.unique_device_id + "_sp"}
 
         config_json = json.dumps(config)
 
