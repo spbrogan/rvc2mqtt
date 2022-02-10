@@ -103,6 +103,13 @@ class WaterHeaterClass(EntityPluginBaseClass):
         self.failure_dc_power = "unknown" # RO mqtt and RVC (power present, power not present)
         self.failure_dc_warning = "unknown" # RO mqtt and RVC (power ok, power low)
 
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Water Heater from WATERHEATER_STATUS"
+                       }
+
         # Allow MQTT to control gas - on off
         self.status_gas_topic = mqtt_support.make_device_topic_string(self.id, "gas", True)
         self.command_gas_topic = mqtt_support.make_device_topic_string(self.id, "gas", False)
@@ -137,6 +144,8 @@ class WaterHeaterClass(EntityPluginBaseClass):
         self.status_failure_ac_topic = mqtt_support.make_device_topic_string(self.id, "failure_ac", True)
         self.status_failure_dc_topic = mqtt_support.make_device_topic_string(self.id, "failure_dc", True)
         self.status_failure_low_dc_topic = mqtt_support.make_device_topic_string(self.id, "failure_low_dc", True)
+
+
 
 
     def process_rvc_msg(self, new_message: dict) -> bool:
@@ -342,9 +351,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         """
 
         # Gas switch - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " Gas", "state_topic": self.status_gas_topic,
-                  "command_topic": self.command_gas_topic, "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF}
+        config = {"name": self.name + " Gas",
+                  "state_topic": self.status_gas_topic,
+                  "command_topic": self.command_gas_topic,
+                  "qos": 1, "retain": False,
+                  "payload_on": WaterHeaterClass.ON,
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_gas_mode",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -360,7 +374,9 @@ class WaterHeaterClass(EntityPluginBaseClass):
         # AC element switch - produce the HA MQTT discovery config json for
         config = {"name": self.name + " AC", "state_topic": self.status_ac_topic,
                   "command_topic": self.command_ac_topic, "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF}
+                  "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_electric_mode",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -379,7 +395,9 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
-                  "value_template": '{{value}}'}
+                  "value_template": '{{value}}',
+                  "unique_id": self.unique_device_id + "_set_point_temperature",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -399,12 +417,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
                    "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
-                  "value_template": '{{value}}'}
+                  "value_template": '{{value}}',
+                  "unique_id": self.unique_device_id + "_water_temperature",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "sensor", "water-temperature")
+            self.id, "sensor", "water_temperature")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -416,7 +436,9 @@ class WaterHeaterClass(EntityPluginBaseClass):
         # thermostate status binary sensor  - produce the HA MQTT discovery config json for
         config = {"name": self.name + " thermostat status", "state_topic": self.status_thermostat_topic,
                   "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF}
+                  "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_thermostat",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -434,12 +456,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         config = {"name": self.name + " gas burner" , "state_topic": self.status_gas_burner_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF}
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_gas_burner_status",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "gbs")
+            self.id, "binary_sensor", "gas_burner_status")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -451,12 +475,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         config = {"name": self.name + " ac element" , "state_topic": self.status_ac_element_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF}
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_ac_element_status",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "ace")
+            self.id, "binary_sensor", "ac_element_status")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -468,12 +494,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         config = {"name": self.name + " high temp limit" , "state_topic": self.status_high_temp_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF}
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_high_temp_limit_switch_status",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "htl")
+            self.id, "binary_sensor", "high_temp_limit_switch_status")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -485,12 +513,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         config = {"name": self.name + "gas failure" , "state_topic": self.status_failure_gas_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF}
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_failure_to_ignite_status",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "fgi")
+            self.id, "binary_sensor", "failure_to_ignite_status")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -502,12 +532,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         config = {"name": self.name + "AC Power failure" , "state_topic": self.status_failure_ac_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF}
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_failure_ac_power_status",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "facp")
+            self.id, "binary_sensor", "failure_ac_power_status")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -519,12 +551,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         config = {"name": self.name + "DC Power failure" , "state_topic": self.status_failure_dc_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF}
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_failure_dc_power_status",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "fdcp")
+            self.id, "binary_sensor", "failure_dc_power_status")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -536,12 +570,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
         config = {"name": self.name + "DC Low Power failure" , "state_topic": self.status_failure_low_dc_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF}
+                  "payload_off": WaterHeaterClass.OFF,
+                  "unique_id": self.unique_device_id + "_failure_dc_power_warning_status",
+                  "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "fdclp")
+            self.id, "binary_sensor", "failure_dc_power_warning_status")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
