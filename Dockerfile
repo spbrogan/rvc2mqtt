@@ -1,4 +1,4 @@
-FROM python:3.10-slim-bullseye
+FROM python:3.9-slim-bullseye
 
 WORKDIR /app
 WORKDIR /app/rvc2mqtt
@@ -9,6 +9,6 @@ COPY readme.md readme.md
 #COPY requirement.txt requirement.txt
 
 #RUN pip3 install -r requirement.txt
-RUN pip3 install --no-cache-dir --no-use-pep517 -e .
+RUN pip3 install --no-cache-dir -e .
 
 CMD python3 -m rvc2mqtt.app
