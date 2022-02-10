@@ -204,7 +204,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         config = {"name": self.name + " power", "state_topic": self.status_topic,
                   "command_topic": self.command_topic, "qos": 1, "retain": False,
                   "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF,
-                  "unique_id": self.unique_device_id + "_power", "device": self.device}
+                  "unique_id": self.unique_device_id + "_power"}#, "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -221,7 +221,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         config = {"name": self.name + " running status", "state_topic": self.running_status_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF,
-                  "unique_id": self.unique_device_id + "_rs", "device": self.device}
+                  "unique_id": self.unique_device_id + "_rs"}#, "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -239,7 +239,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "qos": 1, "retain": False,
                   "payload_on": WaterPumpClass.OUTSIDE_WATER_CONNECTED,
                   "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED,
-                  "unique_id": self.unique_device_id + "_ew", "device": self.device}
+                  "unique_id": self.unique_device_id + "_ew"}#, "device": self.device}
 
         config_json = json.dumps(config)
 
@@ -259,7 +259,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "device_class": "pressure",
                   "state_class": "measurement",
                   "value_template": '{{value}}',
-                  "unique_id": self.unique_device_id + "_sp", "device": self.device}
+                  "unique_id": self.unique_device_id + "_sp"}#, "device": self.device}
 
         config_json = json.dumps(config)
 
