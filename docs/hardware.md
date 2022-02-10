@@ -24,6 +24,21 @@ This has been used on Raspberry Pi OS Lite
 ### Enable CanBus support in Kernel
 
 * Add waveshare doc and steps here
+* <https://www.waveshare.com/w/upload/2/29/RS485-CAN-HAT-user-manuakl-en.pdf>
+
+Need to update /boot/config.txt to enable rs485 can hat
+
+If you are using HomeAssistantOS you will need to remove the SD card and find the file on the boot partition.  
+
+_still need to see if this survives an update_
+
+``` ini
+[all]
+#dtoverlay=vc4-fkms-v3d
+
+dtparam=spi=on
+dtoverlay=mcp2515-can0,oscillator=12000000,interrupt=25,spimaxfrequency=2000000
+```
 
 ### Bring up the can network
 

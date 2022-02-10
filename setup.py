@@ -40,5 +40,10 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers"
     ],
+    install_requires=[
+        'python-can',
+        'ruyaml',
+        'paho-mqtt'
+    ],
     python_requires='>=3.8'
 )
