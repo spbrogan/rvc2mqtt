@@ -24,7 +24,6 @@ limitations under the License.
 """
 
 import argparse
-from email.policy import default
 import logging
 import logging.config
 import queue
