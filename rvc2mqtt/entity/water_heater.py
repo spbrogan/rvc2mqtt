@@ -412,7 +412,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
 
 
         # Water Temperature sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " water temperature", "state_topic": self.status_water_temp_topic,
+        config = {"name": self.name + " Water Temperature", "state_topic": self.status_water_temp_topic,
                   "qos": 1, "retain": False,
                    "unit_of_meas": '°C',
                   "device_class": "temperature",
@@ -434,7 +434,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
 
 
         # thermostate status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " thermostat status", "state_topic": self.status_thermostat_topic,
+        config = {"name": self.name + " Thermostat Status", "state_topic": self.status_thermostat_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_thermostat",
@@ -453,7 +453,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
 
 
         # Gas Burner Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " gas burner" , "state_topic": self.status_gas_burner_topic,
+        config = {"name": self.name + " Gas Burner" , "state_topic": self.status_gas_burner_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
@@ -472,7 +472,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_gas_burner_topic, self.burner_status, retain=True)
 
         # AC Element Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " ac element" , "state_topic": self.status_ac_element_topic,
+        config = {"name": self.name + " AC Element" , "state_topic": self.status_ac_element_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
@@ -491,7 +491,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_ac_element_topic, self.ac_element_status, retain=True)
 
         # High temp limit switch Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " high temp limit" , "state_topic": self.status_high_temp_topic,
+        config = {"name": self.name + " High-Temp Limit" , "state_topic": self.status_high_temp_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
@@ -510,7 +510,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_high_temp_topic, self.high_temp_switch_status, retain=True)
 
         # Failure to ignite Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + "gas failure" , "state_topic": self.status_failure_gas_topic,
+        config = {"name": self.name + " Gas Igniter Failure" , "state_topic": self.status_failure_gas_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
@@ -529,7 +529,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_failure_gas_topic, self.failure_to_ignite, retain=True)
 
         # Failure AC Power Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + "AC Power failure" , "state_topic": self.status_failure_ac_topic,
+        config = {"name": self.name + " AC Power Failure" , "state_topic": self.status_failure_ac_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
@@ -548,7 +548,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_failure_ac_topic, self.failure_ac_power, retain=True)
 
         # Failure DC Power Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + "DC Power failure" , "state_topic": self.status_failure_dc_topic,
+        config = {"name": self.name + " DC Power Failure" , "state_topic": self.status_failure_dc_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
@@ -567,7 +567,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_failure_dc_topic, self.failure_dc_power, retain=True)
 
         # Failure DC Power warning Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + "DC Low Power failure" , "state_topic": self.status_failure_low_dc_topic,
+        config = {"name": self.name + " DC Low Power Warning" , "state_topic": self.status_failure_low_dc_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
