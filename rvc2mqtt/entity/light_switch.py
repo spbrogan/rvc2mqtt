@@ -1,5 +1,5 @@
 """
-A light
+A light switch
 
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
@@ -27,11 +27,21 @@ from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
 
-class LightBaseClass(EntityPluginBaseClass):
+class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
+    FACTORY_MATCH_ATTRIBUTES = {"name": "DC_LOAD_STATUS", "type": "light_switch"}
+    """
+    Light switch that is tied to RVC DGN of DC_LOAD_STATUS and DC_LOAD_COMMAND
+    Supports ON/OFF 
+
+    TODO: can it support brightness
+
+
+    """
     LIGHT_ON = "on"
     LIGHT_OFF = "off"
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
+        self.id = "light-1FFBD-i" + str(data["instance"])
         super().__init__(data, mqtt_support)
         self.Logger = logging.getLogger(__class__.__name__)
 
@@ -40,47 +50,17 @@ class LightBaseClass(EntityPluginBaseClass):
             self.id, None, False)
         self.mqtt_support.register(self.command_topic, self.process_mqtt_msg)
 
-    def process_rvc_msg(self, new_message: dict) -> bool:
-        """ Process an incoming message and determine if it
-        is of interest to this object.
-
-        If relevant - Process the message and return True
-        else - return False
-        """
-        raise NotImplementedError()
-
-    def process_mqtt_msg(self, topic, payload):
-        self.Logger.error(f"Incomplete handler MQTT Message {topic} {payload}")
-
-
-class Light_FromDGN_1FFBD(LightBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"dgn": "1FFBD", "type": "light"}
-    """
-    Subclass of light that is tied to RVC DGN of DC_LOAD_STATUS and DC_LOAD_COMMAND
-    Supports ON/OFF 
-
-    TODO: can it support brightness
-
-
-    """
-
-    def __init__(self, data: dict, mqtt_support: MQTT_Support):
-        self.id = "light-1FFBD-i" + str(data["instance"])
-
-        super().__init__(data, mqtt_support)
-        self.Logger = logging.getLogger(__class__.__name__)
-
         # RVC message must match the following to be this device
-        self.rvc_match_status = {
-            "dgn": "1FFBD", "instance": data['instance']}
-        self.rvc_match_command= { "dgn": "1FFBC", "instance": data['instance']}
+        self.rvc_match_status = { "name": "DC_LOAD_STATUS", "instance": data['instance']}
+        self.rvc_match_command= { "name": "DC_LOAD_COMMAND", "instance": data['instance']}
 
-        self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
-        # ignore for now self.rvc_match_command = {"dgn": "1FFBC", "instance": data['instance'], "group": data['group'] }
+        self.Logger.debug(f"Must match: {str(self.rvc_match_status)} or {str(self.rvc_match_command)}")
 
         # save these for later to send rvc msg
         self.rvc_instance = data['instance']
-        self.rvc_group = data['group']
+        self.rvc_group = '00000000'
+        if 'group' in data:
+            self.rvc_group = data['group']
         self.name = data['instance_name']
         self.state = "unknown"
 
@@ -89,8 +69,7 @@ class Light_FromDGN_1FFBD(LightBaseClass):
                        "identifiers": self.unique_device_id,
                        "name": self.name,
                        "model": "RV-C Light from DC_LOAD_STATUS"
-                       }
-
+                       }     
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -103,9 +82,9 @@ class Light_FromDGN_1FFBD(LightBaseClass):
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug(f"Msg Match Status: {str(new_message)}")
             if new_message["operating_status"] == 100.0:
-                self.state = LightBaseClass.LIGHT_ON
+                self.state = LightSwitch_DC_LOAD_STATUS.LIGHT_ON
             elif new_message["operating_status"] == 0.0:
-                self.state = LightBaseClass.LIGHT_OFF
+                self.state = LightSwitch_DC_LOAD_STATUS.LIGHT_OFF
             else:
                 self.state = "UNEXPECTED(" + \
                     str(new_message["operating_status"]) + ")"
@@ -128,11 +107,11 @@ class Light_FromDGN_1FFBD(LightBaseClass):
             f"MQTT Msg Received on topic {topic} with payload {payload}")
 
         if topic == self.command_topic:
-            if payload.lower() == LightBaseClass.LIGHT_OFF:
-                if self.state != LightBaseClass.LIGHT_OFF:
+            if payload.lower() == LightSwitch_DC_LOAD_STATUS.LIGHT_OFF:
+                if self.state != LightSwitch_DC_LOAD_STATUS.LIGHT_OFF:
                     self._rvc_light_off()
-            elif payload.lower() == LightBaseClass.LIGHT_ON:
-                if self.state != LightBaseClass.LIGHT_ON:
+            elif payload.lower() == LightSwitch_DC_LOAD_STATUS.LIGHT_ON:
+                if self.state != LightSwitch_DC_LOAD_STATUS.LIGHT_ON:
                     self._rvc_light_on()
             else:
                 self.Logger.warning(
@@ -168,15 +147,15 @@ class Light_FromDGN_1FFBD(LightBaseClass):
                   "state_topic": self.status_topic,
                   "command_topic": self.command_topic,
                   "qos": 1, "retain": False,
-                  "payload_on": LightBaseClass.LIGHT_ON,
-                  "payload_off": LightBaseClass.LIGHT_OFF,
+                  "payload_on": LightSwitch_DC_LOAD_STATUS.LIGHT_ON,
+                  "payload_off": LightSwitch_DC_LOAD_STATUS.LIGHT_OFF,
                   "unique_id": self.unique_device_id,
                   "device": self.device}
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "switch")
+            self.unique_device_id, "switch")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(

@@ -4,8 +4,7 @@ There are three different files used for configuration.  These are in yaml forma
 
 ## Floor plan 1 or 2
 
-These two files are both optional but without some floor plan nodes this software doesn't do anything.  These files contain a `floorplan` node and then have subnodes with 
-the different devices in your RV.  A device should only be defined in one floor plan file. The main reason to allow for 
+These two files are both optional but without some floor plan nodes this software doesn't do anything.  These files contain a `floorplan` node and then have subnodes with the different devices in your RV.  A device should only be defined in one floor plan file. The main reason to allow for 
 two input files is to easily support a "HA addon" where a main file might exist and then user entered 
 text from the WebUI might be written to floor plan 2.   
 
@@ -14,22 +13,69 @@ text from the WebUI might be written to floor plan 2.
 ``` yaml
 
 floorplan:
-  - dgn: 1FFBD
+  - name: DC_LOAD_STATUS
     instance: 1
-    group: "00000000"
-    type: light
-    instance_name: bedroom_light
+    type: light_switch
+    instance_name: bedroom light
 
-  - dgn: 1FFBD
+  - name: DC_LOAD_STATUS
     instance: 2
-    group: "00000000"
-    type: light
-    instance_name: main_light
+    type: light_switch
+    instance_name: living room light
 
-  - dgn: 1FFB7
+  - name: DC_LOAD_STATUS
+    instance: 8
+    type: light_switch
+    instance_name: awning light
+
+  - name: THERMOSTAT_AMBIENT_STATUS
+    instance: 2
+    type: temperature
+    instance_name: bedroom temperature
+
+  - name: TANK_STATUS
+    instance: 0
+    type: tank_level
+    instance_name: fresh water tank
+
+  - name: TANK_STATUS
+    instance: 1
+    type: tank_level
+    instance_name: black waste tank
+
+  - name: TANK_STATUS
+    instance: 2
+    type: tank_level
+    instance_name: rear gray waste tank
+
+  - name: TANK_STATUS
     instance: 18
     type: tank_level
-    instance_name: galley_gray_waste_tank
+    instance_name: galley gray waste tank
+
+  - name: TANK_STATUS
+    instance: 20
+    type: tank_level
+    instance_name: what tank is this 20
+
+  - name: TANK_STATUS
+    instance: 21
+    type: tank_level
+    instance_name: what tank is this 21
+
+  - name: WATER_PUMP_STATUS
+    type: water_pump
+    instance_name: fresh water pump
+
+  - name: WATERHEATER_STATUS
+    type: waterheater
+    instance: 1
+    instance_name: main waterheater
+
+  - name: DC_LOAD_STATUS
+    type: tank_warmer
+    instance: 34
+    instance_name: waste tank heater
 
   - name: DC_LOAD_STATUS
     type: tank_warmer

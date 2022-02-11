@@ -212,7 +212,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "switch", "power")
+            self.unique_device_id, "switch", "power")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -232,7 +232,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "running")
+            self.unique_device_id, "binary_sensor", "running")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -252,7 +252,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "external_water")
+            self.unique_device_id, "binary_sensor", "external_water")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -274,7 +274,7 @@ class WaterPumpClass(EntityPluginBaseClass):
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "sensor", "system_pressure")
+            self.unique_device_id, "sensor", "system_pressure")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(

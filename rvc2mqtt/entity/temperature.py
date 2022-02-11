@@ -25,10 +25,10 @@ from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
 
-class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"type": "temperature", "dgn": "1FF9C"}
+class TemperatureSensor_THERMOSTAT_AMBIENT_STATUS(EntityPluginBaseClass):
+    FACTORY_MATCH_ATTRIBUTES = {"type": "temperature", "name": "THERMOSTAT_AMBIENT_STATUS"}
 
-    """ Provide basic temperature values using DGN THERMOSTAT_AMBIENT_STATUS
+    """ Provide basic temperature values using THERMOSTAT_AMBIENT_STATUS 
 
     """
 
@@ -38,7 +38,7 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         self.Logger = logging.getLogger(__class__.__name__)
 
         # RVC message must match the following to be this device
-        self.rvc_match_status = {"dgn": "1FF9C", "instance": data['instance']}
+        self.rvc_match_status = {"name": "THERMOSTAT_AMBIENT_STATUS", "instance": data['instance']}
         self.reported_temp = 100  # should never get this hot in C
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
 
@@ -91,7 +91,7 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "sensor")
+            self.unique_device_id, "sensor")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(

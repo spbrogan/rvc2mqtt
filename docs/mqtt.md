@@ -26,21 +26,21 @@ is located at here:
 `rvc2mqtt/<client-id>`  
 
 More specifically:
-`rvc2mqtt/<client-id>`       - this reports the connected state of our bridge to the mqtt broker (`online` or `offline`)
+`rvc2mqtt/<client-id>/state`       - this reports the connected state of our bridge to the mqtt broker (`online` or `offline`)
 `rvc2mqtt/<client-id>/info`  - contains json defined metadata about this bridge and the rvc2mqtt software
 
 Devices managed by rvc2mqtt are listed by their unique device id
 `rvc2mqtt/<client-id>/d/<device-id>`
 
-### Light
+### Light Switch
 
-The Light object is used to describe a light.
+The Light Switch object is used to describe an switch.
 A light can have on / off
 
 | Topic             | rvc2mqtt operation | Description                     |
 |---                | :---:              | ---                             |
-|`<device-id>`      | publish            | status of light (`on` or `off`) |
-|`<device-id>cmd`   | subscribe          | command the light with payload `on` or `off` |
+|`<device-id>/state`| publish            | status of light (`on` or `off`) |
+|`<device-id>/cmd`  | subscribe          | command the light with payload `on` or `off` |
 
 
 
@@ -53,7 +53,7 @@ It only updates the mqtt topic when the temperature changes.
 
 | Topic                         | rvc2mqtt operation | Description                     |
 |---                            | :---:              | ---                             |
-|`<device-id>`      | publish            | temperature in C |
+|`<device-id>/state`            | publish            | temperature in C |
 
 
 ### HVAC
@@ -68,11 +68,12 @@ Home assistant has created mqtt auto-discovery.  This describes how rvc2mqtt int
 with mqtt auto-discovery.
 
 
-follows path like: `<discovery_prefix>/<component>/<unique_object_id>/config`
+follows path like: `<discovery_prefix>/<component>/<unique_device_id>/<entity_id>/config`
 
 `homeassistant` is the discovery prefix  
 `component` is one of the home assistant component types  
-`unique_object_id` is the sensors unique id.  This will be a concatination that includes the rvc2mqtt_client-id_object
+`unique_device_id` is the sensors unique id.  This will be a concatination that includes the rvc2mqtt_client-id_object  
+`entity_id` is the entity id within the device
 
 config payload is json that matches HA config (at least all required)
 

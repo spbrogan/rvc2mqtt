@@ -181,7 +181,7 @@ class TankWarmer_DC_LOAD_STATUS(EntityPluginBaseClass):
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "switch")
+            self.unique_device_id, "switch")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
