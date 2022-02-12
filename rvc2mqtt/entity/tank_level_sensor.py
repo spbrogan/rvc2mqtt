@@ -25,8 +25,8 @@ import struct
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
-class TankLevelSensor_FromDGN_1FFB7(EntityPluginBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"type": "tank_level", "dgn": "1FFB7"}
+class TankLevelSensor_TANK_STATUS(EntityPluginBaseClass):
+    FACTORY_MATCH_ATTRIBUTES = {"type": "tank_level", "name": "TANK_STATUS"}
 
     """ Provide basic tank level values using DGN TANK_STATUS
 
@@ -38,15 +38,24 @@ class TankLevelSensor_FromDGN_1FFB7(EntityPluginBaseClass):
         self.Logger = logging.getLogger(__class__.__name__)
 
         # RVC message must match the following to be this device
-        self.rvc_match_status = {"dgn": "1FFB7", "instance": data['instance']}
-        self.level = 100  # should never get this hot in C
+        self.rvc_match_status = {"name": "TANK_STATUS", "instance": data['instance']}
+        self.level = 100
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
 
         self.name = data['instance_name']
         self.instance = data['instance']
         self.instance_name = self._get_instance_name(self.instance)
 
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Tank from TANK_STATUS"
+                       }
+
         self.waiting_for_first_msg = True
+
+
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -69,8 +78,10 @@ class TankLevelSensor_FromDGN_1FFB7(EntityPluginBaseClass):
                 # mark first msg sent
                 self.waiting_for_first_msg = False
 
-            if new_message["relative_level"] != self.level:
-                self.level = new_message["relative_level"] / self.resolution
+            
+            new_level = new_message["relative_level"] / self.resolution
+            if new_level != self.level:
+                self.level = new_level
                 self.mqtt_support.client.publish(
                     self.status_topic, self.level, retain=True)
             return True
@@ -95,16 +106,20 @@ class TankLevelSensor_FromDGN_1FFB7(EntityPluginBaseClass):
     def _send_ha_mqtt_discovery_info(self):
 
         # produce the HA MQTT discovery config json
-        config = {"name": self.name, "state_topic": self.status_topic,
+        config = {"name": self.name,
+                  "state_topic": self.status_topic,
                   "qos": 1, "retain": False,
                   "unit_of_meas": 'percentage',
                   "state_class": "measurement",
-                  "value_template": '{{value}}'}
+                  "value_template": '{{value}}',
+                  "unique_id": self.unique_device_id,
+                  "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "sensor")
+            self.unique_device_id, "sensor")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(

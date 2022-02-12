@@ -1,21 +1,41 @@
 # docker
 
 Plan is to deploy using docker. 
-For now you must build your own.
 
-## build it
+Builds are available for released version and `main` branch.
+<https://github.com/spbrogan/rvc2mqtt/pkgs/container/rvc2mqtt>
 
-```bash
-docker build -t rvc2mqtt .
-```
+Image: `ghcr.io/spbrogan/rvc2mqtt:main`
 
-## config file
+## Settings and configuration
 
-The image expects a config file located at /config/config.yaml
-You should bind a host directory to this with your config.yaml.
-It also works well for your log files
+The image uses environment variables for all configuration and file paths.
 
-See configuration.md for a sample config.yaml
+`CAN_INTERFACE_NAME` : the network can interface name.  default value: `can0`
+
+`FLOORPLAN_FILE_1` : path to the floor plan file.  Recommendation is mount a volume from the host with your floor plan
+
+`FLOORPLAN_FILE_2` : path to the 2nd floor plan file.  This is optional but for HA addons this allows UI generated content to be added.
+
+`LOG_CONFIG_FILE` : path to a logging configuration file.  Optional yaml file for more complex logging options.
+
+`MQTT_HOST` : host url for mqtt server
+
+`MQTT_PORT` : host port for mqtt server
+
+`MQTT_USERNAME` : username to connect with
+
+`MQTT_PASSWORD` : password to connect with
+
+`MQTT_CLIENT_ID` : mqtt client id and the bridge node name in mqtt path.  default is `bridge`
+
+Optional values if using TLS (not implemented yet!)
+
+`MQTT_CA` : CA cert for Mqtt server  
+`MQTT_CERT` : Cert for client  
+`MQTT_KEY` : key for mqtt
+
+See configuration.md for a sample files are more details.
 
 ## run it
 
@@ -25,16 +45,14 @@ Might need to bring up the can0 interface on host like
 
 ```bash
 sudo ip link set can0 down
-sudo ip link set can0 up type can bitrate 250000
+sudo ip link set can0 up type can
 ```
 Then to run the docker image
 
-```bash
-docker run --network=host --restart=always -v ~/config:/config rvc2mqtt 
-```
+you will need to setup a bunch of env variables so the command is pretty length.  Sorry.  A docker compose file would probably be helpful.
 
-## run in the container yourself
+## build it locally
 
 ```bash
-docker run --network=host --restart=always -v ~/config:/config -it rvc2mqtt bash
+docker build -t rvc2mqtt .
 ```

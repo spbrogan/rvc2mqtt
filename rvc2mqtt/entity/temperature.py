@@ -25,10 +25,10 @@ from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
 
-class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"type": "temperature", "dgn": "1FF9C"}
+class TemperatureSensor_THERMOSTAT_AMBIENT_STATUS(EntityPluginBaseClass):
+    FACTORY_MATCH_ATTRIBUTES = {"type": "temperature", "name": "THERMOSTAT_AMBIENT_STATUS"}
 
-    """ Provide basic temperature values using DGN THERMOSTAT_AMBIENT_STATUS
+    """ Provide basic temperature values using THERMOSTAT_AMBIENT_STATUS 
 
     """
 
@@ -38,11 +38,17 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
         self.Logger = logging.getLogger(__class__.__name__)
 
         # RVC message must match the following to be this device
-        self.rvc_match_status = {"dgn": "1FF9C", "instance": data['instance']}
+        self.rvc_match_status = {"name": "THERMOSTAT_AMBIENT_STATUS", "instance": data['instance']}
         self.reported_temp = 100  # should never get this hot in C
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)}")
 
         self.name = data['instance_name']
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Temperature Sensor from THERMOSTAT_AMBIENT_STATUS"
+                       }
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -78,12 +84,15 @@ class Temperature_FromDGN_1FF9C(EntityPluginBaseClass):
                   "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
-                  "value_template": '{{value}}'}
+                  "value_template": '{{value}}',
+                  "unique_id": self.unique_device_id,
+                  "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "sensor")
+            self.unique_device_id, "sensor")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(

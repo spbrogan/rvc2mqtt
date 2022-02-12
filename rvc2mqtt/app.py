@@ -227,7 +227,7 @@ def main():
 
     # optional settings
     parser.add_argument("--MQTT_CLIENT_ID", "--mqtt_client_id", dest="mqtt_client_id",
-                        help="client id for mqtt", default=os.environ.get("MQTT_CLIENT_ID"))
+                        help="client id for mqtt", default=os.environ.get("MQTT_CLIENT_ID", "bridge"))
     parser.add_argument("--MQTT_CA", "--mqtt_ca", dest="mqtt_ca",
                         help="ca for mqtt", default=os.environ.get("MQTT_CA"))
     parser.add_argument("--MQTT_CERT", "--mqtt_cert", dest="mqtt_cert",

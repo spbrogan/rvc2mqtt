@@ -85,15 +85,17 @@ class MQTT_Support(object):
         if field is not None:
             s += "/" + self._prepare_topic_string_node(field) 
 
-        if not state:
+        if state:
+            s += "/state"
+        else:
             s += "/set"
         return s
 
     def make_ha_auto_discovery_config_topic(self, id: str, ha_component: str, sub_type: str = None) -> str:
         """ make a config topic string for a Home Assistant auto discovery config"""
-        topic = MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + self.client_id + "/" + id
+        topic = MQTT_Support.HA_AUTO_BASE + "/" + ha_component + "/" + self._prepare_topic_string_node(id)
         if sub_type is not None:
-            topic += "-" + sub_type
+            topic += "/" + self._prepare_topic_string_node(sub_type)
         return topic + "/config"
 
 
@@ -105,6 +107,12 @@ class MQTT_Support(object):
 
         """
         return input.translate(input.maketrans(" /", "__", "()")).lower()
+
+    def get_bridge_ha_name(self) -> str:
+        """ return a string that is used to identify the bridge HA as a device."""
+        return self._prepare_topic_string_node(self.root_topic)
+
+
 
     def shutdown(self):
         """ shutdown.  Tell server we are going offline"""
@@ -123,24 +131,22 @@ def on_mqtt_subscribe(client, userdata, mid, granted_qos):
 def on_mqtt_message(client, userdata, msg):
     gMQTTObj.on_message(client, userdata, msg)
 
-def MqttInitalize(host, port, user, password, client_id):
+def MqttInitalize(host:str, port:str, user:str, password:str, client_id:str):
     """ main function to parse config and initialize the 
     mqtt client.
     """
     global gMQTTObj
-    client_id = "bridge"
-    if client_id is not None:
-        client_id = client_id
     gMQTTObj = MQTT_Support(client_id)
 
     port = int(port)
     
-    mqttc = mqc.Client()
+    mqttc = mqc.Client(client_id=client_id)
     gMQTTObj.set_client(mqttc)
     mqttc.on_connect = on_mqtt_connect
     mqttc.on_subscribe = on_mqtt_subscribe
     mqttc.on_message = on_mqtt_message
     mqttc.username_pw_set(user, password)
+    
 
     try:
         logging.getLogger(__name__).info(f"Connecting to MQTT broker {host}:{port}")

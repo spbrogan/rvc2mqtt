@@ -42,12 +42,14 @@ from rvc2mqtt.entity import EntityPluginBaseClass
   'regulator_pressure_setting': 0, 'operating_current': 0}
 '''
 
+
 class WaterPumpClass(EntityPluginBaseClass):
     '''
     Water pump switch, status, and pressure sensors based
     on the Water Pump Status / Command RV-C DGN
     '''
-    FACTORY_MATCH_ATTRIBUTES = {"name": "WATER_PUMP_STATUS", "type": "water_pump"}
+    FACTORY_MATCH_ATTRIBUTES = {
+        "name": "WATER_PUMP_STATUS", "type": "water_pump"}
     ON = "on"
     OFF = "off"
     OUTSIDE_WATER_CONNECTED = "connected"
@@ -63,21 +65,34 @@ class WaterPumpClass(EntityPluginBaseClass):
         self.rvc_match_status = {"name": "WATER_PUMP_STATUS"}
         self.rvc_match_command = {"name": "WATER_PUMP_COMMAND"}
 
-        self.Logger.debug(f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)}")
-        
+        self.Logger.debug(
+            f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)}")
+
         # fields for a water pump object
         self.name = data["instance_name"]
         self.power_state = "unknown"  # R/W mqtt and RVC
-        self.running_state = "unknown" # RO mqtt and RVC
-        self.external_water_hookup = "unknown" # RO mqtt and RVC
-        self.system_pressure = 0.0 # RO mqtt and RVC (this is configurable but ignore for now as i don't think my trailer supports it)
+        self.running_state = "unknown"  # RO mqtt and RVC
+        self.external_water_hookup = "unknown"  # RO mqtt and RVC
+        # RO mqtt and RVC (this is configurable but ignore for now as i don't think my trailer supports it)
+        self.system_pressure = 0.0
 
-         # Allow MQTT to control power
-        self.command_topic = mqtt_support.make_device_topic_string(self.id, None, False)
-        self.running_status_topic = mqtt_support.make_device_topic_string(self.id, "running", True)
-        self.external_water_status_topic = mqtt_support.make_device_topic_string(self.id, "external_water", True)
-        self.system_pressure_status_topic = mqtt_support.make_device_topic_string(self.id, "system_pressure", True)
+        # Allow MQTT to control power
+        self.command_topic = mqtt_support.make_device_topic_string(
+            self.id, None, False)
+        self.running_status_topic = mqtt_support.make_device_topic_string(
+            self.id, "running", True)
+        self.external_water_status_topic = mqtt_support.make_device_topic_string(
+            self.id, "external_water", True)
+        self.system_pressure_status_topic = mqtt_support.make_device_topic_string(
+            self.id, "system_pressure", True)
         self.mqtt_support.register(self.command_topic, self.process_mqtt_msg)
+
+        self.device = {"manufacturer": "RV-C",
+                       "via_device": self.mqtt_support.get_bridge_ha_name(),
+                       "identifiers": self.unique_device_id,
+                       "name": self.name,
+                       "model": "RV-C Waterpump from WATER_PUMP_STATUS"
+                       }
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -101,7 +116,8 @@ class WaterPumpClass(EntityPluginBaseClass):
                 self.Logger.error(
                     f"Unexpected RVC value {str(new_message['operating_status'])}")
 
-            self.mqtt_support.client.publish(self.status_topic, self.power_state, retain=True)
+            self.mqtt_support.client.publish(
+                self.status_topic, self.power_state, retain=True)
 
             # Running State
             if new_message["pump_status"] == "01":
@@ -114,7 +130,8 @@ class WaterPumpClass(EntityPluginBaseClass):
                 self.Logger.error(
                     f"Unexpected RVC value {str(new_message['pump_status'])}")
 
-            self.mqtt_support.client.publish(self.running_status_topic, self.running_state, retain=True)
+            self.mqtt_support.client.publish(
+                self.running_status_topic, self.running_state, retain=True)
 
             # External Water Hookup State
             if new_message["water_hookup_detected"] == "01":
@@ -127,11 +144,13 @@ class WaterPumpClass(EntityPluginBaseClass):
                 self.Logger.error(
                     f"Unexpected RVC value {str(new_message['water_hookup_detected'])}")
 
-            self.mqtt_support.client.publish(self.external_water_status_topic, self.external_water_hookup, retain=True)
+            self.mqtt_support.client.publish(
+                self.external_water_status_topic, self.external_water_hookup, retain=True)
 
             # System Pressure
             self.system_pressure = new_message['current_system_pressure']
-            self.mqtt_support.client.publish(self.system_pressure_status_topic, self.system_pressure, retain=True)
+            self.mqtt_support.client.publish(
+                self.system_pressure_status_topic, self.system_pressure, retain=True)
 
             return True
 
@@ -144,8 +163,9 @@ class WaterPumpClass(EntityPluginBaseClass):
 
     def process_mqtt_msg(self, topic, payload):
         """ mqtt message to turn on or off the power switch for the pump"""
-        
-        self.Logger.debug(f"MQTT Msg Received on topic {topic} with payload {payload}")
+
+        self.Logger.debug(
+            f"MQTT Msg Received on topic {topic} with payload {payload}")
 
         if topic == self.command_topic:
             if payload.lower() == WaterPumpClass.OFF:
@@ -181,14 +201,19 @@ class WaterPumpClass(EntityPluginBaseClass):
         """
 
         # power state switch - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " power", "state_topic": self.status_topic,
+        config = {"name": self.name + " power",
+                  "state_topic": self.status_topic,
                   "command_topic": self.command_topic, "qos": 1, "retain": False,
-                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF}
+                  "payload_on": WaterPumpClass.ON,
+                  "payload_off": WaterPumpClass.OFF,
+                  "unique_id": self.unique_device_id + "_power",
+                  "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "switch", "power")
+            self.unique_device_id, "switch", "power")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -197,14 +222,19 @@ class WaterPumpClass(EntityPluginBaseClass):
             self.status_topic, self.power_state, retain=True)
 
         # running state binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " running status", "state_topic": self.running_status_topic,
+        config = {"name": self.name + " running status",
+                  "state_topic": self.running_status_topic,
                   "qos": 1, "retain": False,
-                  "payload_on": WaterPumpClass.ON, "payload_off": WaterPumpClass.OFF}
+                  "payload_on": WaterPumpClass.ON,
+                  "payload_off": WaterPumpClass.OFF,
+                  "unique_id": self.unique_device_id + "_running",
+                  "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "rs")
+            self.unique_device_id, "binary_sensor", "running")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -213,15 +243,19 @@ class WaterPumpClass(EntityPluginBaseClass):
             self.running_status_topic, self.running_state, retain=True)
 
         # External Water Connected binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " external water" , "state_topic": self.external_water_status_topic,
+        config = {"name": self.name + " external water",
+                  "state_topic": self.external_water_status_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterPumpClass.OUTSIDE_WATER_CONNECTED,
-                  "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED}
+                  "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED,
+                  "unique_id": self.unique_device_id + "_external_water",
+                  "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "binary_sensor", "ew")
+            self.unique_device_id, "binary_sensor", "external_water")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
@@ -230,17 +264,21 @@ class WaterPumpClass(EntityPluginBaseClass):
             self.external_water_status_topic, self.external_water_hookup, retain=True)
 
         # System Pressure sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " system pressure", "state_topic": self.system_pressure_status_topic,
+        config = {"name": self.name + " system pressure", 
+                  "state_topic": self.system_pressure_status_topic,
                   "qos": 1, "retain": False,
-                   "unit_of_meas": 'Pa',
+                  "unit_of_meas": 'Pa',
                   "device_class": "pressure",
                   "state_class": "measurement",
-                  "value_template": '{{value}}'}
+                  "value_template": '{{value}}',
+                  "unique_id": self.unique_device_id + "_system_pressure",
+                  "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.id, "sensor", "sp")
+            self.unique_device_id, "sensor", "system_pressure")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(

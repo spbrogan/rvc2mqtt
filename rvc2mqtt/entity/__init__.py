@@ -40,6 +40,7 @@ class EntityPluginBaseClass(object):
 
         # Make the required one status/state topic
         self.status_topic: str = mqtt_support.make_device_topic_string(self.id, None, True)
+        self.unique_device_id = mqtt_support.TOPIC_BASE + "_" + mqtt_support.client_id + "_" + self.id 
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming rvc message and determine if it
@@ -86,4 +87,8 @@ class EntityPluginBaseClass(object):
         """ Provide queue for sending RVC messages.  Queue requires 
         items be formatted as python-can messages"""
         self.send_queue: queue = send_queue
+
+    def get_availability_discovery_info_for_ha(self) -> dict:
+        """ return the availability fields in dict format"""
+        return { "availability_topic": self.mqtt_support.bridge_state_topic }
 

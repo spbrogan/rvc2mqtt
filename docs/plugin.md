@@ -2,7 +2,7 @@
 
 All entities or devices in the system are handled by a plugin. 
 Some plugins will be generally maintained while others can be customized and supplied
-in the configuration file independent of the rvc2mqtt code.  
+in the plugin directory independent of the rvc2mqtt code.  
 
 At the moment it is unclear how consistent and specification compliant RV-C devices are
 and this allows greater flexibility while still hopefully creating an easy system. 
@@ -34,7 +34,7 @@ Don't use relative imports.  Due to how it is loaded this doesn't work right.
 
 `self.mqtt_support: MQTT_Support` - mqtt_support object used for pub/sub operations
 
-`self.send_queue: queue` - queue used to transmit any RVC can bus messages.  Msg must a dictionary and must supply at least the `dgn` string and 8 byte `data` array.   
+`self.send_queue: queue` - queue used to transmit any RVC can bus messages.  Msg must be a dictionary and must supply at least the `dgn` string and 8 byte `data` array.   
 
 ## Functions
 
