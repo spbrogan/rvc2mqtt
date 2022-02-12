@@ -3576,6 +3576,11 @@ API_VERSION: 0
       bit: 0-3
       name: operating status
       type: bit4
+      values:
+        '0000': off fault
+        '0001': off manual override running
+        '0100': off normal
+        '0101': on normal
     - byte: 0
       bit: 4-5
       name: yellow lamp status
@@ -3597,6 +3602,39 @@ API_VERSION: 0
       bit: 0-4
       name: fmi
       type: uint5
+      values:
+        0: Datum value above normal range
+        1: Datum value below normal range
+        2: Datum value erratic or invalid
+        3: short circuit to high voltage
+        4: short circuit to low voltage
+        5: open circuit or output current lower
+        6: grounded circuit or output current high
+        7: mechanical device not responding
+        8: datum value showing error of freq, pulse width, or period
+        9: datum not updating at proper rate
+        10: datum value fluctuating at abnormal rate
+        11: failure not identifiable
+        12: bad intelligent RV-C node
+        13: calibration required
+        14: none of the above
+        15: datum valid but above normal mild
+        16: datum valid but above normal moderate
+        17: datum valid but below normal mild
+        18: datum valid but below normal moderate
+        19: received invalid network datum
+        20: network device not responding
+        21: networked device not responding
+        22: reverse polarity
+        23: reserved
+        24: reserved
+        25: reserved
+        26: reserved
+        27: reserved
+        28: reserved
+        29: reserved
+        30: reserved
+        31: failure mode not available
     - byte: 4
       bit: 5-7
       name: spn-lsb
