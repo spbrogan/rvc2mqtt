@@ -30,6 +30,8 @@ from rvc2mqtt.entity import EntityPluginBaseClass
 
 class Diagnostic(EntityPluginBaseClass):
     FACTORY_MATCH_ATTRIBUTES = {"type": "diagnostic", "name": "DM_RV"}
+    ON = "True"
+    OFF = "False"
 
     """ Provide basic diagnostic information from DM_RV
 
@@ -220,6 +222,8 @@ class Diagnostic(EntityPluginBaseClass):
         config = {"name": self.name + " fault state",
                   "state_topic": self.fault_status_topic,
                   "qos": 1, "retain": False,
+                  "payload_on": Diagnostic.ON,
+                  "payload_off": Diagnostic.OFF,
                   "unique_id": self.unique_device_id + "_fault_state",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
@@ -250,6 +254,8 @@ class Diagnostic(EntityPluginBaseClass):
         config = {"name": self.name + " warning state",
                   "state_topic": self.warning_status_topic,
                   "qos": 1, "retain": False,
+                  "payload_on": Diagnostic.ON,
+                  "payload_off": Diagnostic.OFF,
                   "unique_id": self.unique_device_id + "_warning_state",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
