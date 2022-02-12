@@ -152,6 +152,8 @@ class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
                   "unique_id": self.unique_device_id,
                   "device": self.device}
 
+        config.update(self.get_availability_discovery_info_for_ha())
+
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(

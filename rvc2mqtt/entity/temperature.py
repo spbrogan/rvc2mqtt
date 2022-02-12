@@ -87,6 +87,7 @@ class TemperatureSensor_THERMOSTAT_AMBIENT_STATUS(EntityPluginBaseClass):
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id,
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 

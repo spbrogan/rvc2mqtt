@@ -88,3 +88,7 @@ class EntityPluginBaseClass(object):
         items be formatted as python-can messages"""
         self.send_queue: queue = send_queue
 
+    def get_availability_discovery_info_for_ha(self) -> dict:
+        """ return the availability fields in dict format"""
+        return { "availability_topic": self.mqtt_support.bridge_state_topic }
+

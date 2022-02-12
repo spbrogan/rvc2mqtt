@@ -208,6 +208,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "payload_off": WaterPumpClass.OFF,
                   "unique_id": self.unique_device_id + "_power",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -228,6 +229,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "payload_off": WaterPumpClass.OFF,
                   "unique_id": self.unique_device_id + "_running",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -248,6 +250,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED,
                   "unique_id": self.unique_device_id + "_external_water",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -270,6 +273,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_system_pressure",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 

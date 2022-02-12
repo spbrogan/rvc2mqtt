@@ -359,6 +359,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_gas_mode",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -377,6 +378,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_electric_mode",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -398,6 +400,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_set_point_temperature",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -420,6 +423,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_water_temperature",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -439,6 +443,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_thermostat",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -459,6 +464,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_gas_burner_status",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -478,6 +484,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_ac_element_status",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -497,6 +504,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_high_temp_limit_switch_status",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -516,6 +524,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_failure_to_ignite_status",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -535,6 +544,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_failure_ac_power_status",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -554,6 +564,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_failure_dc_power_status",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
@@ -573,6 +584,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_failure_dc_power_warning_status",
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 

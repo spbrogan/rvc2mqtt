@@ -177,6 +177,7 @@ class TankWarmer_DC_LOAD_STATUS(EntityPluginBaseClass):
                   "payload_off": TankWarmer_DC_LOAD_STATUS.OFF,
                   "unique_id": self.unique_device_id,
                   "device": self.device}
+        config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
 
