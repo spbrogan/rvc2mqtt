@@ -102,6 +102,7 @@ class Diagnostic(EntityPluginBaseClass):
         self._fault = False
         self._warning = False
         self._state = "unknown"
+        self._changed = True
 
     #### Try using properties so that change tracking can be easier
     #### This might be overly complex and be an over optimization

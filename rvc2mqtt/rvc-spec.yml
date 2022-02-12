@@ -3577,10 +3577,10 @@ API_VERSION: 0
       name: operating status
       type: bit4
       values:
-        '0000': off fault
-        '0001': off manual override running
-        '0100': off normal
-        '0101': on normal
+        0000: off fault
+        0001: off manual override running
+        0100: off normal
+        0101: on normal
     - byte: 0
       bit: 4-5
       name: yellow lamp status
