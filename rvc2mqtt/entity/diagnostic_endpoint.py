@@ -164,7 +164,7 @@ class Diagnostic(EntityPluginBaseClass):
                 self.warning_attributes = copy.deepcopy(new_message)
             else:
                 self.warning = False
-                self.warning_attributes = {}
+                self.warning_attributes = copy.deepcopy(new_message)
             
             if new_message["operating_status_definition"] != self.state:
                 self.state = new_message["operating_status_definition"]
