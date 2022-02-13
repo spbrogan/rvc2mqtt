@@ -19,6 +19,7 @@ limitations under the License.
 """
 import os
 import unittest
+from unittest import result
 import context  # add rvc2mqtt package to the python path using local reference
 from rvc2mqtt.rvc import RVC_Decoder
 
@@ -31,6 +32,12 @@ class Test_RVC_Decoder(unittest.TestCase):
         rvc.load_rvc_spec(rvc_spec_file_path)
 
         results = rvc.rvc_decode(int("19fff780", 16), "0100000000000000")
+        print(results)
+
+    def test_diagnostic_message(self):
+        rvc = RVC_Decoder()
+        rvc.load_rvc_spec(rvc_spec_file_path)
+        results = rvc.rvc_decode(int("19feca80", 16), '0540FFFFFFFFFFFF')
         print(results)
 
 
