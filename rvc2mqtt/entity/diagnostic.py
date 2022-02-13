@@ -44,17 +44,13 @@ class Diagnostic(EntityPluginBaseClass):
 
 
     HA mqtt discovery is:
+        sensor/<uid>/power_state/config
         binary_sensor/<uid>/warning/config
+             with attributes that include the full record
         binary_sensor/<uid>/fault/config
             with attributes that include the full record
-        sensor/<uid>/warning_message
-
-    diagnostic-s80:
-        state
-        warning
-        fault
-        warning_attributes
-        fault_attributes
+        sensor/<uid>/warning_message/config
+        sensor/<uid>fault_message/config
 
     """
 
