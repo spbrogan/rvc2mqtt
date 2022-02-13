@@ -139,8 +139,6 @@ class Diagnostic(EntityPluginBaseClass):
         if value != self._warning:
             self._warning = value
             self._changed = True
-    
-
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -154,17 +152,17 @@ class Diagnostic(EntityPluginBaseClass):
             # These events happen a lot.  Lets filter down to when fault is active
             if new_message["red_lamp_status"] != '00':
                 self.fault = True
-                self.fault_attributes = copy.deepcopy(new_message)
+                self.fault_attributes = str(new_message)
             else:
                 self.fault = False
                 self.fault_attributes = {}
 
             if new_message["yellow_lamp_status"] != '00':
                 self.warning = True
-                self.warning_attributes = copy.deepcopy(new_message)
+                self.warning_attributes = str(new_message)
             else:
                 self.warning = False
-                self.warning_attributes = copy.deepcopy(new_message)
+                self.warning_attributes = str(new_message)
             
             if new_message["operating_status_definition"] != self.state:
                 self.state = new_message["operating_status_definition"]
