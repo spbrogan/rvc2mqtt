@@ -35,32 +35,19 @@ class Diagnostic(EntityPluginBaseClass):
 
     """ Provide basic diagnostic information from DM_RV
 
-    {'arbitration_id': '0x19feca80', 'data': '0540FFFFFFFFFFFF', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'CA', 'dgn': '1FECA', 
-    'source_id': '80', 'name': 'DM_RV',
-    'operating_status': '0101',
-    'yellow_lamp_status': '00',
-    'red_lamp_status': '00',
-    'dsa': 64,
-    'spn-msb': 255,
-    'spn-isb': 255,
-    'fmi': 31,
-    'spn-lsb': 7,
-    'occurrence_count': 127,
-    'dsa_extension': 255,
-    'bank_select': 15}
-
-
     Floor plan Data needs to be:
 
     type: diagnostic
     name: DM_RV
     instance_name: <friendly name>
-    source_id: <integer source id>
+    source_id: '<source_id>'
 
 
     HA mqtt discovery is:
         binary_sensor/<uid>/warning/config
         binary_sensor/<uid>/fault/config
+            with attributes that include the full record
+        sensor/<uid>/warning_message
 
     diagnostic-s80:
         state
@@ -156,29 +143,16 @@ class Diagnostic(EntityPluginBaseClass):
         """
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug(f"Msg Match Status: {str(new_message)}")
-            # These events happen a lot.  Lets filter down to when fault is active
-            if new_message["red_lamp_status"] != '00':
-                self.fault = True
-                self.fault_msg = f"Failure Mode Identifier: {new_message['fmi']} - {new_message['fmi_definition']}" 
-                self.fault_attributes = new_message
-            else:
-                self.fault = False
-                self.fault_msg = f"Failure Mode Identifier: {new_message['fmi']} - {new_message['fmi_definition']}" 
-                self.fault_attributes = new_message
-                #self.fault_attributes = {}
 
-            if new_message["yellow_lamp_status"] != '00':
-                self.warning = True
-                self.warning_msg = f"Failure Mode Identifier: {new_message['fmi']} - {new_message['fmi_definition']}" 
-                self.warning_attributes = new_message
-            else:
-                self.warning = False
-                self.warning_msg = f"Failure Mode Identifier: {new_message['fmi']} - {new_message['fmi_definition']}" 
-                self.warning_attributes = new_message
-                #self.warning_attributes = {}
+            self.fault = new_message["red_lamp_status"] != '00'
+            self.fault_msg = f"Failure Mode Identifier: {new_message['fmi']} - {new_message['fmi_definition']}" 
+            self.fault_attributes = new_message
+
+            self.warning = new_message["yellow_lamp_status"] != '00'
+            self.warning_msg = f"Failure Mode Identifier: {new_message['fmi']} - {new_message['fmi_definition']}" 
+            self.warning_attributes = new_message
             
-            if new_message["operating_status_definition"] != self.state:
-                self.state = new_message["operating_status_definition"]
+            self.state = new_message["operating_status_definition"]
 
             self._update_mqtt_topics_with_changed_values()
             return True
@@ -229,7 +203,6 @@ class Diagnostic(EntityPluginBaseClass):
         config.update(self.get_availability_discovery_info_for_ha())
         config_json = json.dumps(config)
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(self.unique_device_id, "sensor", "power_state")
-        # publish info to mqtt
         self.mqtt_support.client.publish(ha_config_topic, config_json, retain=True)
 
         # produce the HA MQTT discovery config json for binary sensor fault
@@ -244,7 +217,6 @@ class Diagnostic(EntityPluginBaseClass):
         config.update(self.get_availability_discovery_info_for_ha())
         config_json = json.dumps(config)
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(self.unique_device_id, "binary_sensor", "fault_state")
-        # publish info to mqtt
         self.mqtt_support.client.publish(ha_config_topic, config_json, retain=True)
 
         # produce the HA MQTT discovery config json for text sensor fault msg
@@ -255,8 +227,7 @@ class Diagnostic(EntityPluginBaseClass):
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
         config_json = json.dumps(config)
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(self.unique_device_id, "sensor", "fault_state")
-        # publish info to mqtt
+        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(self.unique_device_id, "sensor", "fault_message")
         self.mqtt_support.client.publish(ha_config_topic, config_json, retain=True)
 
         # produce the HA MQTT discovery config json for binary sensor warning
@@ -271,7 +242,6 @@ class Diagnostic(EntityPluginBaseClass):
         config.update(self.get_availability_discovery_info_for_ha())
         config_json = json.dumps(config)
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(self.unique_device_id, "binary_sensor", "warning_state")
-        # publish info to mqtt
         self.mqtt_support.client.publish(ha_config_topic, config_json, retain=True)
 
         # produce the HA MQTT discovery config json for text sensor warning msg
@@ -282,6 +252,5 @@ class Diagnostic(EntityPluginBaseClass):
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
         config_json = json.dumps(config)
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(self.unique_device_id, "sensor", "warning_attributes")
-        # publish info to mqtt - what should this be?  not sensor?
+        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(self.unique_device_id, "sensor", "warning_message")
         self.mqtt_support.client.publish(ha_config_topic, config_json, retain=True)
