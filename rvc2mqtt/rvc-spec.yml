@@ -1068,6 +1068,8 @@ API_VERSION: 0
         0010: heat
         0011: auto
         0100: fan only
+        0101: aux heat
+        0110: window defrost/dehumidify
     - byte: 1
       bit: 4-5
       name: fan mode
