@@ -80,6 +80,7 @@ class TankLevelSensor_TANK_STATUS(EntityPluginBaseClass):
 
             
             new_level = (new_message["relative_level"] * 100) / self.resolution
+            new_level = round(new_level)  # round it..partial precentage isn't important here
             if new_level != self.level:
                 self.level = new_level
                 self.mqtt_support.client.publish(
