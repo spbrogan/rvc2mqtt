@@ -58,7 +58,7 @@ class app(object):
         """main function.  Sets up the app services, creates
         the receive thread, and processes messages.
 
-        Runs until kill signal is sent
+        Runs until kill/term signal is sent
         """
 
         self.Logger = logging.getLogger("app")
@@ -269,6 +269,7 @@ def main():
     global MyApp
     MyApp = app()
     signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     MyApp.main(args)
 
 
