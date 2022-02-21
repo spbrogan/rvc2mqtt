@@ -39,17 +39,14 @@ See configuration.md for a sample files are more details.
 
 ## run it
 
-Map in the host network so that the can0 bus is present.  
-TODO: figure out better way maybe using --cap-add=NET_ADMIN
-Might need to bring up the can0 interface on host like
+The interface must be enabled before running the docker container and 
+host networking must be used to get access to the host can bus.  
 
-```bash
-sudo ip link set can0 down
-sudo ip link set can0 up type can
-```
-Then to run the docker image
+See the hardware.md file for more info about Linux kernel/os config.
 
-you will need to setup a bunch of env variables so the command is pretty length.  Sorry.  A docker compose file would probably be helpful.
+Then to run the docker image.  Personally I use portainer to make the image with
+all the environment variables, volumes, and values setup.  Docker_compose would make more sense for easy sharing here. 
+
 
 ## build it locally
 
