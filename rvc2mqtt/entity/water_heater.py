@@ -328,6 +328,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                 self.Logger.error(f"Invalid payload {payload} for topic {topic}")
 
     def _rvc_change_mode(self, gas_on: bool, ac_on: bool):
+        ''' change the mode of the water heater.  This can be off/electic on/gas on/both on'''
         mode = 0
 
         if gas_on:
@@ -361,7 +362,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
 
     def _rvc_change_set_point(self, temp: float):
         self.Logger.debug(f"Set hotwater set point to {temp}")
-        # @todo
+        raise NotImplementedError()
 
     def initialize(self):
         """ Optional function 
