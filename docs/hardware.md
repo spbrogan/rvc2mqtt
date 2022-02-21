@@ -59,8 +59,6 @@ iface can0 inet manual
     down /sbin/ifconfig can0 down
 ```
 
-![image](https://user-images.githubusercontent.com/2954441/154997242-382360da-9898-47f6-8517-8f01b10d32de.png)
-
 Manually from the cli this can be done by issuing the following commands
 
 ``` bash
@@ -75,7 +73,7 @@ See [configuration.md](configuration.md)
 
 ### deploy with docker
 
-see docker_deploy.md
+see [docker_deploy.md](docker_deploy.md)
 
 
 
