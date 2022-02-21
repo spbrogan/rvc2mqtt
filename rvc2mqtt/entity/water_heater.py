@@ -83,12 +83,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
 
         # RVC message must match the following status or command
         self.rvc_match_status = {"name": "WATERHEATER_STATUS", "instance": data['instance']}
-        self.rvc_match_command = {"name": "WATERHEATER_STATUS", "instance": data['instance']}
+        self.rvc_match_command = {"name": "WATERHEATER_COMMAND", "instance": data['instance']}
+        self.rvc_match_command2 = {"name": "WATERHEATER_COMMAND2", "instance": data['instance']}
 
-        self.Logger.debug(f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)}")
+        self.Logger.debug(f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)} {str(self.rvc_match_command2)}")
         
         # fields for a water heater object
         self.name = data["instance_name"]
+        self.instance = data['instance']
         self.mode = "unknown"  # R/W mqtt and RVC (off, combustion, electric, gas/electric, auto, test gas, test electric )
         self.gas_mode = "unknown"
         self.ac_mode = "unknown"
@@ -278,6 +280,12 @@ class WaterHeaterClass(EntityPluginBaseClass):
             # as unhandled.
             self.Logger.debug(f"Msg Match Command: {str(new_message)}")
             return True
+
+        elif self._is_entry_match(self.rvc_match_command2, new_message):
+            # This is the command2.  Just eat the message so it doesn't show up
+            # as unhandled.
+            self.Logger.debug(f"Msg Match Command: {str(new_message)}")
+            return True
         return False
 
     def process_mqtt_msg(self, topic, payload):
@@ -320,6 +328,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                 self.Logger.error(f"Invalid payload {payload} for topic {topic}")
 
     def _rvc_change_mode(self, gas_on: bool, ac_on: bool):
+        ''' change the mode of the water heater.  This can be off/electic on/gas on/both on'''
         mode = 0
 
         if gas_on:
@@ -334,11 +343,26 @@ class WaterHeaterClass(EntityPluginBaseClass):
                 mode = 0
 
         self.Logger.debug(f"Set Mode to {mode}")
-        # @todo
+
+        #Waterheater_command
+        # electic
+        # 0102000000000000
+
+        # gas
+        # 0101000000000000
+
+        # gas and electric
+        # 0103000000000000
+
+        # off
+        # 0100000000000000
+        msg_bytes = bytearray(8)
+        struct.pack_into("<BBHBBBB", msg_bytes, 0, self.instance, mode, 0, 0, 0, 0, 0)
+        self.send_queue.put({"dgn": "1FFF6", "data": msg_bytes})
 
     def _rvc_change_set_point(self, temp: float):
         self.Logger.debug(f"Set hotwater set point to {temp}")
-        # @todo
+        raise NotImplementedError()
 
     def initialize(self):
         """ Optional function 
@@ -397,6 +421,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_set_point_temperature",
                   "device": self.device}
@@ -420,6 +445,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                    "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_water_temperature",
                   "device": self.device}
@@ -437,11 +463,12 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_water_temp_topic, self.water_temperature, retain=True)
 
 
-        # thermostate status binary sensor  - produce the HA MQTT discovery config json for
+        # thermostat status binary sensor  - produce the HA MQTT discovery config json for
         config = {"name": self.name + " Thermostat Status", "state_topic": self.status_thermostat_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_thermostat",
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
 
@@ -502,6 +529,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "unique_id": self.unique_device_id + "_high_temp_limit_switch_status",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())

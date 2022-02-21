@@ -3651,8 +3651,210 @@ API_VERSION: 0
       name: bank select
       type: uint4
 
+1FE99:
+  name: WATERHEATER_STATUS2
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+      comment: instance 0 is all
+    - byte: 1
+      bit: 0-3
+      name: electric element level
+      type: uint4
+    - byte: 1
+      bit: 4-7
+      name: max electric element level 
+      type: uint4
+    - byte: 2
+      bit: 0-3
+      name: engine preheat
+      type: bit4
+      values:
+        0000: off
+        0001: on
+        0101: test (forced on)
+    - byte: 2
+      bit: 4-5
+      name: coolant level warning
+      type: bit2
+      values:
+        00: coolant level sufficient
+        01: coolant level low
+    - byte: 2
+      bit: 6-7
+      name: hot water priority
+      type: bit2
+      values:
+        00: domestic water
+        01: heating priority
+    - byte: 3
+      bit: 0-1
+      name: output status burner
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 3
+      bit: 2-3
+      name: output status burner indicator
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 3
+      bit: 4-5
+      name: output status electric low
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 3
+      bit: 6-7
+      name: output status electric high
+      type: bit2
+      values:
+        00: off
+        01: on
+    - byte: 4
+      bit: 0-1
+      name: burner overcurrent status
+      type: bit2
+      values:
+        00: no overcurrent detected
+        01: overcurrent detected
+    - byte: 4
+      bit: 2-3
+      name: burner undercurrent status
+      type: bit2
+      values:
+        00: no undercurrent detected
+        01: undercurrent detected
+    - byte: 4
+      bit: 4-5
+      name: burner temperature status
+      type: bit2
+      values:
+        00: temperature normal
+        01: temperature warning
+    - byte: 4
+      bit: 6-7
+      name: burner input status
+      type: bit2
+      values:
+        00: off (inactive)
+        01: on (active)
+    - byte: 5
+      bit: 0-1
+      name: burner indicator overcurrent status
+      type: bit2
+      values:
+        00: no overcurrent detected
+        01: overcurrent detected
+    - byte: 5
+      bit: 2-3
+      name: burner indicator undercurrent status
+      type: bit2
+      values:
+        00: no undercurrent detected
+        01: undercurrent detected
+    - byte: 5
+      bit: 4-5
+      name: burner indicator temperature status
+      type: bit2
+      values:
+        00: temperature normal
+        01: temperature warning
+    - byte: 6
+      bit: 0-1
+      name: electric low element overcurrent status
+      type: bit2
+      values:
+        00: no overcurrent detected
+        01: overcurrent detected
+    - byte: 6
+      bit: 2-3
+      name: electric low element undercurrent status
+      type: bit2
+      values:
+        00: no undercurrent detected
+        01: undercurrent detected
+    - byte: 6
+      bit: 4-5
+      name: electric low element temperature status
+      type: bit2
+      values:
+        00: temperature normal
+        01: temperature warning
+    - byte: 6
+      bit: 6-7
+      name: electric low element input status
+      type: bit2
+      values:
+        00: off (inactive)
+        01: on (active)
+    - byte: 7
+      bit: 0-1
+      name: electric high element overcurrent status
+      type: bit2
+      values:
+        00: no overcurrent detected
+        01: overcurrent detected
+    - byte: 7
+      bit: 2-3
+      name: electric high element undercurrent status
+      type: bit2
+      values:
+        00: no undercurrent detected
+        01: undercurrent detected
+    - byte: 7
+      bit: 4-5
+      name: electric high element temperature status
+      type: bit2
+      values:
+        00: temperature normal
+        01: temperature warning
+    - byte: 7
+      bit: 6-7
+      name: electric high element input status
+      type: bit2
+      values:
+        00: off (inactive)
+        01: on (active)
+
 1FE98:
   name: WATERHEATER_COMMAND2
+  parameters:
+    - byte: 0
+      name: instance
+      type: uint8
+      comment: instance 0 is all
+    - byte: 1
+      bit: 0-3
+      name: engine preheat
+      type: bit4
+      values:
+        0000: off
+        0001: on
+        0101: test (forced on)
+    - byte: 2
+      name: command
+      type: uint8
+      values:
+        0: electric low enable
+        1: electric low disable
+        2: electric low toggle
+        3: electric high enable
+        4: electric high disable
+        5: electric high toggle
+        6: burner enable
+        7: burner disable
+        8: burner toggle
+        9: electric cycle (low high off)
+        10: electric cycle (high low off)
+        11: electric low test toggle
+        12: electric high test toggle
+        13: burner test toggle
 
 1FE97:
   name: CIRCULATION_PUMP_STATUS
