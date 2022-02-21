@@ -79,7 +79,7 @@ class TankLevelSensor_TANK_STATUS(EntityPluginBaseClass):
                 self.waiting_for_first_msg = False
 
             
-            new_level = new_message["relative_level"] / self.resolution
+            new_level = (new_message["relative_level"] * 100) / self.resolution
             if new_level != self.level:
                 self.level = new_level
                 self.mqtt_support.client.publish(
