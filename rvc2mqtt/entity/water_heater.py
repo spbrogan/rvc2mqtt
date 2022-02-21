@@ -421,6 +421,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_set_point_temperature",
                   "device": self.device}
@@ -444,6 +445,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                    "unit_of_meas": '°C',
                   "device_class": "temperature",
                   "state_class": "measurement",
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_water_temperature",
                   "device": self.device}
@@ -461,11 +463,12 @@ class WaterHeaterClass(EntityPluginBaseClass):
             self.status_water_temp_topic, self.water_temperature, retain=True)
 
 
-        # thermostate status binary sensor  - produce the HA MQTT discovery config json for
+        # thermostat status binary sensor  - produce the HA MQTT discovery config json for
         config = {"name": self.name + " Thermostat Status", "state_topic": self.status_thermostat_topic,
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_thermostat",
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
 
@@ -526,6 +529,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "unique_id": self.unique_device_id + "_high_temp_limit_switch_status",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
