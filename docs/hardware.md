@@ -19,17 +19,20 @@ details to come
 ### Install latest version of Raspbian
 
 go read the latest on <https://raspberrypi.com>
-This has been used on Raspberry Pi OS Lite 
+This has been developed/used on Raspberry Pi OS Lite (debian bullseye & buster) but since docker is used
+for the application environment dependencies are minimal.
 
 ### Enable CanBus support in Kernel
 
 See the waveshare doc here: <https://www.waveshare.com/w/upload/2/29/RS485-CAN-HAT-user-manuakl-en.pdf>
+For debian bullseye and buster nothing additional was needed but if using older/other kernel versions you
+may need to add/enable the kernel modules. 
+
 
 ### Update /boot/config.txt to enable rs485 can hat
 
-If you are using HomeAssistantOS you will need to remove the SD card and find the file on the boot partition.  
-
-_still need to see if this survives an update_
+If you are using HomeAssistantOS you will need to remove the SD card, insert into anothe PC, and find the file on the boot partition.
+This can be done by inserting into a Windows machine as the boot drive is visible.
 
 ``` ini
 [all]
@@ -41,9 +44,24 @@ dtoverlay=mcp2515-can0,oscillator=12000000,interrupt=25,spimaxfrequency=2000000
 
 ### Bring up the can network
 
-TBD - figure out how to do automatically.  Too many different linux network services
+There are a lot of different services that manage the network hardware on linux.  You will need to find what
+is right for your distribution.  
 
-Manually this can be done doing
+For debian bullseye the following process worked.  
+
+Make new can0.conf file in /etc/network/interfaces.d 
+
+``` ini
+auto can0
+iface can0 inet manual
+    pre-up /sbin/ip link set can0 type can bitrate 250000 restart-ms 100
+    up /sbin/ifconfig can0 up
+    down /sbin/ifconfig can0 down
+```
+
+![image](https://user-images.githubusercontent.com/2954441/154997242-382360da-9898-47f6-8517-8f01b10d32de.png)
+
+Manually from the cli this can be done by issuing the following commands
 
 ``` bash
 sudo ip link set can0 type can
