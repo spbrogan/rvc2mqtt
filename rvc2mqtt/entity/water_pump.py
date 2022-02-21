@@ -227,6 +227,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "qos": 1, "retain": False,
                   "payload_on": WaterPumpClass.ON,
                   "payload_off": WaterPumpClass.OFF,
+                  "enabled_by_default": False,  # this implementation running is the same as power
                   "unique_id": self.unique_device_id + "_running",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
@@ -249,6 +250,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "payload_on": WaterPumpClass.OUTSIDE_WATER_CONNECTED,
                   "payload_off": WaterPumpClass.OUTSIDE_WATER_DISCONNECTED,
                   "unique_id": self.unique_device_id + "_external_water",
+                  "enabled_by_default": False,  # this sensor is just the opposite of running/power
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
 
@@ -272,6 +274,7 @@ class WaterPumpClass(EntityPluginBaseClass):
                   "state_class": "measurement",
                   "value_template": '{{value}}',
                   "unique_id": self.unique_device_id + "_system_pressure",
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
 
