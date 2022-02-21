@@ -180,15 +180,15 @@ class WaterPumpClass(EntityPluginBaseClass):
 
     def _rvc_pump_off(self):
         msg_bytes = bytearray(8)
-        struct.pack_into("<BHHBBB", msg_bytes, 0, 0, 0, 0, 0, 0, 0)
+        struct.pack_into("<BHHBBB", msg_bytes, 0, 0, 0, 0, 0, 0)
         self.Logger.debug("Turn Pump Off")
-        #self.send_queue.put({"dgn": "1FFB2", "data": msg_bytes})
+        self.send_queue.put({"dgn": "1FFB2", "data": msg_bytes})
 
     def _rvc_pump_on(self):
         msg_bytes = bytearray(8)
-        struct.pack_into("<BHHBBB", msg_bytes, 0, 1, 0, 0, 0, 0, 0)
+        struct.pack_into("<BHHBBB", msg_bytes, 1, 0, 0, 0, 0, 0)
         self.Logger.debug("Turn Pump On")
-        #self.send_queue.put({"dgn": "1FFB2", "data": msg_bytes})
+        self.send_queue.put({"dgn": "1FFB2", "data": msg_bytes})
 
     def initialize(self):
         """ Optional function 
