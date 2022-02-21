@@ -83,12 +83,14 @@ class WaterHeaterClass(EntityPluginBaseClass):
 
         # RVC message must match the following status or command
         self.rvc_match_status = {"name": "WATERHEATER_STATUS", "instance": data['instance']}
-        self.rvc_match_command = {"name": "WATERHEATER_STATUS", "instance": data['instance']}
+        self.rvc_match_command = {"name": "WATERHEATER_COMMAND", "instance": data['instance']}
+        self.rvc_match_command2 = {"name": "WATERHEATER_COMMAND2", "instance": data['instance']}
 
-        self.Logger.debug(f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)}")
+        self.Logger.debug(f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)} {str(self.rvc_match_command2)}")
         
         # fields for a water heater object
         self.name = data["instance_name"]
+        self.instance = data['instance']
         self.mode = "unknown"  # R/W mqtt and RVC (off, combustion, electric, gas/electric, auto, test gas, test electric )
         self.gas_mode = "unknown"
         self.ac_mode = "unknown"
@@ -278,6 +280,12 @@ class WaterHeaterClass(EntityPluginBaseClass):
             # as unhandled.
             self.Logger.debug(f"Msg Match Command: {str(new_message)}")
             return True
+
+        elif self._is_entry_match(self.rvc_match_command2, new_message):
+            # This is the command2.  Just eat the message so it doesn't show up
+            # as unhandled.
+            self.Logger.debug(f"Msg Match Command: {str(new_message)}")
+            return True
         return False
 
     def process_mqtt_msg(self, topic, payload):
@@ -334,7 +342,22 @@ class WaterHeaterClass(EntityPluginBaseClass):
                 mode = 0
 
         self.Logger.debug(f"Set Mode to {mode}")
-        # @todo
+
+        #Waterheater_command
+        # electic
+        # 0102000000000000
+
+        # gas
+        # 0101000000000000
+
+        # gas and electric
+        # 0103000000000000
+
+        # off
+        # 0100000000000000
+        msg_bytes = bytearray(8)
+        struct.pack_into("<BBHBBBB", msg_bytes, 0, self.instance, mode, 0, 0, 0, 0, 0)
+        self.send_queue.put({"dgn": "1FFF6", "data": msg_bytes})
 
     def _rvc_change_set_point(self, temp: float):
         self.Logger.debug(f"Set hotwater set point to {temp}")
