@@ -51,10 +51,22 @@ class HvacClass(EntityPluginBaseClass):
     'setpoint_temp_heat': 18.0,
     'setpoint_temp_cool': 18.0}
 
+    {'arbitration_id': '0x19fef944', 'data': '0200645824582400', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9',
+ 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1',
+ 'instance': 2,
+ 'operating_mode': '0000', 'operating_mode_definition': 'off',
+ 'fan_mode': '00', 'fan_mode_definition': 'auto',
+ 'schedule_mode': '00', 'schedule_mode_definition': 'disabled',
+ 'fan_speed': 50.0, 
+ 'setpoint_temp_heat': 17.75, 'setpoint_temp_cool': 17.75}
+
 
     MQTT layout
         state == operating mode
-        command
+        command = change op mode
+
+        action/state == current action
+
 
         fan/
             state
@@ -67,6 +79,29 @@ class HvacClass(EntityPluginBaseClass):
     HA Autodiscovery
     https://www.home-assistant.io/integrations/climate.mqtt/
         hvac
+          action_topic string (optional)
+
+          current_temperature_topic
+          current_temperature_template 
+
+          fan_mode_command_template
+          fan_mode_command_topic 
+          fan_mode_state_template 
+          fan_mode_state_topic 
+          fan_modes 
+
+          max_temp 
+          min_temp 
+
+          mode_command_template 
+          mode_command_topic 
+          mode_state_template 
+          mode_state_topic 
+          modes 
+
+          
+
+
 
 
 
