@@ -29,6 +29,7 @@ class MQTT_Support(object):
     def __init__(self, client_id:str):
         self.Logger = logging.getLogger(__name__)
         self.client_id = client_id
+        self._connected = False
 
         self.root_topic = MQTT_Support.TOPIC_BASE + "/" + self.client_id
         self.device_topic_base = self.root_topic + "/d"
@@ -42,7 +43,8 @@ class MQTT_Support(object):
 
     def register(self, topic, func):
         self.registered_mqtt_devices[topic] = func
-        self.client.subscribe((topic,0))
+        if self._connected:
+            self.client.subscribe((topic,0))
 
     def set_client(self, client: mqc):
         self.client = client
@@ -55,6 +57,11 @@ class MQTT_Support(object):
         if rc == mqc.CONNACK_ACCEPTED:
             # publish topic
             self.client.publish(self.bridge_state_topic, "online", retain=True)
+            
+            self._connected = True
+            topic_tuple_list = [(x, 0) for x in self.registered_mqtt_devices.keys()]
+            self.client.subscribe(topic_tuple_list)
+
         else:
             self.Logger.critical(f"Failed to connect to mqtt broker: {mqc.connack_string(rc)}")
 
@@ -67,6 +74,11 @@ class MQTT_Support(object):
             func(msg.topic, msg.payload.decode('utf-8'))
         else:
             self.Logger.warning("Received mqtt message without a device registered '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
+    
+    def on_disconnect(self, client, userdata, msg):
+        self.Logger.critical("MQTT disconnected")
+        self._connected = False
+
 
     def send_bridge_info(self, info:str):
         pass
@@ -131,6 +143,9 @@ def on_mqtt_subscribe(client, userdata, mid, granted_qos):
 def on_mqtt_message(client, userdata, msg):
     gMQTTObj.on_message(client, userdata, msg)
 
+def on_mqtt_disconnect(client, userdata, msg):
+    gMQTTObj.on_disconnect(client, userdata, msg)
+
 def MqttInitalize(host:str, port:str, user:str, password:str, client_id:str):
     """ main function to parse config and initialize the 
     mqtt client.
@@ -145,6 +160,7 @@ def MqttInitalize(host:str, port:str, user:str, password:str, client_id:str):
     mqttc.on_connect = on_mqtt_connect
     mqttc.on_subscribe = on_mqtt_subscribe
     mqttc.on_message = on_mqtt_message
+    mqttc.on_disconnect = on_mqtt_disconnect
     mqttc.username_pw_set(user, password)
     
 
