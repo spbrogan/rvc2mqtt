@@ -141,6 +141,7 @@ class app(object):
             rvc_dict)
 
         self.Logger.debug(f"Sending Msg: {str(rvc_dict)}")
+        logging.getLogger("rvc_bus_trace").debug(str(rvc_dict))
 
         # put into canbus watcher
         self.txQueue.put(rvc_dict)
