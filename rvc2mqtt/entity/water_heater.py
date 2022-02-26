@@ -489,6 +489,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "unique_id": self.unique_device_id + "_gas_burner_status",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
@@ -509,6 +510,7 @@ class WaterHeaterClass(EntityPluginBaseClass):
                   "qos": 1, "retain": False,
                   "payload_on": WaterHeaterClass.ON,
                   "payload_off": WaterHeaterClass.OFF,
+                  "enabled_by_default": False,  # this implementation doesn't expect this sensor to be used
                   "unique_id": self.unique_device_id + "_ac_element_status",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
