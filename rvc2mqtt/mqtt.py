@@ -60,7 +60,8 @@ class MQTT_Support(object):
             
             self._connected = True
             topic_tuple_list = [(x, 0) for x in self.registered_mqtt_devices.keys()]
-            self.client.subscribe(topic_tuple_list)
+            if len(topic_tuple_list) > 0:
+                self.client.subscribe(topic_tuple_list)
 
         else:
             self.Logger.critical(f"Failed to connect to mqtt broker: {mqc.connack_string(rc)}")
@@ -162,6 +163,7 @@ def MqttInitalize(host:str, port:str, user:str, password:str, client_id:str):
     mqttc.on_message = on_mqtt_message
     mqttc.on_disconnect = on_mqtt_disconnect
     mqttc.username_pw_set(user, password)
+    mqttc.will_set(gMQTTObj.bridge_state_topic, payload="offline", qos=0, retain=True)
     
 
     try:
