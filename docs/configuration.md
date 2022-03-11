@@ -115,24 +115,31 @@ logger:
       class: logging.StreamHandler
       formatter: brief
       stream: ext://sys.stdout
+
     debug_file_handler:
-      level: INFO
-      class: logging.FileHandler
+      class : logging.handlers.RotatingFileHandler
       formatter: default
+      maxBytes: 10485760   #10 mb
+      backupCount: 1
+      level: INFO
       filename: /config/RVC2MQTT.log
       mode: w
+
     unhandled_file_handler:
+      class : logging.handlers.RotatingFileHandler
+      formatter: trace
+      maxBytes: 10485760   #10 mb
+      backupCount: 1
       level: DEBUG
-      class: logging.FileHandler
-      formatter: time-only
       filename: /config/UNHANDLED_RVC.log
-      mode: w
+
     rvc_bus_trace_handler:
-      level: DEBUG
-      class: logging.FileHandler
-      formatter: time-only
+      class : logging.handlers.RotatingFileHandler
+      formatter: trace
       filename: /config/RVC_FULL_BUS_TRACE.log
-      mode: w
+      maxBytes: 10485760   #10 mb
+      backupCount: 3
+      level: DEBUG
 
   loggers:
     "": # root logger
@@ -157,11 +164,12 @@ logger:
   formatters:
     brief:
       format: "%(message)s"
-    time-only:
-      format: "%(asctime)s   %(message)s"
-      datefmt: "%d %H:%M:%S"
     default:
       format: "%(asctime)s %(levelname)-8s %(name)-15s %(message)s"
       datefmt: "%Y-%m-%d %H:%M:%S"
+    trace:
+      format: "%(asctime)s %(message)s"
+      datefmt: "%Y-%m-%d %H:%M:%S"
+
 
 ```
