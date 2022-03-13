@@ -393,5 +393,3 @@ change fan mode to Low
         # publish info to mqtt
         self.mqtt_support.client.publish(
             ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_gas_topic, self.gas_mode, retain=True)
