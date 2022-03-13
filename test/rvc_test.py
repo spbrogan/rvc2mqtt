@@ -40,6 +40,17 @@ class Test_RVC_Decoder(unittest.TestCase):
         results = rvc.rvc_decode(int("19feca80", 16), '0540FFFFFFFFFFFF')
         print(results)
 
+    def test_thermostat_status(self):
+        #2022-03-11 08:22:12 Msg {'arbitration_id': '0x19ffe259', 'data': '0215C84724472400',
+        # 'priority': '6', 'dgn_h': '1FF', 'dgn_l': 'E2', 'dgn': '1FFE2', 'source_id': '59', 'name': 'THERMOSTAT_STATUS_1',
+        #  'instance': 2, 'operating_mode': '0101', 'fan_mode': '01', 'fan_mode_definition': 'on', 'schedule_mode': '00',
+        #  'schedule_mode_definition': 'disabled', 'fan_speed': 100.0, 'setpoint_temp_heat': 17.22,
+        #  'setpoint_temp_cool': 17.22}
+        rvc = RVC_Decoder()
+        rvc.load_rvc_spec(rvc_spec_file_path)
+        results = rvc.rvc_decode(int("19ffe259", 16), '0215C84724472400')
+        print(results)
+
 
     def test_rvc_valid_pgn(self):
         
