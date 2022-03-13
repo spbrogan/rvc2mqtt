@@ -101,87 +101,174 @@ class HvacClass(EntityPluginBaseClass):
 
           
 
+rvc turn fan on high
 
+operating mode = fan only
+fan mode = on
+fan speed = 100.0  
+
+rvc turn fan on low
+
+operating mode = fan only
+fan mode = on
+fan speed = 25.0
+
+
+turn mode to cool
+2022-03-11 07:54:20 Msg {'arbitration_id': '0x19fef944', 'data': '0101645125512500', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1', 'instance': 1, 'operating_mode': '0001', 'operating_mode_definition': 'cool', 'fan_mode': '00', 'fan_mode_definition': 'auto', 'schedule_mode': '00', 'schedule_mode_definition': 'disabled', 'fan_speed': 50.0, 'setpoint_temp_heat': 25.53, 'setpoint_temp_cool': 25.53}
+2022-03-11 07:54:20 Msg {'arbitration_id': '0x19fea644', 'data': '01150040FFFF5125', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'A6', 'dgn': '1FEA6', 'source_id': '44', 'name': 'ROOF_FAN_COMMAND_1', 'instance': 1, 'system_status': '01', 'system_status_definition': 'on', 'fan_mode': '01', 'fan_mode_definition': 'force on', 'speed_mode': '01', 'speed_mode_definition': 'manual', 'light': '00', 'light_definition': 'off', 'fan_speed_setting': 0.0, 'wind_direction_setting': '00', 'wind_direction_setting_definition': 'air out', 'dome_position': '0000', 'dome_position_definition': 'close', 'rain_sensor': '01', 'ambient_temperature': 'n/a', 'set_point': 25.53}
+
+Turn mode off
+2022-03-11 08:01:29 Msg {'arbitration_id': '0x19fef944', 'data': '0100005125512500', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1', 'instance': 1, 'operating_mode': '0000', 'operating_mode_definition': 'off', 'fan_mode': '00', 'fan_mode_definition': 'auto', 'schedule_mode': '00', 'schedule_mode_definition': 'disabled', 'fan_speed': 0.0, 'setpoint_temp_heat': 25.53, 'setpoint_temp_cool': 25.53}
+
+
+Turning heat on @ 60f with fan set to auto
+2022-03-11 08:07:29 Msg {'arbitration_id': '0x19fef944', 'data': '0205641124112400', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1', 'instance': 2, 'operating_mode': '0101', 'fan_mode': '00', 'fan_mode_definition': 'auto', 'schedule_mode': '00', 'schedule_mode_definition': 'disabled', 'fan_speed': 50.0, 'setpoint_temp_heat': 15.53, 'setpoint_temp_cool': 15.53}
+
+With heat on at 60f set fan to off
+2022-03-11 08:11:19 Msg {'arbitration_id': '0x19fef944', 'data': '0215001124112400', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1', 'instance': 2, 'operating_mode': '0101', 'fan_mode': '01', 'fan_mode_definition': 'on', 'schedule_mode': '00', 'schedule_mode_definition': 'disabled', 'fan_speed': 0.0, 'setpoint_temp_heat': 15.53, 'setpoint_temp_cool': 15.53}
+
+change heat set point to 63F
+2022-03-11 08:15:41 Msg {'arbitration_id': '0x19fef944', 'data': '0215004724472400', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1', 'instance': 2, 'operating_mode': '0101', 'fan_mode': '01', 'fan_mode_definition': 'on', 'schedule_mode': '00', 'schedule_mode_definition': 'disabled', 'fan_speed': 0.0, 'setpoint_temp_heat': 17.22, 'setpoint_temp_cool': 17.22}
+
+change fan mode to auto
+2022-03-11 08:17:40 Msg {'arbitration_id': '0x19fef944', 'data': '0205644724472400', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1', 'instance': 2, 'operating_mode': '0101', 'fan_mode': '00', 'fan_mode_definition': 'auto', 'schedule_mode': '00', 'schedule_mode_definition': 'disabled', 'fan_speed': 50.0, 'setpoint_temp_heat': 17.22, 'setpoint_temp_cool': 17.22}
+
+
+change fan mode to Low
+2022-03-11 08:18:21 Msg {'arbitration_id': '0x19fef944', 'data': '0215324724472400', 'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44', 'name': 'THERMOSTAT_COMMAND_1', 'instance': 2, 'operating_mode': '0101', 'fan_mode': '01', 'fan_mode_definition': 'on', 'schedule_mode': '00', 'schedule_mode_definition': 'disabled', 'fan_speed': 25.0, 'setpoint_temp_heat': 17.22, 'setpoint_temp_cool': 17.22}
 
 
 
     
     '''
     FACTORY_MATCH_ATTRIBUTES = {"name": "THERMOSTAT_STATUS_1", "type": "hvac"}
-    ON = "on"
-    OFF = "off"
+
+    # HA MQTT HVAC supported modes - must be a subset of default
+    MQTT_SUPPORTED_MODES = ["off", "cool", "heat", "fan_only"]
+
+    # use this to convert the mqtt requests to rvc value to write to rvc buffer
+    MQTT_TO_RVC_MODE_VALUE = {'off': 0, 'cool': 1, 'heat': 5, 'fan_only': 4}
+
+    # use this to convert the incoming rvc message decoded to mqtt values
+    RVC_DEF_TO_MQTT_MODE = {'off': 'off', 'cool': 'cool', 'fan only': 'fan_only', 'aux heat': 'heat' }
+
+    MIN_TEMP = 55
+    MAX_TEMP = 80
+
+    # HA MQTT FAN supported modes - must be subset of default
+    MQTT_SUPPORTED_FAN_MODE = ["auto", "low", "medium", "high"]
+
+    # use this to convert mqtt requests to rvc values
+    MQTT_TO_RVC_FAN_MODE_VALUE = {"auto": 0, "low": 1, "medium": 1, "high": 1, "off": 1}
+    MQTT_TO_RVC_FAN_SPEED_VALUE = {"auto": 50.0, "low": 25.0, "medium": 50.0, "high": 100.0, "off": 0.0}
+
+
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
-        self.id = f"waterheater-i" + str(data["instance"])
+        self.id = f"thermostat-i" + str(data["instance"])
 
         super().__init__(data, mqtt_support)
         self.Logger = logging.getLogger(__class__.__name__)
 
         # RVC message must match the following status or command
-        self.rvc_match_status = {"name": "WATERHEATER_STATUS", "instance": data['instance']}
-        self.rvc_match_command = {"name": "WATERHEATER_STATUS", "instance": data['instance']}
+        self.rvc_match_status = {"name": "THERMOSTAT_STATUS_1", "instance": data['instance']}
+        self.rvc_match_command = {"name": "THERMOSTAT_COMMAND_1", "instance": data['instance']}
 
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)}")
         
-        # fields for a water heater object
+        # fields for a thermostat object
         self.name = data["instance_name"]
-        self.mode = "unknown"  # R/W mqtt and RVC (off, combustion, electric, gas/electric, auto, test gas, test electric )
-        self.gas_mode = "unknown"
-        self.ac_mode = "unknown"
-        self.set_point_temperature = "unknown" # R/W mqtt and RVC (deg c)
-        self.water_temperature = "unknown" # RO mqtt and RVC (deg c)
-        self.thermostat_status = "unknown" # RO mqtt and RVC (met / not met)
-        self.burner_status = "unknown" # RO mqtt and RVC (off, lit)
-        self.ac_element_status = "unknown" # RO mqtt and RVC (AC inactive, AC active)
-        self.high_temp_switch_status = "unknown" # RO mqtt and RVC (tripped, not tripped)
-        self.failure_to_ignite = "unknown" # RO mqtt and RVC (no failure, failure)
-        self.failure_ac_power = "unknown" # RO mqtt and RVC (power present, power not present) 
-        self.failure_dc_power = "unknown" # RO mqtt and RVC (power present, power not present)
-        self.failure_dc_warning = "unknown" # RO mqtt and RVC (power ok, power low)
+
+        self._mode     = "unknown"
+        self._fan_mode = "unknown"
+        self._fan_speed = 0.0
+
+        self._cool_temperature = 90
+        self._heat_temperature = 55
 
         self.device = {"manufacturer": "RV-C",
                        "via_device": self.mqtt_support.get_bridge_ha_name(),
                        "identifiers": self.unique_device_id,
                        "name": self.name,
-                       "model": "RV-C Water Heater from WATERHEATER_STATUS"
+                       "model": "RV-C Thermostat from THERMOSTAT_STATUS_1"
                        }
 
-        # Allow MQTT to control gas - on off
-        self.status_gas_topic = mqtt_support.make_device_topic_string(self.id, "gas", True)
-        self.command_gas_topic = mqtt_support.make_device_topic_string(self.id, "gas", False)
-        self.mqtt_support.register(self.command_gas_topic, self.process_mqtt_msg)
+        # Allow MQTT to control mode
+        self.status_mode_topic = mqtt_support.make_device_topic_string(self.id, "mode", True)
+        self.command_mode_topic = mqtt_support.make_device_topic_string(self.id, "mode", False)
+        self.mqtt_support.register(self.command_mode_topic, self.process_mqtt_msg)
 
-        # Allow MQTT to control ac electric - on off
-        self.status_ac_topic = mqtt_support.make_device_topic_string(self.id, "ac", True)
-        self.command_ac_topic = mqtt_support.make_device_topic_string(self.id, "ac", False)
-        self.mqtt_support.register(self.command_ac_topic, self.process_mqtt_msg)
+        # Allow MQTT to control fan mode
+        self.status_fan_mode_topic = mqtt_support.make_device_topic_string(self.id, "fan_mode", True)
+        self.command_fan_mode_topic = mqtt_support.make_device_topic_string(self.id, "fan_mode", False)
+        self.mqtt_support.register(self.command_fan_mode_topic, self.process_mqtt_msg)
 
-        # Allow MQTT to control set point temperature
-        self.status_set_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_point_temperature", True)
-        self.command_set_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_point_temperature", False)
-        self.mqtt_support.register(self.command_set_point_temp_topic, self.process_mqtt_msg)
+        # Allow MQTT to control cool temperature
+        self.status_set_cool_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_cool_point_temperature", True)
+        self.command_set_cool_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_cool_point_temperature", False)
+        self.mqtt_support.register(self.command_set_cool_point_temp_topic, self.process_mqtt_msg)
 
-        # water temp
-        self.status_water_temp_topic = mqtt_support.make_device_topic_string(self.id, "water_temperature", True)
+        # Allow MQTT to control heat temperature
+        self.status_set_heat_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_heat_point_temperature", True)
+        self.command_set_heat_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_heat_point_temperature", False)
+        self.mqtt_support.register(self.command_set_heat_point_temp_topic, self.process_mqtt_msg)
 
-        # thermostat 
-        self.status_thermostat_topic = mqtt_support.make_device_topic_string(self.id, "thermostat", True)
-
-        # Gas Burner status
-        self.status_gas_burner_topic = mqtt_support.make_device_topic_string(self.id, "gas_burner", True)
-
-        # AC/Electric element status
-        self.status_ac_element_topic = mqtt_support.make_device_topic_string(self.id, "ac_element", True)
-
-        # High temp switch status
-        self.status_high_temp_topic = mqtt_support.make_device_topic_string(self.id, "high_temp", True)
-
-        self.status_failure_gas_topic = mqtt_support.make_device_topic_string(self.id, "failure_gas", True)
-        self.status_failure_ac_topic = mqtt_support.make_device_topic_string(self.id, "failure_ac", True)
-        self.status_failure_dc_topic = mqtt_support.make_device_topic_string(self.id, "failure_dc", True)
-        self.status_failure_low_dc_topic = mqtt_support.make_device_topic_string(self.id, "failure_low_dc", True)
+        # Report current temperature
+        self.status_current_temp_topic = mqtt_support.make_device_topic_string(self.id, "current_temperature", True)
 
 
+    @property
+    def fan_mode(self):
+        return self._fan_mode
+
+    @fan_mode.setter
+    def fan_mode(self, value):
+        if value != self._fan_mode:
+            self._fan_mode = value
+            self._changed = True
+
+    @property
+    def fan_speed(self):
+        return self._fan_speed
+
+    @fan_speed.setter
+    def fan_speed(self, value):
+        if value != self._fan_speed:
+            self._fan_speed = value
+            self._changed = True
+
+    @property
+    def mode(self):
+        return self._mode
+
+    @mode.setter
+    def mode(self, value):
+        if value != self._mode:
+            self._mode = value
+            self._changed = True
+
+    @property
+    def cool_temperature(self):
+        return self._cool_temperature
+
+    @cool_temperature.setter
+    def cool_temperature(self, value):
+        if value != self._cool_temperature:
+            self._cool_temperature = value
+            self._changed = True
+
+    @property
+    def heat_temperature(self):
+        return self._heat_temperature
+
+    @heat_temperature.setter
+    def heat_temperature(self, value):
+        if value != self._heat_temperature:
+            self._heat_temperature = value
+            self._changed = True
+
+    
 
 
     def process_rvc_msg(self, new_message: dict) -> bool:
@@ -192,128 +279,54 @@ class HvacClass(EntityPluginBaseClass):
         else - return False
         """
         '''
-        {'arbitration_id': '0x19fff780', 'data': '0100000000000000', 'priority': '6',
-        'dgn_h': '1FF', 'dgn_l': 'F7', 'dgn': '1FFF7', 'source_id': '80',
-        'name': 'WATERHEATER_STATUS', 'instance': 1,
-        'operating_modes': 0, 'operating_modes_definition': False, 
-        'set_point_temperature': -273.0, 
-        'water_temperature': -273.0, 
-        'thermostat_status': '00', 'thermostat_status_definition': 'set point met', 
-        'burner_status': '00', 'burner_status_definition': False,
-        'ac_element_status': '00', 'ac_element_status_definition': 'no fault', 
-        'high_temperature_limit_switch_status': '00', 'high_temperature_limit_switch_status_definition': 'limit switch not tripped',
-        'failure_to_ignite_status': '00', 'failure_to_ignite_status_definition': 'no failure',
-        'ac_power_failure_status': '00', 'ac_power_failure_status_definition': 'ac power present',
-        'dc_power_failure_status': '00', 'dc_power_failure_status_definition': 'dc power present'}
+        Msg {'arbitration_id': '0x19fef944', 'data': '0101645125512500', 'priority': '6', 
+             'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9', 'source_id': '44',
+             'name': 'THERMOSTAT_COMMAND_1', 'instance': 1, 
+             'operating_mode': '0001', 'operating_mode_definition': 'cool',
+             'fan_mode': '00', 'fan_mode_definition': 'auto',
+             'schedule_mode': '00', 'schedule_mode_definition': 'disabled',
+             'fan_speed': 50.0,
+             'setpoint_temp_heat': 25.53, 
+             'setpoint_temp_cool': 25.53}
+
         '''
 
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug(f"Msg Match Status: {str(new_message)}")
 
-            # Op Mode State
-            self.mode = new_message["operating_modes"]
-            self.gas_mode = WaterHeaterClass.OFF
-            self.ac_mode = WaterHeaterClass.OFF 
-            if new_message["operating_modes"] in [1, 3, 4, 5]:
-                self.gas_mode = WaterHeaterClass.ON
-            if new_message["operating_modes"] in [2, 3, 4, 6]:
-                self.ac_mode = WaterHeaterClass.ON
-            
-            if new_message["operating_modes"] > 7:
-                self.Logger.error(
-                    f"Unexpected RVC Mode Value {str(self.mode)}")
-
-            self.mqtt_support.client.publish(self.status_topic, self.mode, retain=True)
-            self.mqtt_support.client.publish(self.status_gas_topic, self.gas_mode, retain=True)
-            self.mqtt_support.client.publish(self.status_ac_topic, self.ac_mode, retain=True)
-
-            # Set Point Temperature
-            self.set_point_temperature = new_message["set_point_temperature"]
-            self.mqtt_support.client.publish(self.status_set_point_temp_topic, self.set_point_temperature, retain=True)
-
-            # water temperature
-            self.water_temperature = new_message["water_temperature"]
-            self.mqtt_support.client.publish(self.status_water_temp_topic, self.water_temperature, retain=True)
-
-            # Thermostat
-            if new_message["thermostat_status"] == '00':
-                self.thermostat_status = WaterHeaterClass.OFF
-            elif new_message["thermostat_status"] == '01':
-                self.thermostat_status = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC thermostat status value {new_message['thermostat_status']}")
-            self.mqtt_support.client.publish(self.status_thermostat_topic, self.thermostat_status, retain=True)
-
-            # Gas Burner
-            if new_message["burner_status"] == '00':
-                self.burner_status = WaterHeaterClass.OFF
-            elif new_message["burner_status"] == '01':
-                self.burner_status = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC burner status value {new_message['burner_status']}")
-            self.mqtt_support.client.publish(self.status_gas_burner_topic, self.burner_status, retain=True)
-
-            # AC Element
-            if new_message["ac_element_status"] == '00':
-                self.ac_element_status = WaterHeaterClass.OFF
-            elif new_message["ac_element_status"] == '01':
-                self.ac_element_status = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC ac element status value {new_message['ac_element_status']}")
-            self.mqtt_support.client.publish(self.status_ac_element_topic, self.ac_element_status, retain=True)
-
-            # High Temp Limit Tripped
-            if new_message["high_temperature_limit_switch_status"] == '00':
-                self.high_temp_switch_status = WaterHeaterClass.OFF
-            elif new_message["high_temperature_limit_switch_status"] == '01':
-                self.high_temp_switch_status = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC high temp limit switch status value {new_message['high_temperature_limit_switch_status']}")
-            self.mqtt_support.client.publish(self.status_high_temp_topic, self.high_temp_switch_status, retain=True)
-
-            # Failure To Ignite (gas)
-            if new_message["failure_to_ignite_status"] == '00':
-                self.failure_to_ignite = WaterHeaterClass.OFF
-            elif new_message["failure_to_ignite_status"] == '01':
-                self.failure_to_ignite = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC failure to ignite status value {new_message['failure_to_ignite_status']}")
-            self.mqtt_support.client.publish(self.status_failure_gas_topic, self.failure_to_ignite, retain=True)
-
-            # Failure AC element
-            if new_message["ac_power_failure_status"] == '00':
-                self.failure_ac_power = WaterHeaterClass.OFF
-            elif new_message["ac_power_failure_status"] == '01':
-                self.failure_ac_power = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC ac power failure status value {new_message['ac_power_failure_status']}")
-            self.mqtt_support.client.publish(self.status_failure_ac_topic, self.failure_ac_power, retain=True)
-
-            # Failure DC Power
-            if new_message["dc_power_failure_status"] == '00':
-                self.failure_dc_power = WaterHeaterClass.OFF
-            elif new_message["dc_power_failure_status"] == '01':
-                self.failure_dc_power = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC dc power failure status value {new_message['dc_power_failure_status']}")
-            self.mqtt_support.client.publish(self.status_failure_dc_topic, self.failure_dc_power, retain=True)
-
-            # Failure Warning DC Power (power low)
-            if new_message["dc_power_warning_status"] == '00':
-                self.failure_dc_warning = WaterHeaterClass.OFF
-            elif new_message["dc_power_warning_status"] == '01':
-                self.failure_dc_warning = WaterHeaterClass.ON
-            else:
-                self.Logger.error(f"Unexpected RVC dc power warning failure status value {new_message['dc_power_warning_status']}")
-            self.mqtt_support.client.publish(self.status_failure_low_dc_topic, self.failure_dc_warning, retain=True)
-
+            self.fan_mode = new_message["fan_mode_definition"]
+            self.fan_speed = new_message["fan_speed"]
+            self.heat_temperature = new_message["setpoint_temp_heat"]
+            self.cool_temperature = new_message["setpoint_temp_cool"]
+            self.mode = new_message["operating_mode_definition"]
+            self._update_mqtt_topics_with_changed_values()
             return True
+        return False
 
-        elif self._is_entry_match(self.rvc_match_command, new_message):
-            # This is the command.  Just eat the message so it doesn't show up
-            # as unhandled.
-            self.Logger.debug(f"Msg Match Command: {str(new_message)}")
-            return True
+    def _update_mqtt_topics_with_changed_values(self):
+        if self._changed: 
+
+            self.mqtt_support.client.publish(
+                self.status_mode_topic, HvacClass.RVC_DEF_TO_MQTT_MODE[self.mode], retain=True
+            )
+
+            mqtt_fan_mode = "unknown"
+            if self.fan_mode == "auto":
+                mqtt_fan_mode = "auto"
+            else:
+                for k,v in HvacClass.MQTT_TO_RVC_FAN_SPEED_VALUE.items():
+                    if k == "auto":
+                        continue
+                    if v == self.fan_speed:
+                        mqtt_fan_mode = k
+
+            self.mqtt_support.client.publish(self.status_fan_mode_topic, mqtt_fan_mode, retain=True)
+
+            self.mqtt_support.client.publish(
+                self.status_set_cool_point_temp_topic, self.cool_temperature, retain=True)
+            self.mqtt_support.client.publish(
+                self.status_set_heat_point_temp_topic, self.heat_temperature, retain=True)
+            self._changed = False
         return False
 
     def process_mqtt_msg(self, topic, payload):
@@ -324,57 +337,7 @@ class HvacClass(EntityPluginBaseClass):
                 
         """
         
-        self.Logger.debug(f"MQTT Msg Received on topic {topic} with payload {payload}")
-
-        if topic == self.command_ac_topic:
-            if payload.lower() == WaterHeaterClass.OFF:
-                if self.ac_mode != WaterHeaterClass.OFF:
-                    self._rvc_change_mode(self.gas_mode == WaterHeaterClass.ON, False)
-            elif payload.lower() == WaterHeaterClass.ON:
-                if self.ac_mode != WaterHeaterClass.ON:
-                    self._rvc_change_mode(self.gas_mode == WaterHeaterClass.ON, True)      
-            else:
-                self.Logger.error(
-                    f"Invalid payload {payload} for topic {topic}")
-
-        elif topic == self.command_gas_topic:
-            if payload.lower() == WaterHeaterClass.OFF:
-                if self.gas_mode != WaterHeaterClass.OFF:
-                    self._rvc_change_mode(False, self.ac_mode == WaterHeaterClass.ON)
-            elif payload.lower() == WaterHeaterClass.ON:
-                if self.gas_mode != WaterHeaterClass.ON:
-                    self._rvc_change_mode(True, self.ac_mode == WaterHeaterClass.ON)     
-            else:
-                self.Logger.error(
-                    f"Invalid payload {payload} for topic {topic}")
-
-        elif topic == self.command_set_point_temp_topic:
-            try:
-                temperature = float(payload)
-                self._rvc_change_set_point(temperature)
-            except Exception as e:
-                self.Logger.error(f"Invalid payload {payload} for topic {topic}")
-
-    def _rvc_change_mode(self, gas_on: bool, ac_on: bool):
-        mode = 0
-
-        if gas_on:
-            if ac_on:
-                mode = 3
-            else:
-                mode = 1
-        else:
-            if ac_on:
-                mode = 2
-            else:
-                mode = 0
-
-        self.Logger.debug(f"Set Mode to {mode}")
-        # @todo
-
-    def _rvc_change_set_point(self, temp: float):
-        self.Logger.debug(f"Set hotwater set point to {temp}")
-        # @todo
+        pass
 
     def initialize(self):
         """ Optional function 
@@ -387,12 +350,37 @@ class HvacClass(EntityPluginBaseClass):
         """
 
         # Gas switch - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " Gas",
-                  "state_topic": self.status_gas_topic,
-                  "command_topic": self.command_gas_topic,
+        config = {"name": self.name,
+                  "modes": HvacClass.MQTT_SUPPORTED_MODES,
+                  "mode_state_topic": self.status_mode_topic,
+                  "mode_state_template": '{{value}}',
+                  "mode_command_topic": self.command_mode_topic,
+                  "mode_command_template": '{{value}}',
+
+                  "temperature_unit": 'F',
+                  "min_temp": HvacClass.MIN_TEMP,
+                  "max_temp": HvacClass.MAX_TEMP,
+
+                  "fan_modes": HvacClass.MQTT_SUPPORTED_FAN_MODE,
+                  "fan_mode_state_topic": self.status_fan_mode_topic,
+                  "fan_mode_state_template": '{{value}}',
+                  "fan_mode_command_topic": self.command_fan_mode_topic,
+                  "fan_mode_command_template": '{{value}}',
+
+                  #"current_temperature_topic": 
+                  #"current_temperature_template":
+
+                  "temperature_low_state_topic ": self.status_set_cool_point_temp_topic,
+                  "temperature_low_state_template": '{{value}}',
+                  "temperature_low_command_topic": self.command_set_cool_point_temp_topic,
+                  "temperature_low_command_template": '{{value}}',
+
+                  "temperature_high_state_topic ": self.status_set_heat_point_temp_topic,
+                  "temperature_high_state_template": '{{value}}',
+                  "temperature_high_command_topic": self.command_set_heat_point_temp_topic,
+                  "temperature_high_command_template": '{{value}}',
+                  
                   "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
                   "unique_id": self.unique_device_id + "_gas_mode",
                   "device": self.device}
         config.update(self.get_availability_discovery_info_for_ha())
@@ -400,235 +388,10 @@ class HvacClass(EntityPluginBaseClass):
         config_json = json.dumps(config)
 
         ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "switch", "gas_mode")
+            self.unique_device_id, "climate")
 
         # publish info to mqtt
         self.mqtt_support.client.publish(
             ha_config_topic, config_json, retain=True)
         self.mqtt_support.client.publish(
             self.status_gas_topic, self.gas_mode, retain=True)
-
-        # AC element switch - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " AC", "state_topic": self.status_ac_topic,
-                  "command_topic": self.command_ac_topic, "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_electric_mode",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "switch", "electric_mode")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_ac_topic, self.ac_mode, retain=True)
-
-        # Set Point Temp input - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " Set Point Temperature", "state_topic": self.status_set_point_temp_topic,
-                  "command_topic": self.command_set_point_temp_topic, "qos": 1, "retain": False,
-                  "unit_of_meas": '°C',
-                  "device_class": "temperature",
-                  "state_class": "measurement",
-                  "value_template": '{{value}}',
-                  "unique_id": self.unique_device_id + "_set_point_temperature",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "number", "set_point_temperature")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_set_point_temp_topic, self.set_point_temperature, retain=True)
-
-
-        # Water Temperature sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " Water Temperature", "state_topic": self.status_water_temp_topic,
-                  "qos": 1, "retain": False,
-                   "unit_of_meas": '°C',
-                  "device_class": "temperature",
-                  "state_class": "measurement",
-                  "value_template": '{{value}}',
-                  "unique_id": self.unique_device_id + "_water_temperature",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "sensor", "water_temperature")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_water_temp_topic, self.water_temperature, retain=True)
-
-
-        # thermostate status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " Thermostat Status", "state_topic": self.status_thermostat_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON, "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_thermostat",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "thermostat")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_thermostat_topic, self.thermostat_status, retain=True)
-
-
-        # Gas Burner Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " Gas Burner" , "state_topic": self.status_gas_burner_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_gas_burner_status",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "gas_burner_status")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_gas_burner_topic, self.burner_status, retain=True)
-
-        # AC Element Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " AC Element" , "state_topic": self.status_ac_element_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_ac_element_status",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "ac_element_status")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_ac_element_topic, self.ac_element_status, retain=True)
-
-        # High temp limit switch Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " High-Temp Limit" , "state_topic": self.status_high_temp_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_high_temp_limit_switch_status",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "high_temp_limit_switch_status")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_high_temp_topic, self.high_temp_switch_status, retain=True)
-
-        # Failure to ignite Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " Gas Igniter Failure" , "state_topic": self.status_failure_gas_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_failure_to_ignite_status",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "failure_to_ignite_status")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_failure_gas_topic, self.failure_to_ignite, retain=True)
-
-        # Failure AC Power Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " AC Power Failure" , "state_topic": self.status_failure_ac_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_failure_ac_power_status",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "failure_ac_power_status")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_failure_ac_topic, self.failure_ac_power, retain=True)
-
-        # Failure DC Power Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " DC Power Failure" , "state_topic": self.status_failure_dc_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_failure_dc_power_status",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "failure_dc_power_status")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_failure_dc_topic, self.failure_dc_power, retain=True)
-
-        # Failure DC Power warning Status binary sensor  - produce the HA MQTT discovery config json for
-        config = {"name": self.name + " DC Low Power Warning" , "state_topic": self.status_failure_low_dc_topic,
-                  "qos": 1, "retain": False,
-                  "payload_on": WaterHeaterClass.ON,
-                  "payload_off": WaterHeaterClass.OFF,
-                  "unique_id": self.unique_device_id + "_failure_dc_power_warning_status",
-                  "device": self.device}
-        config.update(self.get_availability_discovery_info_for_ha())
-
-        config_json = json.dumps(config)
-
-        ha_config_topic = self.mqtt_support.make_ha_auto_discovery_config_topic(
-            self.unique_device_id, "binary_sensor", "failure_dc_power_warning_status")
-
-        # publish info to mqtt
-        self.mqtt_support.client.publish(
-            ha_config_topic, config_json, retain=True)
-        self.mqtt_support.client.publish(
-            self.status_failure_low_dc_topic, self.failure_dc_warning, retain=True)
