@@ -42,6 +42,15 @@ class EntityPluginBaseClass(object):
         self.status_topic: str = mqtt_support.make_device_topic_string(self.id, None, True)
         self.unique_device_id = mqtt_support.TOPIC_BASE + "_" + mqtt_support.client_id + "_" + self.id 
 
+        self.link_id = None     # id for this entity so if other objects want a link
+        if "link_id" in data:
+            self.link_id = data["link_id"]
+
+        self.entity_links = [] # list of link_ids that this object needs a reference to once the entity has been created
+        if "entity_links" in data:
+            self.entity_links.extend(data["entity_links"])
+
+
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming rvc message and determine if it
         is of interest to this instance of this object.
@@ -59,6 +68,12 @@ class EntityPluginBaseClass(object):
         
         This can be a good place to request data
         """
+        pass
+    
+    def add_entity_link(self, obj):
+        """ optional function
+        If the data of the object has an entity_links list this function 
+        will get called with each entity"""
         pass
 
     ########

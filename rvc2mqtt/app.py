@@ -110,6 +110,12 @@ class app(object):
             obj = entity_factory(
                 item, self.mqtt_client, entity_factory_list)
             if obj is not None:
+                # add entity links if defined.  This allows one entity to reference another entity
+                for link in obj.entity_links:
+                    requested_entity = next(filter(lambda entry: entry.link_id == link, self.entity_list), None)
+                    if requested_entity is not None:
+                        obj.add_entity_link(requested_entity)
+                    
                 obj.set_rvc_send_queue(self.tx_RVC_Buffer)
                 obj.initialize()
                 self.entity_list.append(obj)
