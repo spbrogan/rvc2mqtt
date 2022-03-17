@@ -1,5 +1,5 @@
 """
-HVAC support
+HVAC support using Climate MQTT
 
 
 Copyright 2022 Sean Brogan
@@ -29,9 +29,10 @@ from rvc2mqtt.entity import EntityPluginBaseClass
 
 class HvacClass(EntityPluginBaseClass):
     '''
-    HVAC based on  Heater based on THERMOSTAT_STATUS_1 DGNs
-    Multi instance device
+    HVAC based on climate control based on THERMOSTAT_STATUS_1 and optional temperature entities
+    DGNs
 
+    This is a multi instance device
     FLOORPLAN - Input
 
     type: hvac
@@ -176,6 +177,8 @@ change fan mode to Low
         self.rvc_match_command = {"name": "THERMOSTAT_COMMAND_1", "instance": data['instance']}
 
         self.Logger.debug(f"Must match: {str(self.rvc_match_status)} {str(self.rvc_match_command)}")
+
+        self.temperature_entity_link = None
         
         # fields for a thermostat object
         self.name = data["instance_name"]
@@ -204,19 +207,20 @@ change fan mode to Low
         self.command_fan_mode_topic = mqtt_support.make_device_topic_string(self.id, "fan_mode", False)
         self.mqtt_support.register(self.command_fan_mode_topic, self.process_mqtt_msg)
 
-        # Allow MQTT to control cool temperature
-        self.status_set_cool_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_cool_point_temperature", True)
-        self.command_set_cool_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_cool_point_temperature", False)
-        self.mqtt_support.register(self.command_set_cool_point_temp_topic, self.process_mqtt_msg)
+        # # Allow MQTT to control cool temperature
+        # self.status_set_cool_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_cool_point_temperature", True)
+        # self.command_set_cool_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_cool_point_temperature", False)
+        # self.mqtt_support.register(self.command_set_cool_point_temp_topic, self.process_mqtt_msg)
 
-        # Allow MQTT to control heat temperature
-        self.status_set_heat_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_heat_point_temperature", True)
-        self.command_set_heat_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_heat_point_temperature", False)
-        self.mqtt_support.register(self.command_set_heat_point_temp_topic, self.process_mqtt_msg)
+        # # Allow MQTT to control heat temperature
+        # self.status_set_heat_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_heat_point_temperature", True)
+        # self.command_set_heat_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_heat_point_temperature", False)
+        # self.mqtt_support.register(self.command_set_heat_point_temp_topic, self.process_mqtt_msg)
 
-        # Report current temperature
-        self.status_current_temp_topic = mqtt_support.make_device_topic_string(self.id, "current_temperature", True)
-
+        # Allow MQTT to control the target temperature
+        self.status_set_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_point_temperature", True)
+        self.command_set_point_temp_topic = mqtt_support.make_device_topic_string(self.id, "set_point_temperature", False)
+        self.mqtt_support.register(self.command_set_point_temp_topic, self.process_mqtt_msg)
 
     @property
     def fan_mode(self):
@@ -267,6 +271,15 @@ change fan mode to Low
         if value != self._heat_temperature:
             self._heat_temperature = value
             self._changed = True
+
+
+    def add_entity_link(self, obj):
+        """ optional function
+        If the data of the object has an entity_links list this function 
+        will get called with each entity"""
+        
+        self.temperature_entity_link = obj
+
 
     
 
@@ -348,8 +361,6 @@ change fan mode to Low
         This can be a good place to request data
 
         """
-
-        # Gas switch - produce the HA MQTT discovery config json for
         config = {"name": self.name,
                   "modes": HvacClass.MQTT_SUPPORTED_MODES,
                   "mode_state_topic": self.status_mode_topic,
@@ -367,22 +378,29 @@ change fan mode to Low
                   "fan_mode_command_topic": self.command_fan_mode_topic,
                   "fan_mode_command_template": '{{value}}',
 
-                  #"current_temperature_topic": 
-                  #"current_temperature_template":
+                #   "temperature_low_state_topic ": self.status_set_cool_point_temp_topic,
+                #   "temperature_low_state_template": '{{value}}',
+                #   "temperature_low_command_topic": self.command_set_cool_point_temp_topic,
+                #   "temperature_low_command_template": '{{value}}',
 
-                  "temperature_low_state_topic ": self.status_set_cool_point_temp_topic,
-                  "temperature_low_state_template": '{{value}}',
-                  "temperature_low_command_topic": self.command_set_cool_point_temp_topic,
-                  "temperature_low_command_template": '{{value}}',
+                #   "temperature_high_state_topic ": self.status_set_heat_point_temp_topic,
+                #   "temperature_high_state_template": '{{value}}',
+                #   "temperature_high_command_topic": self.command_set_heat_point_temp_topic,
+                #   "temperature_high_command_template": '{{value}}',
 
-                  "temperature_high_state_topic ": self.status_set_heat_point_temp_topic,
-                  "temperature_high_state_template": '{{value}}',
-                  "temperature_high_command_topic": self.command_set_heat_point_temp_topic,
-                  "temperature_high_command_template": '{{value}}',
+                  "temperature_state_topic": self.status_set_point_temp_topic,
+                  "temperature_state_template": '{{value}}',
+                  "temperature_command_topic": self.command_set_point_temp_topic,
+                  "temperature_command_template": '{{value}}',
                   
                   "qos": 1, "retain": False,
-                  "unique_id": self.unique_device_id + "_gas_mode",
+                  "unique_id": self.unique_device_id,
                   "device": self.device}
+
+        if self.temperature_entity_link is not None:
+            config["current_temperature_topic"] = self.temperature_entity_link.status_topic
+            config["current_temperature_template"] = '{{value}}'
+
         config.update(self.get_availability_discovery_info_for_ha())
 
         config_json = json.dumps(config)
