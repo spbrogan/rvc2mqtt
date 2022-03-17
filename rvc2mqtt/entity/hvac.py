@@ -154,8 +154,8 @@ change fan mode to Low
     # use this to convert the incoming rvc message decoded to mqtt values
     RVC_DEF_TO_MQTT_MODE = {'off': 'off', 'cool': 'cool', 'fan only': 'fan_only', 'aux heat': 'heat' }
 
-    MIN_TEMP = 55
-    MAX_TEMP = 80
+    MIN_TEMP = 12
+    MAX_TEMP = 30
 
     # HA MQTT FAN supported modes - must be subset of default
     MQTT_SUPPORTED_FAN_MODE = ["auto", "low", "medium", "high"]
@@ -187,9 +187,9 @@ change fan mode to Low
         self._fan_mode = "unknown"
         self._fan_speed = 0.0
 
-        self._cool_temperature = 90
-        self._heat_temperature = 55
-        self._set_point_temperature = 66
+        #self._cool_temperature = 90
+        #self._heat_temperature = 55
+        self._set_point_temperature = 16.09
 
         self.device = {"manufacturer": "RV-C",
                        "via_device": self.mqtt_support.get_bridge_ha_name(),
@@ -253,25 +253,25 @@ change fan mode to Low
             self._mode = value
             self._changed = True
 
-    @property
-    def cool_temperature(self):
-        return self._cool_temperature
+    # @property
+    # def cool_temperature(self):
+    #     return self._cool_temperature
 
-    @cool_temperature.setter
-    def cool_temperature(self, value):
-        if value != self._cool_temperature:
-            self._cool_temperature = value
-            self._changed = True
+    # @cool_temperature.setter
+    # def cool_temperature(self, value):
+    #     if value != self._cool_temperature:
+    #         self._cool_temperature = value
+    #         self._changed = True
 
-    @property
-    def heat_temperature(self):
-        return self._heat_temperature
+    # @property
+    # def heat_temperature(self):
+    #     return self._heat_temperature
 
-    @heat_temperature.setter
-    def heat_temperature(self, value):
-        if value != self._heat_temperature:
-            self._heat_temperature = value
-            self._changed = True
+    # @heat_temperature.setter
+    # def heat_temperature(self, value):
+    #     if value != self._heat_temperature:
+    #         self._heat_temperature = value
+    #         self._changed = True
 
     @property
     def set_point_temperature(self):
@@ -291,10 +291,6 @@ change fan mode to Low
         will get called with each entity"""
         
         self.temperature_entity_link = obj
-
-
-    
-
 
     def process_rvc_msg(self, new_message: dict) -> bool:
         """ Process an incoming message and determine if it
@@ -358,10 +354,7 @@ change fan mode to Low
 
     def process_mqtt_msg(self, topic, payload):
         """ mqtt message:
-                Turn Gas On/Off
-                Turn AC element On/Off
-                Set Water Temp Set point
-                
+               
         """
         
         pass
@@ -382,7 +375,7 @@ change fan mode to Low
                   "mode_command_topic": self.command_mode_topic,
                   "mode_command_template": '{{value}}',
 
-                  "temperature_unit": 'F',
+                  "temperature_unit": 'C',
                   "min_temp": HvacClass.MIN_TEMP,
                   "max_temp": HvacClass.MAX_TEMP,
 
