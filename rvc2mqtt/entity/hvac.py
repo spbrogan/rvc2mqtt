@@ -189,6 +189,7 @@ change fan mode to Low
 
         self._cool_temperature = 90
         self._heat_temperature = 55
+        self._set_point_temperature = 66
 
         self.device = {"manufacturer": "RV-C",
                        "via_device": self.mqtt_support.get_bridge_ha_name(),
@@ -272,6 +273,17 @@ change fan mode to Low
             self._heat_temperature = value
             self._changed = True
 
+    @property
+    def set_point_temperature(self):
+        return self._set_point_temperature
+
+    @set_point_temperature.setter
+    def set_point_temperature(self, value):
+        if value != self._set_point_temperature:
+            self._set_point_temperature = value
+            self._changed = True
+    
+
 
     def add_entity_link(self, obj):
         """ optional function
@@ -309,8 +321,9 @@ change fan mode to Low
 
             self.fan_mode = new_message["fan_mode_definition"]
             self.fan_speed = new_message["fan_speed"]
-            self.heat_temperature = new_message["setpoint_temp_heat"]
-            self.cool_temperature = new_message["setpoint_temp_cool"]
+            #self.heat_temperature = new_message["setpoint_temp_heat"]
+            #self.cool_temperature = new_message["setpoint_temp_cool"]
+            self.set_point_temperature = new_message["setpoint_temp_cool"]
             self.mode = new_message["operating_mode_definition"]
             self._update_mqtt_topics_with_changed_values()
             return True
@@ -335,10 +348,11 @@ change fan mode to Low
 
             self.mqtt_support.client.publish(self.status_fan_mode_topic, mqtt_fan_mode, retain=True)
 
-            self.mqtt_support.client.publish(
-                self.status_set_cool_point_temp_topic, self.cool_temperature, retain=True)
-            self.mqtt_support.client.publish(
-                self.status_set_heat_point_temp_topic, self.heat_temperature, retain=True)
+            self.mqtt_support.client.publish(self.status_set_point_temp_topic, self.set_point_temperature, retain=True)
+            #    self.status_set_cool_point_temp_topic, self.cool_temperature, retain=True)
+                
+            #self.mqtt_support.client.publish(
+            #    self.status_set_heat_point_temp_topic, self.heat_temperature, retain=True)
             self._changed = False
         return False
 
