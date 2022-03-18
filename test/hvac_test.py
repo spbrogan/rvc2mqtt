@@ -65,7 +65,26 @@ class Test_HvacClimate(unittest.TestCase):
         self.assertEqual(l._convert_mqtt_to_rvc_mode('fan_only'), "fan only")
         self.assertEqual(l._convert_mqtt_to_rvc_mode('heat'), "aux heat")
 
+    def test_make_data_buffer(self):
+        mock = MagicMock()
+        mock.mqtt_support.make_device_topic_string.return_value = 'topic_string'
 
+        l = HvacClass({'instance': 1, 'instance_name': "test hvac"}, mock)
+
+        '''{   'arbitration_id': '0x19fef944', 'data': '0200645824582400',
+            'priority': '6', 'dgn_h': '1FE', 'dgn_l': 'F9', 'dgn': '1FEF9',
+            'source_id': '44',
+            'name': 'THERMOSTAT_COMMAND_1',
+            'instance': 2,
+            'operating_mode': '0000', 'operating_mode_definition': 'off',
+            'fan_mode': '00', 'fan_mode_definition': 'auto',
+            'schedule_mode': '00', 'schedule_mode_definition': 'disabled',
+            'fan_speed': 50.0, 
+            'setpoint_temp_heat': 17.75, 'setpoint_temp_cool': 17.75}
+         '''
+        self.assertEqual(l._make_rvc_payload(2, 'off', 'auto', 'disabled', 50, 17.75), bytearray.fromhex("0200645824582400"))
+
+        
 
 
 

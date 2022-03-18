@@ -24,6 +24,7 @@ import queue
 import logging
 import struct
 import json
+from typing import Union
 from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
@@ -267,7 +268,7 @@ class HvacClass(EntityPluginBaseClass):
         return round((temp_c + 273 ) * 32)
 
 
-    def _make_rvc_payload(self, instance, mode, fan_mode, schedule_mode, rvc_fan_speed, temperature_c):
+    def _make_rvc_payload(self, instance:int, mode:str, fan_mode:str, schedule_mode:str, rvc_fan_speed:Union[int, float], temperature_c:float):
         ''' Make 8 byte buffer in THERMOSTAT_COMMAND_1 format. 
         
         {   'arbitration_id': '0x19fef944', 'data': '0200645824582400',
@@ -285,9 +286,10 @@ class HvacClass(EntityPluginBaseClass):
         mi = HvacClass.RVC_MODE_TO_RVC_MODE_VALUE[mode]  # mode int value
         fmi = HvacClass.RVC_FAN_MODE_TO_RVC_FAN_MODE_VALUE[fan_mode]  # fan mode int value
         smi = HvacClass.RVC_SCHEDULE_MODE_TO_RVC_SCHEDULE_MODE_VALUE[schedule_mode]  # schedule mode int value
-        fsi = int(rvc_fan_speed * 2)
+        fsi = int(rvc_fan_speed) * 2
+        temperature_uint16 = self._convert_temp_c_to_rvc_uint16(temperature_c)
 
-        struct.pack_into("<BBBHHB", msg_bytes, 0, instance, (mi | (fmi << 4) | (smi << 6)), fsi, temperature_c, temperature_c, 0  )
+        struct.pack_into("<BBBHHB", msg_bytes, 0, instance, (mi | (fmi << 4) | (smi << 6)), fsi, temperature_uint16, temperature_uint16, 0  )
         return msg_bytes
 
     def _convert_mqtt_to_rvc_mode(self, mqtt_mode):
