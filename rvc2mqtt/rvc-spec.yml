@@ -1073,7 +1073,7 @@ API_VERSION: 0
     - byte: 1
       bit: 4-5
       name: fan mode
-      type: bit
+      type: bit2
       values:
         00: auto
         01: on
@@ -1081,7 +1081,7 @@ API_VERSION: 0
     - byte: 1
       bit: 6-7
       name: schedule mode
-      type: bit
+      type: bit2
       values:
         00: disabled
         01: enabled
