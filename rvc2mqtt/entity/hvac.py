@@ -376,7 +376,7 @@ class HvacClass(EntityPluginBaseClass):
 
         elif topic == self.command_set_point_temp_topic:
             try: 
-                temp = self._convert_temp_c_to_rvc_uint16(payload)
+                temp = float(payload)
                 pl = self._make_rvc_payload(self.rvc_instance, self.mode, self.fan_mode, self.scheduled_mode, temp)
                 self.send_queue.put({"dgn": "1FEF9", "data": pl})
             except Exception as e:
