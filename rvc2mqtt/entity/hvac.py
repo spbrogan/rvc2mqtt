@@ -363,24 +363,24 @@ class HvacClass(EntityPluginBaseClass):
                 mode = HvacMode(payload.lower())
                 pl = self._make_rvc_payload(self.rvc_instance, mode, self.fan_mode, self.scheduled_mode, self.set_point_temperature)
                 self.send_queue.put({"dgn": "1FEF9", "data": pl})
-            except:
-                self.Logger.error(f"Exception trying to respond to topic {topic}")
+            except Exception as e:
+                self.Logger.error(f"Exception trying to respond to topic {topic} + {str(e)}")
 
         elif topic == self.command_fan_mode_topic:
             try: 
                 fan_mode = FanMode(payload)
                 pl = self._make_rvc_payload(self.rvc_instance, self.mode, fan_mode, self.scheduled_mode, self.set_point_temperature)
                 self.send_queue.put({"dgn": "1FEF9", "data": pl})
-            except:
-                self.Logger.error(f"Exception trying to respond to topic {topic}")
+            except Exception as e:
+                self.Logger.error(f"Exception trying to respond to topic {topic} + {str(e)}")
 
         elif topic == self.command_set_point_temp_topic:
             try: 
                 temp = self._convert_temp_c_to_rvc_uint16(payload)
                 pl = self._make_rvc_payload(self.rvc_instance, self.mode, self.fan_mode, self.scheduled_mode, temp)
                 self.send_queue.put({"dgn": "1FEF9", "data": pl})
-            except:
-                self.Logger.error(f"Exception trying to respond to topic {topic}")
+            except Exception as e:
+                self.Logger.error(f"Exception trying to respond to topic {topic} + {str(e)}")
                
         else:
             self.Logger.error(f"Invalid payload {payload} for topic {topic}")
