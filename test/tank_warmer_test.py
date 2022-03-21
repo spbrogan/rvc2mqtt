@@ -19,15 +19,18 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import MagicMock
 import context  # add rvc2mqtt package to the python path using local reference
-from rvc2mqtt.entity.tank_warmer import TankWarmer_DC_LOAD_STATUS
+from rvc2mqtt.entity.tank_warmer import TankWarmer_DC_LOAD_STATUS as TankWarmer
 
-class Test_Waterheater(unittest.TestCase):
+class Test_TankWarmer(unittest.TestCase):
 
     def test_basic(self):
+        mock = MagicMock()
+        mock.mqtt_support.make_device_topic_string.return_value = 'topic_string'
         
-        l = TankWarmer_DC_LOAD_STATUS({'instance': 1}, None)
-        self.assertTrue(type(l), TankWarmer_DC_LOAD_STATUS)
+        l = TankWarmer({'instance': 1, 'instance_name': "test tank_warmer"}, mock)
+        self.assertTrue(type(l), TankWarmer)
 
 if __name__ == '__main__':
     unittest.main()

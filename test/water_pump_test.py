@@ -1,5 +1,5 @@
 """
-Unit tests for the waterheater entity class
+Unit tests for the water pump entity class
 
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
@@ -21,17 +21,16 @@ limitations under the License.
 import unittest
 from unittest.mock import MagicMock
 import context  # add rvc2mqtt package to the python path using local reference
-from rvc2mqtt.entity.water_heater import WaterHeaterClass
+from rvc2mqtt.entity.water_pump import WaterPumpClass as WaterPump
 
-class Test_Waterheater(unittest.TestCase):
+class Test_WaterPump(unittest.TestCase):
 
     def test_basic(self):
-        
         mock = MagicMock()
         mock.mqtt_support.make_device_topic_string.return_value = 'topic_string'
         
-        l = WaterHeaterClass({'instance': 1, 'instance_name': "test water heater"}, mock)
-        self.assertTrue(type(l), WaterHeaterClass)
+        l = WaterPump({'instance': 1, 'instance_name': "test WaterPump"}, mock)
+        self.assertTrue(type(l), WaterPump)
 
 if __name__ == '__main__':
     unittest.main()

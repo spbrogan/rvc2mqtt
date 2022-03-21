@@ -19,15 +19,18 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import MagicMock
 import context  # add rvc2mqtt package to the python path using local reference
-from rvc2mqtt.entity.light import LightBaseClass
+from rvc2mqtt.entity.light_switch import LightSwitch_DC_LOAD_STATUS as Light
 
 class Test_Light(unittest.TestCase):
 
     def test_basic(self):
+        mock = MagicMock()
+        mock.mqtt_support.make_device_topic_string.return_value = 'topic_string'
         
-        l = Light()
-        self.assertTrue(type(l), LightBaseClass)
+        l = Light({'instance': 1, 'instance_name': "test light"}, mock)
+        self.assertTrue(type(l), Light)
 
 if __name__ == '__main__':
     unittest.main()

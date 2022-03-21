@@ -26,7 +26,7 @@ from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
 
-class DcSystemSensor_THERMOSTAT_AMBIENT_STATUS(EntityPluginBaseClass):
+class DcSystemSensor_DC_SOURCE_STATUS_1(EntityPluginBaseClass):
     FACTORY_MATCH_ATTRIBUTES = {"type": "dc_system", "name": "DC_SOURCE_STATUS_1"}
 
     """ Provide basic DC system information using DC_SOURCE_STATUS_1 
