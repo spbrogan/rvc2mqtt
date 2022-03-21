@@ -19,6 +19,7 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import MagicMock
 import context  # add rvc2mqtt package to the python path using local reference
 from rvc2mqtt.entity.water_heater import WaterHeaterClass
 
@@ -26,7 +27,10 @@ class Test_Waterheater(unittest.TestCase):
 
     def test_basic(self):
         
-        l = WaterHeaterClass({'instance': 1}, None)
+        mock = MagicMock()
+        mock.mqtt_support.make_device_topic_string.return_value = 'topic_string'
+        
+        l = WaterHeaterClass({'instance': 1, 'instance_name': "test water heater"}, mock)
         self.assertTrue(type(l), WaterHeaterClass)
 
 if __name__ == '__main__':
