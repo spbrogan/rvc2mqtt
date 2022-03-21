@@ -1,5 +1,5 @@
 """
-Unit tests for the tankwarmer entity class
+Unit tests for the Diagnostic entity class
 
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
@@ -21,16 +21,16 @@ limitations under the License.
 import unittest
 from unittest.mock import MagicMock
 import context  # add rvc2mqtt package to the python path using local reference
-from rvc2mqtt.entity.tank_warmer import TankWarmer_DC_LOAD_STATUS as TankWarmer
+from rvc2mqtt.entity.diagnostic import Diagnostic
 
-class Test_TankWarmer(unittest.TestCase):
+class Test_Diagnostic(unittest.TestCase):
 
     def test_basic(self):
         mock = MagicMock()
         mock.mqtt_support.make_device_topic_string.return_value = 'topic_string'
         
-        l = TankWarmer({'instance': 1, 'instance_name': "test tank_warmer"}, mock)
-        self.assertTrue(type(l), TankWarmer)
+        l = Diagnostic({'source_id': 255, 'instance_name': "test Diagnostic Sensor"}, mock)
+        self.assertTrue(type(l), Diagnostic)
 
 if __name__ == '__main__':
     unittest.main()

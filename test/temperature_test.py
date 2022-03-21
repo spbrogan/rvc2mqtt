@@ -1,5 +1,5 @@
 """
-Unit tests for the tankwarmer entity class
+Unit tests for the temperature entity class
 
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
@@ -21,16 +21,16 @@ limitations under the License.
 import unittest
 from unittest.mock import MagicMock
 import context  # add rvc2mqtt package to the python path using local reference
-from rvc2mqtt.entity.tank_warmer import TankWarmer_DC_LOAD_STATUS as TankWarmer
+from rvc2mqtt.entity.temperature import TemperatureSensor_THERMOSTAT_AMBIENT_STATUS as TemperatureSensor
 
-class Test_TankWarmer(unittest.TestCase):
+class Test_TemperatureSensor(unittest.TestCase):
 
     def test_basic(self):
         mock = MagicMock()
         mock.mqtt_support.make_device_topic_string.return_value = 'topic_string'
         
-        l = TankWarmer({'instance': 1, 'instance_name': "test tank_warmer"}, mock)
-        self.assertTrue(type(l), TankWarmer)
+        l = TemperatureSensor({'instance': 1, 'instance_name': "test TemperatureSensor"}, mock)
+        self.assertTrue(type(l), TemperatureSensor)
 
 if __name__ == '__main__':
     unittest.main()
