@@ -32,15 +32,14 @@ More specifically:
 Devices managed by rvc2mqtt are listed by their unique device id
 `rvc2mqtt/<client-id>/d/<device-id>`
 
-### Light Switch
+### Switch
 
-The Light Switch object is used to describe an switch.
-A light can have on / off
+The Switch object is used to describe an on/off switch.
 
 | Topic             | rvc2mqtt operation | Description                     |
 |---                | :---:              | ---                             |
-|`<device-id>/state`| publish            | status of light (`on` or `off`) |
-|`<device-id>/cmd`  | subscribe          | command the light with payload `on` or `off` |
+|`<device-id>/state`| publish            | status of switch (`on` or `off`) |
+|`<device-id>/cmd`  | subscribe          | command the switch with payload `on` or `off` |
 
 
 

@@ -29,7 +29,7 @@ from rvc2mqtt.entity import EntityPluginBaseClass
 
 class TankWarmer_DC_LOAD_STATUS(EntityPluginBaseClass):
     #
-    # This is basically a light but with different icons
+    # This is basically a switch but with different icons
     #
     FACTORY_MATCH_ATTRIBUTES = {"name": "DC_LOAD_STATUS", "type": "tank_warmer"}
     ON = "on"
@@ -190,7 +190,7 @@ class TankWarmer_DC_LOAD_STATUS(EntityPluginBaseClass):
         self.mqtt_support.client.publish(
             self.status_topic, self.state, retain=True)
 
-        # request dgn report - this should trigger that light to report
+        # request dgn report - this should trigger that switch to report
         # dgn = 1FFBD which is actually  BD FF 01 <instance> FF 00 00 00
         self.Logger.debug("Sending Request for DGN")
         data = struct.pack("<BBBBBBBB", int("0xBD", 0), int(

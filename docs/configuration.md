@@ -15,17 +15,17 @@ text from the WebUI might be written to floor plan 2.
 floorplan:
   - name: DC_LOAD_STATUS
     instance: 1
-    type: light_switch
+    type: switch
     instance_name: bedroom light
 
   - name: DC_LOAD_STATUS
     instance: 2
-    type: light_switch
+    type: switch
     instance_name: living room light
 
   - name: DC_LOAD_STATUS
     instance: 8
-    type: light_switch
+    type: switch
     instance_name: awning light
 
   - name: THERMOSTAT_AMBIENT_STATUS

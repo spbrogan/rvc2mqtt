@@ -27,10 +27,10 @@ class Test_Entity(unittest.TestCase):
     def test_factory_success(self):
         pass
 
-        # d = {"type": "Light"}
+        # d = {"type": "switch"}
         # obj = rvc2mqtt.entity.entity_factory(d)
         # self.assertIsNotNone(obj)
-        # self.assertTrue(type(obj), rvc2mqtt.entity.Light)
+        # self.assertTrue(type(obj), rvc2mqtt.entity.switch)
 
     def test_factory_invalid(self):
         pass

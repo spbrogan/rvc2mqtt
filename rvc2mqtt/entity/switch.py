@@ -1,5 +1,5 @@
 """
-A light switch
+An on/off switch
 
 Copyright 2022 Sean Brogan
 SPDX-License-Identifier: Apache-2.0
@@ -27,25 +27,23 @@ from rvc2mqtt.mqtt import MQTT_Support
 from rvc2mqtt.entity import EntityPluginBaseClass
 
 
-class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
-    FACTORY_MATCH_ATTRIBUTES = {"name": "DC_LOAD_STATUS", "type": "light_switch"}
+class Switch_DC_LOAD_STATUS(EntityPluginBaseClass):
+    FACTORY_MATCH_ATTRIBUTES = {"name": "DC_LOAD_STATUS", "type": "switch"}
     """
-    Light switch that is tied to RVC DGN of DC_LOAD_STATUS and DC_LOAD_COMMAND
+    switch that is tied to RVC DGN of DC_LOAD_STATUS and DC_LOAD_COMMAND
     Supports ON/OFF 
 
-    TODO: can it support brightness
-
-
     """
-    LIGHT_ON = "on"
-    LIGHT_OFF = "off"
+    _ON = "on"
+    _OFF = "off"
+    _UNKNOWN = "unknown"
 
     def __init__(self, data: dict, mqtt_support: MQTT_Support):
-        self.id = "light-1FFBD-i" + str(data["instance"])
+        self.id = "switch-1FFBD-i" + str(data["instance"])
         super().__init__(data, mqtt_support)
         self.Logger = logging.getLogger(__class__.__name__)
 
-        # Allow MQTT to control light
+        # Allow MQTT to control switch
         self.command_topic = mqtt_support.make_device_topic_string(
             self.id, None, False)
         self.mqtt_support.register(self.command_topic, self.process_mqtt_msg)
@@ -62,13 +60,13 @@ class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
         if 'group' in data:
             self.rvc_group = data['group']
         self.name = data['instance_name']
-        self.state = "unknown"
+        self.state = Switch_DC_LOAD_STATUS._UNKNOWN
 
         self.device = {"manufacturer": "RV-C",
                        "via_device": self.mqtt_support.get_bridge_ha_name(),
                        "identifiers": self.unique_device_id,
                        "name": self.name,
-                       "model": "RV-C Light from DC_LOAD_STATUS"
+                       "model": "RV-C Switch from DC_LOAD_STATUS"
                        }     
 
     def process_rvc_msg(self, new_message: dict) -> bool:
@@ -82,9 +80,9 @@ class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
         if self._is_entry_match(self.rvc_match_status, new_message):
             self.Logger.debug(f"Msg Match Status: {str(new_message)}")
             if new_message["operating_status"] == 100.0:
-                self.state = LightSwitch_DC_LOAD_STATUS.LIGHT_ON
+                self.state = Switch_DC_LOAD_STATUS._ON
             elif new_message["operating_status"] == 0.0:
-                self.state = LightSwitch_DC_LOAD_STATUS.LIGHT_OFF
+                self.state = Switch_DC_LOAD_STATUS._OFF
             else:
                 self.state = "UNEXPECTED(" + \
                     str(new_message["operating_status"]) + ")"
@@ -107,24 +105,24 @@ class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
             f"MQTT Msg Received on topic {topic} with payload {payload}")
 
         if topic == self.command_topic:
-            if payload.lower() == LightSwitch_DC_LOAD_STATUS.LIGHT_OFF:
-                if self.state != LightSwitch_DC_LOAD_STATUS.LIGHT_OFF:
-                    self._rvc_light_off()
-            elif payload.lower() == LightSwitch_DC_LOAD_STATUS.LIGHT_ON:
-                if self.state != LightSwitch_DC_LOAD_STATUS.LIGHT_ON:
-                    self._rvc_light_on()
+            if payload.lower() == Switch_DC_LOAD_STATUS._OFF:
+                if self.state != Switch_DC_LOAD_STATUS._OFF:
+                    self._rvc_switch_off()
+            elif payload.lower() == Switch_DC_LOAD_STATUS._ON:
+                if self.state != Switch_DC_LOAD_STATUS._ON:
+                    self._rvc_switch_on()
             else:
                 self.Logger.warning(
                     f"Invalid payload {payload} for topic {topic}")
 
-    def _rvc_light_off(self):
+    def _rvc_switch_off(self):
         # 01 00 FA 00 03 FF 0000
         msg_bytes = bytearray(8)
         struct.pack_into("<BBBBBBH", msg_bytes, 0, self.rvc_instance, int(
             self.rvc_group, 2), 250, 0, 3, 0xFF, 0)
         self.send_queue.put({"dgn": "1FFBC", "data": msg_bytes})
 
-    def _rvc_light_on(self):
+    def _rvc_switch_on(self):
 
         # 01 00 FA 00 01 FF 0000
         msg_bytes = bytearray(8)
@@ -147,8 +145,8 @@ class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
                   "state_topic": self.status_topic,
                   "command_topic": self.command_topic,
                   "qos": 1, "retain": False,
-                  "payload_on": LightSwitch_DC_LOAD_STATUS.LIGHT_ON,
-                  "payload_off": LightSwitch_DC_LOAD_STATUS.LIGHT_OFF,
+                  "payload_on": Switch_DC_LOAD_STATUS._ON,
+                  "payload_off": Switch_DC_LOAD_STATUS._OFF,
                   "unique_id": self.unique_device_id,
                   "device": self.device}
 
@@ -165,7 +163,7 @@ class LightSwitch_DC_LOAD_STATUS(EntityPluginBaseClass):
         self.mqtt_support.client.publish(
             self.status_topic, self.state, retain=True)
 
-        # request dgn report - this should trigger that light to report
+        # request dgn report - this should trigger that switch to report
         # dgn = 1FFBD which is actually  BD FF 01 <instance> FF 00 00 00
         self.Logger.debug("Sending Request for DGN")
         data = struct.pack("<BBBBBBBB", int("0xBD", 0), int(

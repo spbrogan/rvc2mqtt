@@ -70,7 +70,7 @@ def initialize(self):
     # publish info to mqtt
     self.mqtt_support.client.publish(self.status_topic, self.state, retain=True)
 
-    # request dgn report - this should trigger that light to report
+    # request dgn report - this should trigger that dgn to report
     # dgn = 1FFBD which is actually  BD FF 01 <instance> FF 00 00 00
     self.Logger.debug("Sending Request for DGN")
     data = struct.pack("<BBBBBBBB", int("0xBD",0), int("0xFF", 0), 1, self.rvc_instance, 0, 0, 0, 0)
