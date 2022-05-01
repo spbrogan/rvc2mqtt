@@ -21,7 +21,7 @@ See the github repo [__docs__](docs/overview.md) folder
 
 ## Current Status
 
-[![Run Python Tests](https://github.com/spbrogan/rvc2mqtt/actions/workflows/ci.yml/badge.svg)](https://github.com/spbrogan/rvc2mqtt/actions/workflows/ci.yml)
+[![Run Python Tests](https://github.com/spbrogan/rvc2mqtt/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/spbrogan/rvc2mqtt/actions/workflows/ci.yml)
 
 ## License
 
