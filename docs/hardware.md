@@ -12,7 +12,12 @@ Waveshare RS485 CAN HAT
 
 ## Tested Hardware (Pi 3 B+)
 
-details to come
+RaspberryPi 3 B+
+<https://rpilocator.com/>
+
+
+Waveshare RS485 CAN HAT
+<https://www.amazon.com/gp/product/B07VMB1ZKH/ref=ox_sc_act_title_1?smid=A3B0XDFTVR980O&psc=1>
 
 ## Software
 
